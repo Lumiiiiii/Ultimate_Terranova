@@ -63,7 +63,7 @@ $totalPatients = $patientManager->countPatients(); // $totalPatients è una vari
                                 <span class="small text-muted">assistiti</span>
                             </div>
                         </div>
-                        <span class="fs-1">👥</span>
+                        <span class="fs-1"></span>
                     </div>
                     <div class="mt-3">
                         <span class="badge rounded-pill bg-light text-success fw-semibold border">
@@ -76,7 +76,7 @@ $totalPatients = $patientManager->countPatients(); // $totalPatients è una vari
             <div class="col-md-5">
                 <a href="paziente_nuovo.php" class="card h-100 border-0 shadow-sm p-4 text-decoration-none text-white hover-lift rounded-4" 
                    style="background: linear-gradient(135deg, var(--color-primary), #4ade80);">
-                    <div class="fs-1 mb-2">➕</div>
+                    <div class="fs-1 mb-2"></div>
                     <h5 class="fw-bold mb-1">Nuovo Paziente</h5>
                     <p class="small opacity-75 mb-0">Registra una nuova scheda</p>
                 </a>
@@ -85,7 +85,7 @@ $totalPatients = $patientManager->countPatients(); // $totalPatients è una vari
             <div class="col-12">
                 <div class="card glass border-0 rounded-4 shadow-sm p-2">
                     <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-transparent border-0">🔍</span>
+                        <span class="input-group-text bg-transparent border-0"></span>
                         <input type="text" id="search-input" class="form-control border-0 bg-transparent" 
                                placeholder="Cerca paziente per nome, email o telefono..." autocomplete="off">
                     </div>
@@ -123,7 +123,7 @@ $totalPatients = $patientManager->countPatients(); // $totalPatients è una vari
 
             <div class="col-md-4">
                 <a href="medicinali_gestione.php" class="card h-100 border-0 shadow-sm p-4 text-decoration-none glass hover-lift rounded-4">
-                    <div class="fs-1 mb-2">💊</div>
+                    <div class="fs-1 mb-2"></div>
                     <h5 class="fw-bold text-dark mb-1">Medicinali</h5>
                     <p class="small text-muted mb-0">Gestisci l'archivio dei rimedi</p>
                 </a>
