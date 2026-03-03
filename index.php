@@ -1,9 +1,18 @@
 <?php
-include __DIR__ . '/config/database.php'; //file con le istruzioni necessarie a collegare il database
-include __DIR__ . '/includes/patient.php'; // è una classe con tutti i metodi del paziente, che verrà richiamata ogni volta che c'è bisogno
-$patientManager = new Patient(); // $patientManager è utilizzato come "gestore" delle funzioni della classe Patient
-$recentPatients = $patientManager->getRecentPatients(); // $recentPatients è una variabile che conterrà l'elenco dei pazienti più recenti
-$totalPatients = $patientManager->countPatients(); // $totalPatients è una variabile che conterrà il numero totale dei pazienti presenti nel database
+// Include il file che contiene le credenziali e la connessione al database
+include __DIR__ . '/config/database.php'; 
+
+// Include la definizione della classe Patient (dove sono scritte le funzioni CRUD)
+include __DIR__ . '/includes/patient.php'; 
+
+// Crea un'istanza della classe Patient per poter usare i suoi metodi
+$patientManager = new Patient(); 
+
+// Chiama il metodo per recuperare l'array dei pazienti più recenti dal database
+$recentPatients = $patientManager->getRecentPatients(); 
+
+// Chiama il metodo che conta quanti record totali ci sono nella tabella pazienti
+$totalPatients = $patientManager->countPatients(); 
 ?>
 
 <!DOCTYPE html>
@@ -15,11 +24,20 @@ $totalPatients = $patientManager->countPatients(); // $totalPatients è una vari
     <title>TerraNova - Gestionale Naturopatia</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Definizione del colore principale della pagina a verde */
         :root { --color-primary: #2ecc71; }
+        
+        /* Classe personalizzata per l'effetto "vetro"*/
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        
+        /* Stile per il cerchietto con l'iniziale del paziente */
         .avatar-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        
+        /* Animazione per far sollevare leggermente le card quando ci passi sopra col cursore */
         .hover-lift { transition: transform 0.2s ease; }
         .hover-lift:hover { transform: translateY(-5px) !important; }
+        
+        /* Arrotondamento accentuato per i bordi */
         .rounded-4 { border-radius: 1rem !important; }
     </style>
 </head>
@@ -63,7 +81,6 @@ $totalPatients = $patientManager->countPatients(); // $totalPatients è una vari
                                 <span class="small text-muted">assistiti</span>
                             </div>
                         </div>
-                        <span class="fs-1">👥</span>
                     </div>
                     <div class="mt-3">
                         <span class="badge rounded-pill bg-light text-success fw-semibold border">
@@ -76,7 +93,6 @@ $totalPatients = $patientManager->countPatients(); // $totalPatients è una vari
             <div class="col-md-5">
                 <a href="paziente_nuovo.php" class="card h-100 border-0 shadow-sm p-4 text-decoration-none text-white hover-lift rounded-4" 
                    style="background: linear-gradient(135deg, var(--color-primary), #4ade80);">
-                    <div class="fs-1 mb-2">➕</div>
                     <h5 class="fw-bold mb-1">Nuovo Paziente</h5>
                     <p class="small opacity-75 mb-0">Registra una nuova scheda</p>
                 </a>
@@ -85,7 +101,6 @@ $totalPatients = $patientManager->countPatients(); // $totalPatients è una vari
             <div class="col-12">
                 <div class="card glass border-0 rounded-4 shadow-sm p-2">
                     <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-transparent border-0">🔍</span>
                         <input type="text" id="search-input" class="form-control border-0 bg-transparent" 
                                placeholder="Cerca paziente per nome, email o telefono..." autocomplete="off">
                     </div>
@@ -109,8 +124,8 @@ $totalPatients = $patientManager->countPatients(); // $totalPatients è una vari
                                             <?= strtoupper(substr($patient['nome_cognome'], 0, 1)) ?>
                                         </div>
                                         <div>
-                                            <div class="fw-semibold text-dark"><?= htmlspecialchars($patient['nome_cognome']) ?></div>
-                                            <div class="text-muted small"><?= $patient['eta'] ?> anni • <?= htmlspecialchars($patient['telefono']) ?></div>
+                                            <div class="fw-semibold text-dark"><?= $patient['nome_cognome'] ?></div>
+                                            <div class="text-muted small"><?= $patient['eta'] ?> anni • <?= $patient['telefono'] ?></div>
                                         </div>
                                     </div>
                                     <span class="text-muted">›</span>
@@ -123,19 +138,23 @@ $totalPatients = $patientManager->countPatients(); // $totalPatients è una vari
 
             <div class="col-md-4">
                 <a href="medicinali_gestione.php" class="card h-100 border-0 shadow-sm p-4 text-decoration-none glass hover-lift rounded-4">
-                    <div class="fs-1 mb-2">💊</div>
                     <h5 class="fw-bold text-dark mb-1">Medicinali</h5>
                     <p class="small text-muted mb-0">Gestisci l'archivio dei rimedi</p>
                 </a>
             </div>
         </div>
     </main>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
     <script>
+        // Attende che tutta la pagina sia caricata prima di eseguire il JS
         document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('search-input');
+            
+            // Ogni volta che l'utente scrive qualcosa nella barra di ricerca...
             searchInput.addEventListener('input', function (e) {
+                // Chiama la funzione di ricerca definita nel tuo file main.js
                 searchPatients(e.target.value);
             });
         });
