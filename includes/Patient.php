@@ -142,4 +142,3 @@ public function deletePatient($id)
     }
 
     }
-}
