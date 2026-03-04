@@ -6,14 +6,23 @@ include __DIR__ . '/config/database.php';
 // Include la definizione della classe Patient (dove sono scritte le funzioni CRUD)
 include __DIR__ . '/includes/patient.php'; 
 
+// Include la definizione della classe Note per gestire il promemoria veloce
+include __DIR__ . '/includes/Note.php'; 
+
 // Crea un'istanza della classe Patient per poter usare i suoi metodi
 $patientManager = new Patient(); 
+
+// Crea un'istanza della classe Note
+$noteManager = new Note();
 
 // Chiama il metodo per recuperare l'array dei pazienti più recenti dal database
 $recentPatients = $patientManager->getRecentPatients(); 
 
 // Chiama il metodo che conta quanti record totali ci sono nella tabella pazienti
 $totalPatients = $patientManager->countPatients(); 
+
+// Recupera la nota veloce
+$noteText = $noteManager->getNote();
 ?>
 
 <!DOCTYPE html>
@@ -337,17 +346,41 @@ $totalPatients = $patientManager->countPatients();
                 </div>
             </div>
 
-            <div class="col-md-8">
+            <!-- ── COLONNA 1: Note Veloci (Nuovo) ── -->
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 bg-white h-100">
+                    <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">Note Veloci</h5>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-warning">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column text-muted">
+                        <!-- Area di testo col testo caricato dal DB -->
+                        <textarea id="quick-notes" class="form-control border-0 bg-light rounded-3 p-3 text-dark mb-3 flex-grow-1" placeholder="Scrivi un promemoria qui..." style="resize: none; background-color: #fdfbf7 !important; border-left: 3px solid #f6c23e !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); min-height: 180px;"><?= htmlspecialchars($noteText) ?></textarea>
+                        
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <small id="save-status" class="opacity-75">Modifiche salvate in automatico</small>
+                            <!-- Bottone rimosso, salva tutto da solo -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── COLONNA 2: Pazienti Recenti (Esistente, ma ridimensionato a col-4) ── -->
+            <div class="col-md-4">
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
                     <div class="card-header bg-transparent border-bottom py-3 px-4">
                         <h5 class="fw-bold mb-0">Pazienti Recenti</h5>
                     </div>
-                    <div id="patients-list" style="max-height: 420px; overflow-y: auto;">
+                    <div id="patients-list" class="flex-grow-1" style="max-height: 420px; overflow-y: auto;">
                         <?php if (empty($recentPatients)): ?>
-                            <div class="p-5 text-center text-muted">Nessun paziente trovato.</div>
+                            <div class="p-5 text-center text-muted h-100 d-flex align-items-center justify-content-center">
+                                <div><br>Nessun paziente trovato.</div>
+                            </div>
                         <?php else: ?>
                             <?php foreach ($recentPatients as $patient): ?>
-                                <div class="px-4 py-3 d-flex justify-content-between align-items-center border-bottom" 
+                                <div class="px-4 py-3 d-flex justify-content-between align-items-center border-bottom hover-lift" 
                                      style="cursor:pointer" onclick="window.location.href='paziente_dettaglio.php?id=<?= $patient['id'] ?>'">
                                     <div class="d-flex align-items-center gap-3">
                                         <div class="avatar-circle bg-light text-primary">
@@ -366,10 +399,20 @@ $totalPatients = $patientManager->countPatients();
                 </div>
             </div>
 
+            <!-- ── COLONNA 3: Medicinali (Esistente) ── -->
             <div class="col-md-4">
                 <a href="medicinali_gestione.php" class="card h-100 border-0 shadow-sm p-4 text-decoration-none glass hover-lift rounded-4">
-                    <h5 class="fw-bold text-dark mb-1">Medicinali</h5>
-                    <p class="small text-muted mb-0">Gestisci l'archivio dei rimedi →</p>
+                    <div class="d-flex flex-column h-100 justify-content-center align-items-center text-center">
+                        <div class="p-3 bg-light rounded-circle mb-3">
+                            <!-- Icona SVG: capsula / medicina -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="var(--color-primary)" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 20.5l10-10a4.95 4.95 0 10-7-7l-10 10a4.95 4.95 0 107 7z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.5 8.5l7 7" />
+                            </svg>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-2">Archivio Medicinali</h5>
+                        <p class="small text-muted mb-0">Gestisci i rimedi e integratori naturali →</p>
+                    </div>
                 </a>
             </div>
         </div>
@@ -381,13 +424,67 @@ $totalPatients = $patientManager->countPatients();
     <script>
         // Attende che tutta la pagina sia caricata prima di eseguire il JS
         document.addEventListener('DOMContentLoaded', function () {
-            const searchInput = document.getElementById('search-input');
             
-            // Ogni volta che l'utente scrive qualcosa nella barra di ricerca...
-            searchInput.addEventListener('input', function (e) {
-                // Chiama la funzione di ricerca definita nel tuo file main.js
-                searchPatients(e.target.value);
-            });
+            // --- GESTIONE RICERCA PAZIENTI ---
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                // Ogni volta che l'utente scrive qualcosa nella barra di ricerca...
+                searchInput.addEventListener('input', function (e) {
+                    // Chiama la funzione di ricerca definita nel tuo file main.js
+                    if (typeof searchPatients === 'function') {
+                        searchPatients(e.target.value);
+                    }
+                });
+            }
+
+            // --- GESTIONE SALVATAGGIO AUTOMATICO NOTE VELOCI ---
+            const notesTextarea = document.getElementById('quick-notes');
+            const saveStatus = document.getElementById('save-status');
+            let typingTimer;
+            const doneTypingInterval = 1000; // Aspetta 1 secondo prima di salvare
+
+            if (notesTextarea && saveStatus) {
+                // Quando l'utente inizia a scrivere, cambia il testo e cancella il timer
+                notesTextarea.addEventListener('input', function () {
+                    clearTimeout(typingTimer);
+                    saveStatus.textContent = "Salvataggio in corso...";
+                    saveStatus.classList.add('text-warning');
+                    saveStatus.classList.remove('text-success', 'text-danger');
+
+                    // Fa partire il timer: se l'utente non scrive nulla per 1s, salva
+                    typingTimer = setTimeout(saveNotes, doneTypingInterval);
+                });
+            }
+
+            function saveNotes() {
+                const text = notesTextarea.value;
+
+                fetch('ajax_notes.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ testo: text })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const now = new Date();
+                        const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                        saveStatus.textContent = "Salvato alle " + timeString;
+                        saveStatus.classList.remove('text-warning', 'text-danger');
+                        saveStatus.classList.add('text-success');
+                    } else {
+                        throw new Error(data.error || "Errore sconosciuto");
+                    }
+                })
+                .catch(error => {
+                    console.error('Errore durante il salvataggio:', error);
+                    saveStatus.textContent = "Errore durante il salvataggio!";
+                    saveStatus.classList.remove('text-warning', 'text-success');
+                    saveStatus.classList.add('text-danger');
+                });
+            }
         });
     </script>
 </body>

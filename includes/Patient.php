@@ -140,4 +140,6 @@ public function deletePatient($id)
         $query->execute([$term, $term, $term]); // $term mandato 3 volte: per nome, telefono ed email
         return $query->fetchAll();
     }
+
+    }
 }

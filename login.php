@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <div class="card shadow">
                 <div class="card-body p-4">
 
-                    <h3 class="text-center mb-4">Accesso Riservato</h3>
+                    <h3 class="text-center mb-4">Login</h3>
 
                     <?php if (!empty($errore)): ?>
                         <div class="alert alert-danger">

@@ -92,6 +92,11 @@ data_modifica TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 FOREIGN KEY (paziente_id) REFERENCES pazienti(id) ON DELETE CASCADE,
 FOREIGN KEY (lista_alimenti_id) REFERENCES lista_alimenti(id) ON DELETE CASCADE
 );
+CREATE TABLE promemoria_veloce (
+    id INT PRIMARY KEY,
+    testo TEXT,
+    data_modifica TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
-
-
+-- Inseriamo subito una riga vuota che il gestionale andrà sempre ad aggiornare (invece di crearne di nuove)
+INSERT INTO promemoria_veloce (id, testo) VALUES (1, '');
