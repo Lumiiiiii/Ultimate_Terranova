@@ -141,4 +141,36 @@ public function deletePatient($id)
         return $query->fetchAll();
     }
 
+    // Lista tutti i pazienti registrati (per la sezione "Pazienti Registrati")
+    public function getAllPatients()
+    {
+        try {
+            $queryText = "SELECT *, TIMESTAMPDIFF(YEAR, data_nascita, CURDATE()) AS eta 
+                    FROM pazienti 
+                    ORDER BY nome_cognome ASC";
+            $query = $this->db->query($queryText);
+            return $query->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    // Lista visite recenti con nome del paziente
+    public function getRecentVisits($limit = 10)
+    {
+        try {
+            $queryText = "SELECT v.*, p.nome_cognome 
+                    FROM visite v 
+                    JOIN pazienti p ON v.paziente_id = p.id 
+                    ORDER BY v.data_visita DESC, v.id DESC 
+                    LIMIT :limit";
+            $query = $this->db->prepare($queryText);
+            $query->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+            $query->execute();
+            return $query->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
     }

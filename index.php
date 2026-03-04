@@ -1,4 +1,11 @@
 <?php
+session_start(); // Avvia la sessione
+
+// Se l'utente non è loggato, reindirizza alla pagina di login
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: login.php');
+    exit;
+}
 
 // Include il file che contiene le credenziali e la connessione al database
 include __DIR__ . '/config/database.php'; 
@@ -15,11 +22,14 @@ $patientManager = new Patient();
 // Crea un'istanza della classe Note
 $noteManager = new Note();
 
-// Chiama il metodo per recuperare l'array dei pazienti più recenti dal database
-$recentPatients = $patientManager->getRecentPatients(); 
-
 // Chiama il metodo che conta quanti record totali ci sono nella tabella pazienti
 $totalPatients = $patientManager->countPatients(); 
+
+// Recupera tutti i pazienti registrati (per la sezione "Pazienti Registrati")
+$allPatients = $patientManager->getAllPatients();
+
+// Recupera le visite recenti (per la sezione "Visite Recenti")
+$recentVisits = $patientManager->getRecentVisits();
 
 // Recupera la nota veloce
 $noteText = $noteManager->getNote();
@@ -310,16 +320,13 @@ $noteText = $noteManager->getNote();
 
         <div class="row g-4">
             
-            <div class="col-md-7">
+            <!-- ── Totale Pazienti ── -->
+            <div class="col-md-3">
                 <div class="card h-100 border-0 shadow-sm p-4 rounded-4 bg-white">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-uppercase small fw-bold text-muted mb-1">Totale Pazienti</p>
-                            <div class="d-flex align-items-baseline gap-2">
-                                <span class="display-4 fw-bold"><?= $totalPatients ?></span>
-                                <span class="small text-muted">assistiti</span>
-                            </div>
-                        </div>
+                    <p class="text-uppercase small fw-bold text-muted mb-1">Totale Pazienti</p>
+                    <div class="d-flex align-items-baseline gap-2">
+                        <span class="display-4 fw-bold"><?= $totalPatients ?></span>
+                        <span class="small text-muted">assistiti</span>
                     </div>
                     <div class="mt-3">
                         <span class="badge rounded-pill bg-light text-success fw-semibold border">
@@ -329,11 +336,49 @@ $noteText = $noteManager->getNote();
                 </div>
             </div>
 
-            <div class="col-md-5">
-                <a href="paziente_nuovo.php" class="card h-100 border-0 shadow-sm p-4 text-decoration-none text-white hover-lift rounded-4" 
+            <!-- ── Pazienti Registrati (lista completa) ── -->
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
+                    <div class="card-header bg-transparent border-bottom py-3 px-4">
+                        <h5 class="fw-bold mb-0">Pazienti Registrati</h5>
+                    </div>
+                    <div style="max-height: 200px; overflow-y: auto;">
+                        <?php if (empty($allPatients)): ?>
+                            <div class="p-4 text-center text-muted">
+                                Nessun paziente registrato.
+                            </div>
+                        <?php else: ?>
+                            <?php foreach ($allPatients as $patient): ?>
+                                <div class="px-4 py-2 d-flex justify-content-between align-items-center border-bottom hover-lift" 
+                                     style="cursor:pointer" onclick="window.location.href='paziente_dettaglio.php?id=<?= $patient['id'] ?>'">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar-circle bg-light text-primary" style="width:32px;height:32px;font-size:0.8rem;">
+                                            <?= strtoupper(substr($patient['nome_cognome'], 0, 1)) ?>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold text-dark small"><?= $patient['nome_cognome'] ?></div>
+                                            <div class="text-muted" style="font-size:0.75rem;"><?= $patient['eta'] ?> anni • <?= $patient['telefono'] ?></div>
+                                        </div>
+                                    </div>
+                                    <span class="text-muted">›</span>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Nuovo Paziente (rimpicciolito) ── -->
+            <div class="col-md-3">
+                <a href="paziente_nuovo.php" class="card h-100 border-0 shadow-sm p-3 text-decoration-none text-white hover-lift rounded-4 d-flex align-items-center justify-content-center" 
                    style="background: linear-gradient(135deg, var(--color-primary), #4ade80);">
-                    <h5 class="fw-bold mb-1">Nuovo Paziente</h5>
-                    <p class="small opacity-75 mb-0">Registra una nuova scheda →</p>
+                    <div class="text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="mb-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                        <h6 class="fw-bold mb-1">Nuovo Paziente</h6>
+                        <p class="small opacity-75 mb-0">Registra una nuova scheda →</p>
+                    </div>
                 </a>
             </div>
 
@@ -367,28 +412,36 @@ $noteText = $noteManager->getNote();
                 </div>
             </div>
 
-            <!-- ── COLONNA 2: Pazienti Recenti (Esistente, ma ridimensionato a col-4) ── -->
+            <!-- ── COLONNA 2: Visite Recenti ── -->
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
-                    <div class="card-header bg-transparent border-bottom py-3 px-4">
-                        <h5 class="fw-bold mb-0">Pazienti Recenti</h5>
+                    <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">Visite Recenti</h5>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
                     </div>
-                    <div id="patients-list" class="flex-grow-1" style="max-height: 420px; overflow-y: auto;">
-                        <?php if (empty($recentPatients)): ?>
+                    <div id="visits-list" class="flex-grow-1" style="max-height: 420px; overflow-y: auto;">
+                        <?php if (empty($recentVisits)): ?>
                             <div class="p-5 text-center text-muted h-100 d-flex align-items-center justify-content-center">
-                                <div><br>Nessun paziente trovato.</div>
+                                <div>Nessuna visita registrata.</div>
                             </div>
                         <?php else: ?>
-                            <?php foreach ($recentPatients as $patient): ?>
+                            <?php foreach ($recentVisits as $visit): ?>
                                 <div class="px-4 py-3 d-flex justify-content-between align-items-center border-bottom hover-lift" 
-                                     style="cursor:pointer" onclick="window.location.href='paziente_dettaglio.php?id=<?= $patient['id'] ?>'">
+                                     style="cursor:pointer" onclick="window.location.href='paziente_dettaglio.php?id=<?= $visit['paziente_id'] ?>'">
                                     <div class="d-flex align-items-center gap-3">
                                         <div class="avatar-circle bg-light text-primary">
-                                            <?= strtoupper(substr($patient['nome_cognome'], 0, 1)) ?>
+                                            <?= strtoupper(substr($visit['nome_cognome'], 0, 1)) ?>
                                         </div>
                                         <div>
-                                            <div class="fw-semibold text-dark"><?= $patient['nome_cognome'] ?></div>
-                                            <div class="text-muted small"><?= $patient['eta'] ?> anni • <?= $patient['telefono'] ?></div>
+                                            <div class="fw-semibold text-dark"><?= $visit['nome_cognome'] ?></div>
+                                            <div class="text-muted small">
+                                                <?= $visit['data_visita'] ? date('d/m/Y', strtotime($visit['data_visita'])) : 'Data n/d' ?>
+                                                <?php if (!empty($visit['motivazione'])): ?>
+                                                    • <?= mb_strimwidth(htmlspecialchars($visit['motivazione']), 0, 30, '…') ?>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
                                     </div>
                                     <span class="text-muted">›</span>
