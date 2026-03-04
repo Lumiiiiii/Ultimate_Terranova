@@ -147,7 +147,7 @@ public function deletePatient($id)
         try {
             $queryText = "SELECT *, TIMESTAMPDIFF(YEAR, data_nascita, CURDATE()) AS eta 
                     FROM pazienti 
-                    ORDER BY nome_cognome ASC";
+                    ORDER BY id DESC";
             $query = $this->db->query($queryText);
             return $query->fetchAll();
         } catch (PDOException $e) {
