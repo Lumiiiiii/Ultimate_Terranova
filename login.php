@@ -48,9 +48,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             position: fixed;
             inset: 0;
             background: 
-                radial-gradient(ellipse at 20% 50%, rgba(46, 204, 113, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(74, 222, 128, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 80%, rgba(39, 174, 96, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 50%, rgba(46, 204, 113, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(34, 197, 94, 0.08) 0%, transparent 50%),
                 linear-gradient(160deg, #0f0f23 0%, #1a1a2e 40%, #16213e 100%);
             z-index: 0;
             animation: bgShift 12s ease-in-out infinite alternate;
@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
         .particle {
             position: absolute;
-            background: rgba(46, 204, 113, 0.3);
+            background: rgba(46, 180, 160, 0.3);
             border-radius: 50%;
             animation: float linear infinite;
         }
@@ -111,18 +111,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         .brand-icon {
             width: 56px;
             height: 56px;
-            background: linear-gradient(135deg, #2ecc71, #4ade80);
+            background: linear-gradient(135deg, #2ecc71, #3b82f6);
             border-radius: 16px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 20px rgba(46, 204, 113, 0.3);
+            box-shadow: 0 4px 20px rgba(46, 180, 160, 0.3);
             animation: iconPulse 3s ease-in-out infinite;
         }
 
         @keyframes iconPulse {
-            0%, 100% { box-shadow: 0 4px 20px rgba(46, 204, 113, 0.3); }
-            50%      { box-shadow: 0 4px 30px rgba(46, 204, 113, 0.5); }
+            0%, 100% { box-shadow: 0 4px 20px rgba(46, 180, 160, 0.3); }
+            50%      { box-shadow: 0 4px 30px rgba(59, 130, 246, 0.5); }
         }
 
         /* Customizing Bootstrap Input for Dark Mode */
@@ -137,7 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
         .form-control.glass-input:focus {
             background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(46, 204, 113, 0.5);
+            border-color: rgba(46, 180, 160, 0.5);
             box-shadow: none;
             color: #ffffff;
         }
@@ -167,23 +167,51 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         .input-group:focus-within .glass-addon,
         .input-group:focus-within .glass-input,
         .input-group:focus-within .btn-toggle-pass {
-            border-color: rgba(46, 204, 113, 0.5);
+            border-color: rgba(46, 180, 160, 0.5);
         }
         .input-group:focus-within .glass-addon svg {
-            color: #2ecc71;
+            color: #2eb4a0;
         }
 
         /* Custom Button */
         .btn-primary-custom {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            background: linear-gradient(135deg, #2ecc71, #3b82f6);
             border: none;
             color: white;
             font-weight: 600;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-primary-custom::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                135deg,
+                transparent 0%,
+                transparent 35%,
+                rgba(255, 255, 255, 0.25) 45%,
+                rgba(255, 255, 255, 0.35) 50%,
+                rgba(255, 255, 255, 0.25) 55%,
+                transparent 65%,
+                transparent 100%
+            );
+            animation: waveEffect 2.5s ease-in-out infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+        @keyframes waveEffect {
+            0%   { transform: translate(-60%, -60%); }
+            100% { transform: translate(60%, 60%); }
         }
         .btn-primary-custom:hover, .btn-primary-custom:focus {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(46, 204, 113, 0.35);
+            box-shadow: 0 8px 25px rgba(46, 180, 160, 0.35);
             color: white;
         }
 
@@ -227,7 +255,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <circle cx="15" cy="10" r="1" fill="white" />
                         </svg>
                     </div>
-                    <h1 class="h3 fw-bold mb-1">Aequa</h1>
+                    <h1 class="h3 fw-bold mb-1" style="background: linear-gradient(135deg, #2ecc71, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Aequa</h1>
                     <p class="small text-white-50 mb-0">Gestionale Naturopatia</p>
                 </div>
 

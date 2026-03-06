@@ -58,6 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         :root {
             --color-primary: #2ecc71;
             --color-primary-dark: #27ae60;
+            --color-accent: #3b82f6;
             --sidebar-width: 260px;
             --sidebar-bg: #1a1a2e;
             --sidebar-text: #a0aec0;
@@ -96,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             transition: all 0.2s ease; margin-bottom: 2px;
         }
         .sidebar-nav a:hover { background: rgba(255,255,255,0.08); color: white; }
-        .sidebar-nav a.active { background: rgba(46, 204, 113, 0.15); color: white; }
+        .sidebar-nav a.active { background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(59, 130, 246, 0.15)); color: white; }
         .sidebar-nav a svg { width: 20px; height: 20px; flex-shrink: 0; opacity: 0.6; }
         .sidebar-nav a:hover svg, .sidebar-nav a.active svg { opacity: 1; }
         .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
@@ -126,22 +127,53 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         /* ── FORM CUSTOM STYLES ────────────────────────────────────────────── */
         .form-control:focus {
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 0.2rem rgba(46, 204, 113, 0.15);
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
         }
         .form-floating > .form-control:focus ~ label,
         .form-floating > .form-control:not(:placeholder-shown) ~ label {
-            color: var(--color-primary);
+            color: var(--color-accent);
         }
         .btn-save {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            border: none; color: white; font-weight: 600;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+            font-weight: 600;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .btn-save::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                135deg,
+                transparent 0%,
+                transparent 38%,
+                rgba(46, 204, 113, 0.12) 44%,
+                rgba(59, 130, 246, 0.18) 50%,
+                rgba(46, 204, 113, 0.12) 56%,
+                transparent 62%,
+                transparent 100%
+            );
+            animation: saveWave 3s ease-in-out infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+        @keyframes saveWave {
+            0%   { transform: translate(-60%, -60%); }
+            100% { transform: translate(60%, 60%); }
         }
         .btn-save:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.35);
-            color: white;
+            box-shadow: 0 6px 20px rgba(46, 180, 160, 0.2);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: #1e293b;
         }
         .section-icon {
             width: 40px; height: 40px; border-radius: 12px;

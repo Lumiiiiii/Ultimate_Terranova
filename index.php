@@ -48,6 +48,7 @@ $noteText = $noteManager->getNote();
         :root {
             --color-primary: #2ecc71;          /* verde principale */
             --color-primary-dark: #27ae60;     /* verde scuro (hover) */
+            --color-accent: #3b82f6;           /* blu accento gradiente */
             --sidebar-width: 260px;            /* larghezza sidebar */
             --sidebar-bg: #1a1a2e;             /* sfondo sidebar: blu scurissimo */
             --sidebar-text: #a0aec0;           /* testo sidebar: grigio chiaro */
@@ -147,7 +148,7 @@ $noteText = $noteManager->getNote();
 
         /* Voce ATTIVA: sfondo verde semitrasparente + testo bianco */
         .sidebar-nav a.active {
-            background: rgba(46, 204, 113, 0.15);
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(59, 130, 246, 0.15));
             color: white;
         }
 
@@ -371,7 +372,7 @@ $noteText = $noteManager->getNote();
             <!-- ── Nuovo Paziente (rimpicciolito) ── -->
             <div class="col-md-3">
                 <a href="paziente_nuovo.php" class="card h-100 border-0 shadow-sm p-3 text-decoration-none text-white hover-lift rounded-4 d-flex align-items-center justify-content-center" 
-                   style="background: linear-gradient(135deg, var(--color-primary), #4ade80);">
+                   style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent));">
                     <div class="text-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="mb-2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
