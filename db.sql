@@ -20,10 +20,12 @@ CREATE TABLE anamnesi (
     patologie_pregresse TEXT, -- esempio: il paziente soffre di ipertensione, diabete, ecc.
     interventi_chirurgici TEXT, -- esempio: il paziente ha subito un intervento chirurgico al ginocchio nel 2019
     esami_clinici_recenti TEXT, -- esempio: il paziente ha fatto le analisi del sangue l'anno scorso
-    terapie_farmacologiche_croniche TEXT, -- esempio: assumo la pillola anticoncezionale, prendo l'antinfiammatorio ogni tanto
     alcol VARCHAR(100), -- da rivedere, si potrebbe mettere un si/no
     fumo VARCHAR(100), -- da rivedere, si potrebbe mettere un si/no
     traumi_o_fratture TEXT, -- esempio: il paziente ha avuto una frattura al braccio sinistro nel 2020
+    altezza INT,
+    peso decimal(5,2),
+    note_aggiuntive TEXT,
     FOREIGN KEY (paziente_id) REFERENCES pazienti(id) ON DELETE CASCADE
 );
 CREATE TABLE visite(

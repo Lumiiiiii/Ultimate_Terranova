@@ -173,4 +173,21 @@ public function deletePatient($id)
         }
     }
 
+    /**
+     * Verifica se il paziente ha già effettuato la prima anamnesi
+     * Ritorna true se esiste almeno un record nella tabella anamnesi
+     */
+    public function checkAnamnesi($paziente_id)
+    {
+        try {
+            $queryText = "SELECT COUNT(*) as totale FROM anamnesi WHERE paziente_id = :paziente_id";
+            $query = $this->db->prepare($queryText);
+            $query->execute([':paziente_id' => $paziente_id]);
+            $result = $query->fetch();
+            return ($result['totale'] > 0);
+        } catch (PDOException $e) {
+            error_log("Errore in checkAnamnesi: " . $e->getMessage());
+            return false;
+        }
     }
+}

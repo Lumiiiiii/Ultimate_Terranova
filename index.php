@@ -41,7 +41,10 @@ $noteText = $noteManager->getNote();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aequa - Gestionale Naturopatia</title>
+    <title>Aequa</title>
+    <!-- Icona per la scheda del browser (Favicon) -->
+    <link rel="icon" type="image/png" href="assets/img/logo.png">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* ── VARIABILI CSS GLOBALI ─────────────────────────────────────────────── */
@@ -254,9 +257,9 @@ $noteText = $noteManager->getNote();
     <aside class="sidebar">
 
         <!-- ── HEADER: Nome dell'applicazione ─────────────────────────────────── -->
-        <div class="sidebar-header">
-            <h4>Aequa</h4>
-            <small>Gestionale Naturopatia</small>
+        <div class="sidebar-header d-flex align-items-center gap-2" style="padding-left: 20px;">
+            <img src="assets/img/logo.png" alt="Aequa Logo" style="width: 46px; height: 46px; object-fit: contain; flex-shrink: 0;">
+            <h3 class="mb-0 fw-bold pb-1" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; letter-spacing: 0.5px;">Aequa</h3>
         </div>
 
         <!-- ── NAVIGAZIONE: Voci del menu ─────────────────────────────────────── -->

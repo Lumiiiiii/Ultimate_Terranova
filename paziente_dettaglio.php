@@ -16,7 +16,10 @@ if(!$patient){
     header('Location: index.php');
     exit;
 }
-$visits = $visitManager->getPatientVisits($id);
+$visits = $visitManager->getVisitHistory($id);
+
+// Verifica se il paziente ha già fatto la prima anamnesi
+$haFattoAnamnesi = $patientManager->checkAnamnesi($id);
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -24,6 +27,8 @@ $visits = $visitManager->getPatientVisits($id);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($patient['nome_cognome']) ?> - Dettaglio - Aequa</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/img/logo.png">
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -157,9 +162,9 @@ $visits = $visitManager->getPatientVisits($id);
 
     <!-- ══ SIDEBAR ═══════════════════════════════════════════════════════════ -->
     <aside class="sidebar">
-        <div class="sidebar-header">
-            <h4>Aequa</h4>
-            <small>Gestionale Naturopatia</small>
+        <div class="sidebar-header d-flex align-items-center gap-2" style="padding-left: 20px;">
+            <img src="assets/img/logo.png" alt="Aequa Logo" style="width: 46px; height: 46px; object-fit: contain; flex-shrink: 0;">
+            <h3 class="mb-0 fw-bold pb-1" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; letter-spacing: 0.5px;">Aequa</h3>
         </div>
         <nav class="sidebar-nav">
             <div class="nav-section-label">Principale</div>
@@ -229,12 +234,21 @@ $visits = $visitManager->getPatientVisits($id);
                         
                         <h4 class="fw-bold mb-4"><?= htmlspecialchars($patient['nome_cognome']) ?></h4>
 
-                        <a href="visita_anamnesi.php?paziente_id=<?= $id ?>" class="btn btn-gradient btn-lg w-100 mb-4 rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                            </svg>
-                            Nuova Visita
-                        </a>
+                        <?php if (!$haFattoAnamnesi): ?>
+                            <a href="visita_anamnesi.php?paziente_id=<?= $id ?>" class="btn btn-gradient btn-lg w-100 mb-4 rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Fai anamnesi (prima visita)
+                            </a>
+                        <?php else: ?>
+                            <a href="visita_nuova.php?paziente_id=<?= $id ?>" class="btn btn-gradient btn-lg w-100 mb-4 rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Nuova visita
+                            </a>
+                        <?php endif; ?>
 
                         <!-- Dettagli anagrafici -->
                         <div class="text-start border-top pt-4 small flex-grow-1">

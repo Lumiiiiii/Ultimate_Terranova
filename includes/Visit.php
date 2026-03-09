@@ -1,8 +1,7 @@
 <?php
 /**
- * Classe Visit - Gestione visite
+ * Classe Visit - Gestione Visite (Sedute singole)
  */
-
 require_once __DIR__ . '/../config/database.php';
 
 class Visit
@@ -14,43 +13,74 @@ class Visit
         $this->db = getDB();
     }
 
-    /**
-     * Ottieni tutte le visite di un paziente specifico
-     * 
-     * @param int $paziente_id ID del paziente
-     * @return array Lista delle visite
-     */
-    public function getPatientVisits($paziente_id)
+    // Crea nuova visita
+    public function createVisit($paziente_id)
     {
-        try {
-            $queryText = "SELECT * FROM visite WHERE paziente_id = :paziente_id ORDER BY data_visita DESC, id DESC";
-            $query = $this->db->prepare($queryText);
-            $query->execute([':paziente_id' => $paziente_id]);
-            return $query->fetchAll();
-        } catch (PDOException $e) {
-            error_log("Errore getPatientVisits: " . $e->getMessage());
-            return [];
+        $date = date('Y-m-d');
+        $stmt = $this->db->prepare("INSERT INTO visite (paziente_id, data_visita) VALUES (?, ?)");
+        if ($stmt->execute([$paziente_id, $date])) {
+            return $this->db->lastInsertId();
         }
+        return false;
     }
 
-    /**
-     * Crea una nuova visita (implementazione base)
-     */
-    public function createVisit($data)
+    // Ottieni dati visita
+    public function getVisit($id)
     {
-        try {
-            $queryText = "INSERT INTO visite (paziente_id, data_visita, motivazione, note_finali) 
-                          VALUES (:paziente_id, :data_visita, :motivazione, :note_finali)";
-            $query = $this->db->prepare($queryText);
-            return $query->execute([
-                ':paziente_id' => $data['paziente_id'],
-                ':data_visita' => $data['data_visita'] ?? date('Y-m-d'),
-                ':motivazione' => $data['motivazione'] ?? null,
-                ':note_finali' => $data['note_finali'] ?? null
-            ]);
-        } catch (PDOException $e) {
-            error_log("Errore createVisit: " . $e->getMessage());
-            return false;
-        }
+        $stmt = $this->db->prepare("SELECT * FROM visite WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
+    // Aggiorna visita
+    public function updateVisit($id, $data)
+    {
+        $sql = "UPDATE visite SET 
+                motivazione = :motivazione,
+                concentrazione = :concentrazione,
+                stato_emotivo = :stato_emotivo,
+                attivita_fisica = :attivita_fisica,
+                idratazione = :idratazione,
+                qualita_sonno_percepita = :qualita_sonno,
+                ore_sonno = :ore_sonno,
+                sintomi_acuti = :sintomi,
+                regolarita_intestinale = :regolarita,
+                appetito_e_digestione = :digestione,
+                difficolta_addormentarsi_risvegli_notturni = :sonno_problemi,
+                livello_stress = :stress,
+                livello_energia = :energia,
+                supporti_in_uso = :supporti,
+                alimentazione_recente = :alimentazione,
+                note_finali = :note
+                WHERE id = :id";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':id' => $id,
+            ':motivazione' => $data['motivazione'] ?? '',
+            ':concentrazione' => $data['concentrazione'] ?? '',
+            ':stato_emotivo' => $data['stato_emotivo'] ?? '',
+            ':attivita_fisica' => $data['attivita_fisica'] ?? '',
+            ':idratazione' => $data['idratazione'] ?? '',
+            ':qualita_sonno' => $data['qualita_sonno_percepita'] ?? '',
+            ':ore_sonno' => !empty($data['ore_sonno']) ? $data['ore_sonno'] : 0,
+            ':sintomi' => $data['sintomi_acuti'] ?? '',
+            ':regolarita' => $data['regolarita_intestinale'] ?? '',
+            ':digestione' => $data['appetito_e_digestione'] ?? '',
+            ':sonno_problemi' => $data['difficolta_addormentarsi_risvegli_notturni'] ?? '',
+            ':stress' => !empty($data['livello_stress']) ? $data['livello_stress'] : 0,
+            ':energia' => !empty($data['livello_energia']) ? $data['livello_energia'] : 0,
+            ':supporti' => $data['supporti_in_uso'] ?? '',
+            ':alimentazione' => $data['alimentazione_recente'] ?? '',
+            ':note' => $data['note_finali'] ?? ''
+        ]);
+    }
+
+    // Storico visite paziente
+    public function getVisitHistory($paziente_id)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM visite WHERE paziente_id = ? ORDER BY data_visita DESC");
+        $stmt->execute([$paziente_id]);
+        return $stmt->fetchAll();
     }
 }

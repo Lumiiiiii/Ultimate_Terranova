@@ -28,10 +28,50 @@ try {
             }
             break;
 
-        // In futuro, quando creeremo la classe Visit.php, aggiungeremo qui:
-        // case 'create_visit':
-        //     ...
-        //     break;
+        // --- GESTIONE ANAMNESI ---
+        case 'create_anamnesi':
+            $paz_id = $_POST['paziente_id'] ?? null;
+            if (!$paz_id) {
+                echo json_encode(['success' => false, 'error' => 'ID paziente mancante.']);
+                break;
+            }
+
+            // Prepared statement per inserire tutti i campi
+            $queryText = "INSERT INTO anamnesi (
+                paziente_id, allergie_intolleranze, farmaci_assunti, patologie_pregresse, 
+                interventi_chirurgici, esami_clinici_recenti, alcol, fumo, 
+                traumi_o_fratture, note_aggiuntive, altezza, peso
+            ) VALUES (
+                :paziente_id, :allergie, :farmaci, :patologie, 
+                :interventi, :esami, :alcol, :fumo, 
+                :traumi, :note_aggiuntive, :altezza, :peso
+            )";
+
+            $db = getDB();
+            $stmt = $db->prepare($queryText);
+            
+            $success = $stmt->execute([
+                ':paziente_id' => $paz_id,
+                ':allergie'   => $_POST['allergie_intolleranze'] ?? null,
+                ':farmaci'    => $_POST['farmaci_assunti'] ?? null,
+                ':patologie'  => $_POST['patologie_pregresse'] ?? null,
+                ':interventi' => $_POST['interventi_chirurgici'] ?? null,
+                ':esami'      => $_POST['esami_clinici_recenti'] ?? null,
+                ':alcol'      => $_POST['alcol'] ?? null,
+                ':fumo'       => $_POST['fumo'] ?? null,
+                ':traumi'     => $_POST['traumi_o_fratture'] ?? null,
+                ':note_aggiuntive' => $_POST['note_aggiuntive'] ?? null,
+                ':altezza'    => !empty($_POST['altezza']) ? (int)$_POST['altezza'] : null,
+                ':peso'       => !empty($_POST['peso']) ? (float)$_POST['peso'] : null
+            ]);
+
+            if ($success) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Errore nel salvataggio dell\'anamnesi.']);
+            }
+            break;
+            
             
         default:
             echo json_encode(['success' => false, 'error' => 'Azione non valida o non specificata.']);
