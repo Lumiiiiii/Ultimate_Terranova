@@ -329,9 +329,16 @@ $noteText = $noteManager->getNote();
                         <span class="display-4 fw-bold"><?= $totalPatients ?></span>
                         <span class="small text-muted">assistiti</span>
                     </div>
-                    <div class="mt-3">
+                    <div class="mt-auto pt-3 d-flex justify-content-between align-items-end">
+                        <div class="d-flex align-items-end gap-1 mb-1" style="height: 35px; width: 60px;">
+                            <div class="bg-primary bg-opacity-25 rounded-top" style="width: 8px; height: 35%;"></div>
+                            <div class="bg-primary bg-opacity-25 rounded-top" style="width: 8px; height: 50%;"></div>
+                            <div class="bg-primary bg-opacity-50 rounded-top" style="width: 8px; height: 40%;"></div>
+                            <div class="bg-primary bg-opacity-75 rounded-top" style="width: 8px; height: 75%;"></div>
+                            <div class="bg-primary rounded-top" style="width: 8px; height: 100%;"></div>
+                        </div>
                         <span class="badge rounded-pill bg-light text-success fw-semibold border">
-                            <span class="me-1">●</span> Database attivo
+                            <span class="me-1">●</span> +12% questo mese
                         </span>
                     </div>
                 </div>
@@ -383,10 +390,15 @@ $noteText = $noteManager->getNote();
                 </a>
             </div>
 
-            <div class="col-12">
-                <div class="card glass border-0 rounded-4 shadow-sm p-2">
-                    <div class="input-group input-group-lg">
-                        <input type="text" id="search-input" class="form-control border-0 bg-transparent" 
+            <div class="col-12 mt-2 mb-1">
+                <div class="card border-0 rounded-4 shadow-sm p-2 hover-lift" style="background: linear-gradient(135deg, #ffffff 0%, #f4f7fe 100%); border: 1px solid rgba(59, 130, 246, 0.15) !important;">
+                    <div class="input-group input-group-lg align-items-center">
+                        <span class="input-group-text bg-transparent border-0 text-primary ps-4 pe-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </span>
+                        <input type="text" id="search-input" class="form-control border-0 bg-transparent shadow-none fs-5 py-3 fw-medium" 
                                placeholder="Cerca paziente per nome, email o telefono..." autocomplete="off">
                     </div>
                 </div>
