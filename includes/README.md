@@ -151,6 +151,28 @@ Il risultato contiene sia i campi della visita (`v.*`) che il nome del paziente 
 
 ---
 
+## `Visit.php` — Storico e Gestione Visite
+
+### Cosa fa questa classe?
+
+La classe `Visit` incapsula tutte le logiche di estrazione dal database per lo storico visite (`visite`), legando in futuro le visite alle anamnesi. Separa la responsabilità delle visite mediche o naturopatiche in un oggetto unico e testabile rispetto alla generica classe `Patient`.
+
+### Metodi Principali
+
+#### `getPatientVisits($paziente_id)` — SELECT delle visite
+
+| Aspetto | Dettaglio |
+|---|---|
+| **Operazione SQL** | `SELECT * FROM visite WHERE paziente_id = :paziente_id ORDER BY data_visita DESC, id DESC` |
+| **Parametro** | `$paziente_id` = l'ID del paziente del quale cercare le visite |
+| **Ritorno** | Array associativo contenente i dettagli della visita |
+
+Questa query non preleva solo le visite grezze ma le posiziona cronologicamente:
+- **`ORDER BY data_visita DESC`**: fa sì che la visita più recente (oggi o ieri) appaia per prima nella UI.
+- **`id DESC`**: in caso di molteplici visite lo stesso giorno (o dati di mock), vince l'ultima inserita nel database permettendo un flow visuale corretto.
+
+---
+
 ## `Note.php` — Gestione Promemoria Veloce
 
 ### Cosa fa questa classe?

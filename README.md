@@ -20,9 +20,11 @@ Permette di gestire pazienti, visite, prescrizioni e medicinali tramite un'inter
   - [login.php](#4-loginphp--pagina-di-login)
   - [index.php](#5-indexphp--dashboard-principale)
   - [paziente_nuovo.php](#6-paziente_nuovophp--registrazione-nuovo-paziente)
-  - [ajax_notes.php](#7-ajax_notesphp--api-per-il-salvataggio-note)
-  - [logout.php](#8-logoutphp--disconnessione)
-  - [db.sql](#9-dbsql--script-di-creazione-database)
+  - [paziente_dettaglio.php](#7-paziente_dettagliophp--dettaglio-e-visite-paziente)
+  - [includes/Visit.php](#8-includesvisitphp--classe-visite)
+  - [ajax_notes.php](#9-ajax_notesphp--api-per-il-salvataggio-note)
+  - [logout.php](#10-logoutphp--disconnessione)
+  - [db.sql](#11-dbsql--script-di-creazione-database)
 - [Come installare e avviare il progetto](#-come-installare-e-avviare-il-progetto)
 
 ---
@@ -129,12 +131,15 @@ Ultimate_Terranova/
 │
 ├── includes/
 │   ├── Patient.php            ← Classe per la gestione dei pazienti (CRUD)
+│   ├── Visit.php              ← Classe per la gestione delle visite (storico e nuove visite)
 │   └── Note.php               ← Classe per il promemoria veloce
 │
 ├── login.php                  ← Pagina di autenticazione
 ├── index.php                  ← Dashboard principale (homepage)
 ├── paziente_nuovo.php         ← Form per registrare un nuovo paziente
+├── paziente_dettaglio.php     ← Pagina dettagli, storico visite e modifica dati
 ├── ajax_notes.php             ← Endpoint API per il salvataggio note via AJAX
+├── ajax_handlers.php          ← Gestore API per upload, modifiche pazienti, ecc.
 ├── logout.php                 ← Script di disconnessione
 ├── db.sql                     ← Script SQL per creare il database e le tabelle
 │
@@ -846,7 +851,52 @@ Quando l'utente seleziona una data nel datepicker, JavaScript converte il format
 
 ---
 
-### 7. `ajax_notes.php` — API per il Salvataggio Note
+### 7. `paziente_dettaglio.php` — Dettaglio e Visite Paziente
+
+📍 **Percorso:** `paziente_dettaglio.php`
+
+**Scopo:** Fornisce una panoramica completa di un paziente. Mostra i suoi dettagli anagrafici, offre un modal (Bootstrap) per modificarli al volo, e un elenco per consultare lo storico delle visite.
+
+#### Design System "Aequa"
+Come per `index.php` e `paziente_nuovo.php`, anche la pagina di dettaglio applica il medesimo styling visual "Aequa", per offrire una sensazione premium coerente:
+- **Sidebar persistente** e responsive con header dedicato.
+- **Card in Glassmorphism** stilizzate tramite la utility di utilità `.glass`.
+- Bottoni principali con design a gradiente animato (`.btn-gradient`) per incitare all'azione (es. "Nuova Visita").
+- Modali moderni (`.rounded-4`, `.border-0`, `.shadow-lg`) per i web-form (modifica paziente).
+- Utilizzo della libreria "Bootstrap Datepicker" standardizzata in tutta l'app per permettere agli utenti di scorrere velocemente le decadi durante l'inputizzazione dell'età.
+
+#### Visualizzazione Dati Dinamici e Modal AJAX
+Nella pagina, il form di modifica non ricarica l'intera finestra (il che guasterebbe la user experience), ma comunica in modo fully-Ajax verso `ajax_handlers.php`:
+```javascript
+const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData });
+const data = await res.json();
+if (data.success) location.reload();
+```
+Il salvataggio impedisce azioni doppie bloccando il button e mostrando l'icona spinner in tempo reale.
+
+---
+
+### 8. `includes/Visit.php` — Classe Visite
+
+📍 **Percorso:** `includes/Visit.php`
+
+**Scopo:** Isola in un oggetto unico e testabile tutte le operazioni del DB inerenti le visite naturopatiche di un paziente.
+
+```php
+class Visit {
+    public function getPatientVisits($paziente_id) {
+        $queryText = "SELECT * FROM visite WHERE paziente_id = :paziente_id ORDER BY data_visita DESC, id DESC";
+        $query = $this->db->prepare($queryText);
+        $query->execute([':paziente_id' => $paziente_id]);
+        return $query->fetchAll();
+    }
+}
+```
+L'ordinamento multiplo discendente (`ORDER BY data_visita DESC, id DESC`) fa sì che le visite più recenti appaiano in alto e, a parità di data (come i mock), vinca quella inserita per ultima nel sistema.
+
+---
+
+### 9. `ajax_notes.php` — API per il Salvataggio Note
 
 📍 **Percorso:** `ajax_notes.php` · **28 righe**
 
@@ -899,7 +949,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 ---
 
-### 8. `logout.php` — Disconnessione
+### 10. `logout.php` — Disconnessione
 
 📍 **Percorso:** `logout.php` · **7 righe**
 
@@ -918,7 +968,7 @@ Il file più corto del progetto. Tre istruzioni fondamentali:
 
 ---
 
-### 9. `db.sql` — Script di Creazione Database
+### 11. `db.sql` — Script di Creazione Database
 
 📍 **Percorso:** `db.sql` · **103 righe**
 
