@@ -155,11 +155,11 @@ if ($haFattoAnamnesi) {
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
                         <label class="form-label small fw-semibold text-muted">Altezza (cm)</label>
-                        <input type="number" name="altezza" class="form-control bg-light py-2" placeholder="Es. 175" min="0">
+                        <input type="number" name="altezza" class="form-control bg-light py-2" placeholder="Es. 175" min="100" max="250">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label small fw-semibold text-muted">Peso (kg)</label>
-                        <input type="number" step="0.1" name="peso" class="form-control bg-light py-2" placeholder="Es. 70.5" min="0">
+                        <input type="number" step="0.1" name="peso" class="form-control bg-light py-2" placeholder="Es. 70.5" min="20" max="300">
                     </div>
                 </div>
 

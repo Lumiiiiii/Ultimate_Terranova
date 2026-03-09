@@ -73,6 +73,21 @@ $noteText = $noteManager->getNote();
         /* Bordi arrotondati */
         .rounded-4 { border-radius: 1rem !important; }
 
+        /* Pulsante elimina pazienti invisibile di default, appare al passaggio */
+        .btn-delete-paziente {
+            opacity: 0;
+            transition: all 0.2s ease;
+            color: #e57373;
+        }
+        .hover-lift:hover .btn-delete-paziente {
+            opacity: 0.6;
+        }
+        .btn-delete-paziente:hover {
+            opacity: 1 !important;
+            color: #ef5350 !important;
+            transform: scale(1.1);
+        }
+
         /* ── SIDEBAR (BARRA LATERALE FISSA) ────────────────────────────────────── */
 
         /* Contenitore principale della sidebar:
@@ -371,7 +386,16 @@ $noteText = $noteManager->getNote();
                                             <div class="text-muted" style="font-size:0.75rem;"><?= $patient['eta'] ?> anni • <?= $patient['telefono'] ?></div>
                                         </div>
                                     </div>
-                                    <span class="text-muted">›</span>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <!-- Pulsante Elimina: event.stopPropagation() evita che cliccando qui si apra la scheda paziente -->
+                                        <button class="btn btn-sm btn-delete-paziente p-1 border-0" 
+                                                onclick="event.stopPropagation(); deletePatient(<?= $patient['id'] ?>, '<?= addslashes($patient['nome_cognome']) ?>')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                        <span class="text-muted">›</span>
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -479,7 +503,7 @@ $noteText = $noteManager->getNote();
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.5 8.5l7 7" />
                             </svg>
                         </div>
-                        <h5 class="fw-bold text-dark mb-2">Archivio Medicinali</h5>
+                        <h5 class="fw-bold text-dark mb-2">Archivio medicinali</h5>
                         <p class="small text-muted mb-0">Gestisci i rimedi e integratori naturali →</p>
                     </div>
                 </a>
@@ -487,6 +511,29 @@ $noteText = $noteManager->getNote();
         </div>
     </main>
     </div><!-- fine .main-content -->
+
+    <!-- ══ MODAL DI CONFERMA ELIMINAZIONE ══════════════════════════════════════ -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body p-5 text-center">
+                    <div class="mb-4">
+                        <div class="d-inline-flex bg-danger bg-opacity-10 text-danger rounded-circle p-3 mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </div>
+                        <h4 class="fw-bold mb-2">Conferma eliminazione</h4>
+                        <p class="text-muted">Sei sicuro di voler eliminare definitivamente <span id="deletePazienteNome" class="fw-bold text-dark"></span>? <br>L'azione cancellerà anche tutte le visite e le anamnesi collegate.</p>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-center">
+                        <button type="button" class="btn btn-light px-4 py-2 rounded-3 fw-semibold" data-bs-dismiss="modal">Annulla</button>
+                        <button type="button" id="confirmDeleteBtn" class="btn btn-danger px-4 py-2 rounded-3 fw-semibold">Elimina ora</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
@@ -503,6 +550,54 @@ $noteText = $noteManager->getNote();
                     if (typeof searchPatients === 'function') {
                         searchPatients(e.target.value);
                     }
+                });
+            }
+
+            // --- GESTIONE ELIMINAZIONE PAZIENTE (CON MODAL) ---
+            let pazienteIdToDelete = null;
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+            window.deletePatient = function(id, nome) {
+                pazienteIdToDelete = id;
+                document.getElementById('deletePazienteNome').textContent = nome;
+                deleteModal.show();
+            };
+
+            if (confirmDeleteBtn) {
+                confirmDeleteBtn.addEventListener('click', function() {
+                    if (!pazienteIdToDelete) return;
+
+                    // Cambia stato al bottone (loading)
+                    const originalText = confirmDeleteBtn.innerHTML;
+                    confirmDeleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminazione...';
+                    confirmDeleteBtn.disabled = true;
+
+                    const formData = new FormData();
+                    formData.append('action', 'delete_paziente');
+                    formData.append('id', pazienteIdToDelete);
+
+                    fetch('ajax_handlers.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            alert('Errore: ' + (data.error || 'Impossibile eliminare il paziente.'));
+                            confirmDeleteBtn.innerHTML = originalText;
+                            confirmDeleteBtn.disabled = false;
+                            deleteModal.hide();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Errore durante l\'eliminazione:', error);
+                        alert('Si è verificato un errore di rete.');
+                        confirmDeleteBtn.innerHTML = originalText;
+                        confirmDeleteBtn.disabled = false;
+                    });
                 });
             }
 

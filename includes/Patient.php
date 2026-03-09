@@ -190,4 +190,20 @@ public function deletePatient($id)
             return false;
         }
     }
+
+    /**
+     * Recupera l'intero record anamnestico di un paziente, se esiste
+     */
+    public function getAnamnesi($paziente_id)
+    {
+        try {
+            $queryText = "SELECT * FROM anamnesi WHERE paziente_id = :paziente_id LIMIT 1";
+            $query = $this->db->prepare($queryText);
+            $query->execute([':paziente_id' => $paziente_id]);
+            return $query->fetch(); // Ritorna l'array associativo coi dati (es. allergie, farmaci, etc.)
+        } catch (PDOException $e) {
+            error_log("Errore in getAnamnesi: " . $e->getMessage());
+            return false;
+        }
+    }
 }
