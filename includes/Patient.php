@@ -206,4 +206,30 @@ public function deletePatient($id)
             return false;
         }
     }
+
+    /**
+     * Controlla se esiste già un paziente con lo stesso nome e data di nascita
+     */
+    public function isDuplicate($nome_cognome, $data_nascita)
+    {
+        try {
+            if (empty($data_nascita)) {
+                $queryText = "SELECT COUNT(*) as totale FROM pazienti WHERE nome_cognome = :nome_cognome AND (data_nascita IS NULL OR data_nascita = '')";
+                $query = $this->db->prepare($queryText);
+                $query->execute([':nome_cognome' => $nome_cognome]);
+            } else {
+                $queryText = "SELECT COUNT(*) as totale FROM pazienti WHERE nome_cognome = :nome_cognome AND data_nascita = :data_nascita";
+                $query = $this->db->prepare($queryText);
+                $query->execute([
+                    ':nome_cognome' => $nome_cognome,
+                    ':data_nascita' => $data_nascita
+                ]);
+            }
+            $result = $query->fetch();
+            return ($result['totale'] > 0);
+        } catch (PDOException $e) {
+            error_log("Errore in isDuplicate: " . $e->getMessage());
+            return false;
+        }
+    }
 }

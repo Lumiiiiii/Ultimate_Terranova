@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 
 // Se l'utente non è loggato, reindirizza alla pagina di login
@@ -32,13 +33,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } elseif (empty($data['data_nascita'])) {
         $errore = "Il campo Data di Nascita è obbligatorio.";
     } else {
-        $newId = $patientManager->createPatient($data);
-        if ($newId) {
-            // Redirect alla homepage
-            header("Location: index.php");
-            exit;
+        // Controllo duplicati
+        if ($patientManager->isDuplicate($data['nome_cognome'], $data['data_nascita'])) {
+            $errore = "Esiste già un paziente con questi dati (Nome, Cognome e Data di nascita).";
         } else {
-            $errore = "Errore durante il salvataggio. Riprova.";
+            $newId = $patientManager->createPatient($data);
+            if ($newId) {
+                // Redirect alla homepage
+                header("Location: index.php");
+                exit;
+            } else {
+                $errore = "Errore durante il salvataggio. Riprova.";
+            }
         }
     }
 }
@@ -67,7 +73,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             --sidebar-active: #ffffff;
         }
 
-        /* ── CLASSI DI UTILITÀ ─────────────────────────────────────────────── */
+        /* ── CLASSI DI UTILITÀ E RESET ─────────────────────────────────────── */
+        html, body { background-color: #f8f9fa; }
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
         .hover-lift { transition: transform 0.2s ease; }
         .hover-lift:hover { transform: translateY(-5px) !important; }
@@ -213,10 +220,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </a>
             <a href="medicinali_gestione.php">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 20.5l10-10a4.95 4.95 0 10-7-7l-10 10a4.95 4.95 0 107 7z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.5 8.5l7 7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                 </svg>
-                Medicinali
+                Archivio
             </a>
         </nav>
         <div class="sidebar-footer">

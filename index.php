@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Sincronizza l'invio della pagina al server (previene FOUC)
 session_start(); // Avvia la sessione
 
 // Se l'utente non è loggato, reindirizza alla pagina di login
@@ -25,8 +26,8 @@ $noteManager = new Note();
 // Chiama il metodo che conta quanti record totali ci sono nella tabella pazienti
 $totalPatients = $patientManager->countPatients(); 
 
-// Recupera tutti i pazienti registrati (per la sezione "Pazienti Registrati")
-$allPatients = $patientManager->getAllPatients();
+// Recupera i pazienti recenti (per la sezione "Pazienti Recenti")
+$allPatients = $patientManager->getRecentPatients(5);
 
 // Recupera le visite recenti (per la sezione "Visite Recenti")
 $recentVisits = $patientManager->getRecentVisits();
@@ -58,7 +59,10 @@ $noteText = $noteManager->getNote();
             --sidebar-active: #ffffff;         /* testo voce attiva: bianco */
         }
 
-        /* ── CLASSI DI UTILITÀ ─────────────────────────────────────────────────── */
+        /* ── CLASSI DI UTILITÀ E RESET ─────────────────────────────────────────── */
+        html, body {
+            background-color: #f8f9fa; /* Sincronizza il bg con bg-light di Bootstrap per evitare FOUC bianco */
+        }
 
         /* Effetto vetro/glassmorphism */
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
@@ -304,14 +308,12 @@ $noteText = $noteManager->getNote();
                 Nuovo Paziente
             </a>
 
-            <!-- Medicinali -->
+            <!-- Archivio -->
             <a href="medicinali_gestione.php">
-                <!-- Icona SVG: capsula / medicina -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 20.5l10-10a4.95 4.95 0 10-7-7l-10 10a4.95 4.95 0 107 7z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.5 8.5l7 7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                 </svg>
-                Medicinali
+                Archivio
             </a>
 
         </nav>
@@ -351,13 +353,13 @@ $noteText = $noteManager->getNote();
                 </div>
             </div>
 
-            <!-- ── Pazienti Registrati (lista completa) ── -->
+            <!-- ── Pazienti Recenti ── -->
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
                     <div class="card-header bg-transparent border-bottom py-3 px-4">
-                        <h5 class="fw-bold mb-0">Pazienti Registrati</h5>
+                        <h5 class="fw-bold mb-0">Pazienti Recenti</h5>
                     </div>
-                    <div style="max-height: 200px; overflow-y: auto;">
+                    <div style="max-height: 190px; overflow-y: auto;">
                         <?php if (empty($allPatients)): ?>
                             <div class="p-4 text-center text-muted">
                                 Nessun paziente registrato.
@@ -486,13 +488,12 @@ $noteText = $noteManager->getNote();
                 <a href="medicinali_gestione.php" class="card h-100 border-0 shadow-sm p-4 text-decoration-none glass hover-lift rounded-4">
                     <div class="d-flex flex-column h-100 justify-content-center align-items-center text-center">
                         <div class="p-3 bg-light rounded-circle mb-3">
-                            <!-- Icona SVG: capsula / medicina -->
+                            <!-- Icona SVG: cassetto / archivio -->
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="var(--color-primary)" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 20.5l10-10a4.95 4.95 0 10-7-7l-10 10a4.95 4.95 0 107 7z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.5 8.5l7 7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                             </svg>
                         </div>
-                        <h5 class="fw-bold text-dark mb-2">Archivio medicinali</h5>
+                        <h5 class="fw-bold text-dark mb-2">Archivio</h5>
                         <p class="small text-muted mb-0">Gestisci i rimedi e integratori naturali →</p>
                     </div>
                 </a>

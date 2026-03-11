@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 if(!isset($_SESSION['logged_in'])  || $_SESSION['logged_in'] !== true){
     header('Location: login.php');
@@ -47,7 +48,8 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
             --sidebar-active: #ffffff;
         }
 
-        /* ── CLASSI DI UTILITÀ ─────────────────────────────────────────────── */
+        /* ── CLASSI DI UTILITÀ E RESET ─────────────────────────────────────── */
+        html, body { background-color: #f8f9fa; }
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
         .hover-lift { transition: transform 0.2s ease; }
         .hover-lift:hover { transform: translateY(-5px) !important; }
@@ -183,10 +185,9 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
             </a>
             <a href="medicinali_gestione.php">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 20.5l10-10a4.95 4.95 0 10-7-7l-10 10a4.95 4.95 0 107 7z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.5 8.5l7 7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                 </svg>
-                Medicinali
+                Archivio
             </a>
         </nav>
         <div class="sidebar-footer">
@@ -227,8 +228,16 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
                 
                 <!-- Colonna Sinistra: Profilo Paziente -->
                 <div class="col-lg-4">
-                    <div class="card border-0 shadow-sm rounded-4 bg-white text-center p-4 h-100">
-                        <div class="avatar-circle-large bg-light text-primary mb-3">
+                    <div class="card border-0 shadow-sm rounded-4 bg-white text-center p-4 h-100 position-relative">
+                        
+                        <!-- Bottone Elimina Paziente (Cestino in alto a destra) -->
+                        <button type="button" class="btn btn-sm btn-outline-danger position-absolute border-0 hover-lift" style="top: 15px; right: 15px;" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" title="Elimina Paziente">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+
+                        <div class="avatar-circle-large bg-light text-primary mb-3 mt-2">
                             <?= strtoupper(substr($patient['nome_cognome'], 0, 1)) ?>
                         </div>
                         
@@ -422,7 +431,30 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
         </div>
     </div>
 
-    <!-- Script per gestire l'invio del form -->
+    <!-- Modal Conferma Eliminazione -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body p-5 text-center">
+                    <div class="mb-4">
+                        <div class="d-inline-flex bg-danger bg-opacity-10 text-danger rounded-circle p-3 mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </div>
+                        <h4 class="fw-bold mb-2">Conferma eliminazione</h4>
+                        <p class="text-muted">Sei sicuro di voler eliminare definitivamente <strong><?= htmlspecialchars($patient['nome_cognome']) ?></strong>? <br>L'azione cancellerà anche tutte le visite e le anamnesi collegate.</p>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-center">
+                        <button type="button" class="btn btn-light px-4 py-2 rounded-3 fw-semibold" data-bs-dismiss="modal">Annulla</button>
+                        <button type="button" id="confirmDeleteBtnDettaglio" class="btn btn-danger px-4 py-2 rounded-3 fw-semibold">Elimina ora</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script per gestire l'invio del form e l'eliminazione -->
     <script>
         document.getElementById('edit-form').addEventListener('submit', async function (e) {
             e.preventDefault(); 
@@ -450,6 +482,36 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
                 alert("Errore di connessione.");
                 btn.innerHTML = originalText;
                 btn.classList.remove('disabled');
+            }
+        });
+
+        // Script per eliminare il paziente e ricaricare la home
+        document.getElementById('confirmDeleteBtnDettaglio')?.addEventListener('click', async function () {
+            const btn = this;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminazione...';
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('action', 'delete_paziente');
+            formData.append('id', <?= $id ?>);
+
+            try {
+                const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData });
+                const data = await res.json();
+                
+                if (data.success) {
+                    window.location.href = 'index.php'; // redirect alla dashboard dopo l'eliminazione
+                } else {
+                    alert('Errore: ' + (data.error || 'Impossibile eliminare il paziente.'));
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+                alert('Errore di connessione.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         });
     </script>
