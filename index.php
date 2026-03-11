@@ -347,18 +347,7 @@ $noteText = $noteManager->getNote();
                         <span class="display-4 fw-bold"><?= $totalPatients ?></span>
                         <span class="small text-muted">assistiti</span>
                     </div>
-                    <div class="mt-auto pt-3 d-flex justify-content-between align-items-end">
-                        <div class="d-flex align-items-end gap-1 mb-1" style="height: 35px; width: 60px;">
-                            <div class="bg-primary bg-opacity-25 rounded-top" style="width: 8px; height: 35%;"></div>
-                            <div class="bg-primary bg-opacity-25 rounded-top" style="width: 8px; height: 50%;"></div>
-                            <div class="bg-primary bg-opacity-50 rounded-top" style="width: 8px; height: 40%;"></div>
-                            <div class="bg-primary bg-opacity-75 rounded-top" style="width: 8px; height: 75%;"></div>
-                            <div class="bg-primary rounded-top" style="width: 8px; height: 100%;"></div>
-                        </div>
-                        <span class="badge rounded-pill bg-light text-success fw-semibold border">
-                            <span class="me-1">●</span> +12% questo mese
-                        </span>
-                    </div>
+
                 </div>
             </div>
 
