@@ -477,8 +477,7 @@ $anamnesi_passata = $patientManager->getAnamnesi($paziente_id);
             document.getElementById('loadingOverlay').style.display = 'none';
         }
     });
-    </script>
-    
+
     // ==========================================
     // JS: GESTIONE AGGIORNAMENTO RAPIDO ANAMNESI
     // ==========================================
@@ -497,17 +496,17 @@ $anamnesi_passata = $patientManager->getAnamnesi($paziente_id);
             formData.append('action', 'update_anamnesi_rapido');
             
             try {
-                const response = await fetch('ajax_handlers.php', { method: 'POST', body: formData });
+                const response = await fetch('ajax_handlers.php', {
+                    method: 'POST',
+                    body: formData
+                });
                 const result = await response.json();
                 
                 if (result.success) {
                     // Successo! L'aggancio grafico (verifichiamo l'aggiornamento mettendo colore verde)
                     btn.classList.remove('btn-outline-primary');
                     btn.classList.add('btn-success', 'text-white');
-                    btn.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="me-1">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                    </svg> Aggiornata!`;
+                    btn.innerHTML = `<i class="fas fa-check"></i> Aggiornata!`;
                     
                     // Ripristino dopo 2 secondi
                     setTimeout(() => {
@@ -529,8 +528,9 @@ $anamnesi_passata = $patientManager->getAnamnesi($paziente_id);
             }
         });
     }
+    </script>
     
-    // Script Bootstrap 5 JS - Obbligatorio per far funzionare la tendina animata Accordion
+    <!-- Script Bootstrap 5 JS - Obbligatorio per far funzionare la tendina animata Accordion -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
