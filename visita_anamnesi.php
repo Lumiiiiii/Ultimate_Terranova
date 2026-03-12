@@ -44,7 +44,22 @@ if ($haFattoAnamnesi) {
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+<script>
+  // 1. Forza immediatamente il tema light per evitare che Bootstrap applichi il nero
+  document.documentElement.setAttribute('data-bs-theme', 'light');
+</script>
+
+<style>
+  /* 2. Definisci subito lo sfondo esatto della tua dashboard nel root */
+  :root { 
+    background-color: #f8f9fa !important; /* Il grigio chiaro di Bootstrap */
+  }
+  body { 
+    background-color: #f8f9fa !important; 
+    visibility: visible !important;
+  }
+</style>
+
     <style>
         :root {
             --color-primary: #2ecc71;

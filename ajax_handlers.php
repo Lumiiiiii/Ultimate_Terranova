@@ -28,6 +28,40 @@ try {
             }
             break;
 
+        case 'create_paziente':
+            $data = [
+                'nome_cognome' => trim($_POST['nome_cognome'] ?? ''),
+                'data_nascita' => $_POST['data_nascita'] ?? null,
+                'telefono'     => trim($_POST['telefono'] ?? ''),
+                'indirizzo'    => trim($_POST['indirizzo'] ?? ''),
+                'email'        => trim($_POST['email'] ?? ''),
+                'professione'  => trim($_POST['professione'] ?? '')
+            ];
+
+            // Validazione
+            if (empty($data['nome_cognome'])) {
+                echo json_encode(['success' => false, 'error' => 'Il campo Nome e Cognome è obbligatorio.']);
+                break;
+            }
+            if (empty($data['data_nascita'])) {
+                echo json_encode(['success' => false, 'error' => 'Il campo Data di Nascita è obbligatorio.']);
+                break;
+            }
+
+            // Controllo duplicati
+            if ($patientManager->isDuplicate($data['nome_cognome'], $data['data_nascita'])) {
+                echo json_encode(['success' => false, 'error' => 'Esiste già un paziente con questi dati (Nome, Cognome e Data di nascita).']);
+                break;
+            }
+
+            $newId = $patientManager->createPatient($data);
+            if ($newId) {
+                echo json_encode(['success' => true, 'id' => $newId]);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Errore durante il salvataggio del paziente.']);
+            }
+            break;
+
         case 'delete_paziente':
             $paz_id = $_POST['id'] ?? null;
             if (!$paz_id) {

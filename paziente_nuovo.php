@@ -13,41 +13,6 @@ include __DIR__ . '/config/database.php';
 include __DIR__ . '/includes/patient.php';
 
 $patientManager = new Patient();
-$successo = "";
-$errore = "";
-
-// Gestione invio form
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $data = [
-        'nome_cognome' => trim($_POST['nome_cognome'] ?? ''),
-        'data_nascita' => $_POST['data_nascita'] ?? null,
-        'telefono'     => trim($_POST['telefono'] ?? ''),
-        'indirizzo'    => trim($_POST['indirizzo'] ?? ''),
-        'email'        => trim($_POST['email'] ?? ''),
-        'professione'  => trim($_POST['professione'] ?? '')
-    ];
-
-    // Validazione: nome e data di nascita sono obbligatori
-    if (empty($data['nome_cognome'])) {
-        $errore = "Il campo Nome e Cognome è obbligatorio.";
-    } elseif (empty($data['data_nascita'])) {
-        $errore = "Il campo Data di Nascita è obbligatorio.";
-    } else {
-        // Controllo duplicati
-        if ($patientManager->isDuplicate($data['nome_cognome'], $data['data_nascita'])) {
-            $errore = "Esiste già un paziente con questi dati (Nome, Cognome e Data di nascita).";
-        } else {
-            $newId = $patientManager->createPatient($data);
-            if ($newId) {
-                // Redirect alla homepage
-                header("Location: index.php");
-                exit;
-            } else {
-                $errore = "Errore durante il salvataggio. Riprova.";
-            }
-        }
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -61,6 +26,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Datepicker -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker3.min.css">
+<script>
+  // 1. Forza immediatamente il tema light per evitare che Bootstrap applichi il nero
+  document.documentElement.setAttribute('data-bs-theme', 'light');
+</script>
+
+<style>
+  /* 2. Definisci subito lo sfondo esatto della tua dashboard nel root */
+  :root { 
+    background-color: #f8f9fa !important; /* Il grigio chiaro di Bootstrap */
+  }
+  body { 
+    background-color: #f8f9fa !important; 
+    visibility: visible !important;
+  }
+</style>
+
     <style>
         /* ── VARIABILI CSS GLOBALI ─────────────────────────────────────────────── */
         :root {
@@ -256,17 +237,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </header>
 
             <!-- Messaggi di errore -->
-            <?php if (!empty($errore)): ?>
-                <div class="alert alert-danger d-flex align-items-center gap-2 rounded-3 mb-4" role="alert">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <?php echo htmlspecialchars($errore); ?>
-                </div>
-            <?php endif; ?>
+            <div id="alertContainer"></div>
 
             <!-- Form -->
-            <form method="POST" action="paziente_nuovo.php" id="patientForm">
+            <form id="patientForm">
+                <input type="hidden" name="action" value="create_paziente">
                 <div class="row g-4">
 
                     <!-- ── SEZIONE UNICA: Dati Paziente ── -->
@@ -412,11 +387,59 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             document.getElementById('data_nascita').value = year + '-' + month + '-' + day;
         });
 
-        // Loading state al submit
-        document.getElementById('patientForm').addEventListener('submit', function() {
+        // Loading state e AJAX submit
+        document.getElementById('patientForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
             const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Salvataggio...';
             btn.classList.add('disabled');
+            
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = ''; // Pulisce eventuali errori precedenti
+
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('ajax_handlers.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Redirect alla dashboard o al dettaglio del nuovo paziente
+                    window.location.href = 'index.php';
+                } else {
+                    // Mostra errore
+                    alertContainer.innerHTML = `
+                        <div class="alert alert-danger d-flex align-items-center gap-2 rounded-3 mb-4" role="alert">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            ${data.error || 'Errore durante il salvataggio.'}
+                        </div>
+                    `;
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('disabled');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } catch (error) {
+                console.error('Errore:', error);
+                alertContainer.innerHTML = `
+                    <div class="alert alert-danger d-flex align-items-center gap-2 rounded-3 mb-4" role="alert">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Errore di connessione al server.
+                    </div>
+                `;
+                btn.innerHTML = originalText;
+                btn.classList.remove('disabled');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         });
     </script>
 
