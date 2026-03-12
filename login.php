@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aequa — Login</title>
-
+ <link rel="icon" type="image/png" href="assets/img/logo.png">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -248,16 +248,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 
                 <!-- Brand -->
                 <div class="text-center mb-4">
-                    <div class="brand-icon mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.85 0 3.58-.5 5.07-1.37M12 2c5.52 0 10 4.48 10 10 0 1.85-.5 3.58-1.37 5.07" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 14s1.5 2 4 2 4-2 4-2" />
-                            <circle cx="9" cy="10" r="1" fill="white" />
-                            <circle cx="15" cy="10" r="1" fill="white" />
-                        </svg>
-                    </div>
+                        <img src="assets/img/logo.png" alt="Logo" style="max-width: 100px; max-height: 100px; object-fit: contain;">
                     <h1 class="h3 fw-bold mb-1" style="background: linear-gradient(135deg, #2ecc71, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Aequa</h1>
-                    <p class="small text-white-50 mb-0">Gestionale Naturopatia</p>
                 </div>
 
                 <!-- Messaggio di Errore -->
