@@ -38,7 +38,7 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
     
     <style>
 <script>
-  // 1. Forza immediatamente il tema light per evitare che Bootstrap applichi il nero
+  
   document.documentElement.setAttribute('data-bs-theme', 'light');
 </script>
 
@@ -105,12 +105,12 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
         .sidebar-nav a:hover svg, .sidebar-nav a.active svg { opacity: 1; }
         .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
         .sidebar-footer a {
-            display: flex; align-items: center; gap: 12px;
-            padding: 11px 16px; color: #e57373; text-decoration: none;
-            border-radius: 10px; font-size: 0.92rem; font-weight: 500; transition: all 0.2s ease;
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 14px; color: #e57373; text-decoration: none;
+            border-radius: 8px; font-size: 0.8rem; font-weight: 500; transition: all 0.2s ease;
         }
         .sidebar-footer a:hover { background: rgba(229, 115, 115, 0.1); color: #ef5350; }
-        .sidebar-footer a svg { width: 20px; height: 20px; opacity: 0.7; }
+        .sidebar-footer a svg { width: 16px; height: 16px; opacity: 0.7; }
         
         .main-content { margin-left: var(--sidebar-width); }
 
@@ -196,6 +196,12 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
                 Dashboard
             </a>
             <div class="nav-section-label">Gestione</div>
+            <a href="calendario.php">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Calendario
+            </a>
             <a href="paziente_nuovo.php">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -474,6 +480,9 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
     </div>
 
     <!-- Script per gestire l'invio del form e l'eliminazione -->
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
         document.getElementById('edit-form').addEventListener('submit', async function (e) {
             e.preventDefault(); 
@@ -490,48 +499,103 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
                 const data = await res.json();
                 
                 if (data.success) {
-                    location.reload(); 
+                    Swal.fire({
+                        title: 'Aggiornato!',
+                        text: 'I dati del paziente sono stati salvati.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        customClass: { popup: 'rounded-4 border-0 shadow' }
+                    }).then(() => {
+                        location.reload();
+                    });
                 } else {
-                    alert("Errore nel salvataggio: " + (data.message || 'Errore sconosciuto'));
+                    Swal.fire({
+                        title: 'Errore',
+                        text: (data.message || 'Errore nel salvataggio'),
+                        icon: 'error',
+                        customClass: { popup: 'rounded-4 border-0 shadow' }
+                    });
                     btn.innerHTML = originalText;
                     btn.classList.remove('disabled');
                 }
             } catch (e) { 
                 console.error(e); 
-                alert("Errore di connessione.");
+                Swal.fire({
+                    title: 'Errore di Rete',
+                    text: 'Impossibile comunicare con il server.',
+                    icon: 'error',
+                    customClass: { popup: 'rounded-4 border-0 shadow' }
+                });
                 btn.innerHTML = originalText;
                 btn.classList.remove('disabled');
             }
         });
 
-        // Script per eliminare il paziente e ricaricare la home
-        document.getElementById('confirmDeleteBtnDettaglio')?.addEventListener('click', async function () {
-            const btn = this;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminazione...';
-            btn.disabled = true;
+        // Script per eliminare il paziente con SweetAlert2
+        document.getElementById('confirmDeleteBtnDettaglio')?.addEventListener('click', function () {
+            Swal.fire({
+                title: 'Sei sicuro?',
+                text: "Questa azione non può essere annullata. Tutti i dati del paziente verranno eliminati.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sì, elimina definitivamente',
+                cancelButtonText: 'Annulla',
+                customClass: {
+                    popup: 'rounded-4 border-0 shadow',
+                    confirmButton: 'btn btn-danger px-4 mx-2',
+                    cancelButton: 'btn btn-light px-4 mx-2'
+                },
+                buttonsStyling: false,
+                reverseButtons: true
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const btn = this;
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminazione...';
+                    btn.disabled = true;
 
-            const formData = new FormData();
-            formData.append('action', 'delete_paziente');
-            formData.append('id', <?= $id ?>);
+                    const formData = new FormData();
+                    formData.append('action', 'delete_paziente');
+                    formData.append('id', <?= $id ?>);
 
-            try {
-                const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData });
-                const data = await res.json();
-                
-                if (data.success) {
-                    window.location.href = 'index.php'; // redirect alla dashboard dopo l'eliminazione
-                } else {
-                    alert('Errore: ' + (data.error || 'Impossibile eliminare il paziente.'));
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
+                    try {
+                        const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData });
+                        const data = await res.json();
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Eliminato!',
+                                text: 'Il paziente è stato rimosso.',
+                                icon: 'success',
+                                timer: 1500,
+                                showConfirmButton: false,
+                                customClass: { popup: 'rounded-4 border-0 shadow' }
+                            }).then(() => {
+                                window.location.href = 'index.php';
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Errore',
+                                text: data.error || 'Impossibile eliminare il paziente.',
+                                icon: 'error',
+                                customClass: { popup: 'rounded-4 border-0 shadow' }
+                            });
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                        }
+                    } catch (error) {
+                        console.error('Errore:', error);
+                        Swal.fire({
+                            title: 'Errore di Rete',
+                            text: 'Impossibile completare l\'operazione.',
+                            icon: 'error',
+                            customClass: { popup: 'rounded-4 border-0 shadow' }
+                        });
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
                 }
-            } catch (error) {
-                console.error('Errore:', error);
-                alert('Errore di connessione.');
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
+            });
         });
     </script>
 

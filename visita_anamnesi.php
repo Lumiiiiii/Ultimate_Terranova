@@ -24,112 +24,17 @@ if (!$patient) {
     exit;
 }
 
-// Controllo supplementare: se l'anamnesi esiste già potremmo voler reindirizzare al dettaglio, 
-// ma per ora lasciamo compilare (il salvataggio creerebbe un nuovo record, gestire in futuro l'update)
-$haFattoAnamnesi = $patientManager->checkAnamnesi($paziente_id);
-if ($haFattoAnamnesi) {
-    // de-commentare se si vuole bloccare l'accesso se già fatta:
-    // header('Location: paziente_dettaglio.php?id=' . $paziente_id);
-    // exit;
-}
+$pageTitle = "Anamnesi";
+$currentPage = "index";
+include 'includes/header.php';
+include 'includes/sidebar.php';
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prima visita (anamnesi) - <?= htmlspecialchars($patient['nome_cognome']) ?></title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/img/logo.png">
-    
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script>
-  // 1. Forza immediatamente il tema light per evitare che Bootstrap applichi il nero
-  document.documentElement.setAttribute('data-bs-theme', 'light');
-</script>
 
-<style>
-  /* 2. Definisci subito lo sfondo esatto della tua dashboard nel root */
-  :root { 
-    background-color: #f8f9fa !important; /* Il grigio chiaro di Bootstrap */
-  }
-  body { 
-    background-color: #f8f9fa !important; 
-    visibility: visible !important;
-  }
-</style>
-
-    <style>
-        :root {
-            --color-primary: #2ecc71;
-            --color-primary-dark: #27ae60;
-            --color-accent: #3b82f6;
-            --sidebar-width: 260px;
-            --sidebar-bg: #1a1a2e;
-            --sidebar-text: #a0aec0;
-        }
-
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .hover-lift { transition: transform 0.2s ease; }
-        .hover-lift:hover { transform: translateY(-3px) !important; }
-        .rounded-4 { border-radius: 1rem !important; }
-
-        .btn-gradient {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-accent)) !important;
-            color: white !important;
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
-            color: white !important;
-        }
-        
-        .main-content {
-            margin-left: 0; /* Nessuna sidebar fissa per avere più spazio, o possiamo mettere un header slim */
-            background-color: #f8f9fa;
-            min-height: 100vh;
-        }
-
-        /* Stile textarea personalizzato */
-        textarea.form-control {
-            border-radius: 0.75rem;
-            border: 1px solid #dee2e6;
-            transition: border-color 0.2s;
-        }
-        textarea.form-control:focus {
-            border-color: var(--color-accent);
-            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.1);
-        }
-        
-        /* Loading Overlay per il salvataggio */
-        .saving-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.8);
-            backdrop-filter: blur(5px);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="saving-overlay" id="loadingOverlay">
-        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
-        <h4 class="mt-3 text-dark fw-bold">Salvataggio Anamnesi in corso...</h4>
-    </div>
-
-    <!-- MAIN CONTENT Pieno Schermo -->
+    <!-- MAIN CONTENT -->
     <div class="main-content">
         <!-- Header sottile -->
         <nav class="navbar navbar-light bg-white shadow-sm px-4 py-3 sticky-top">
-            <div class="container-fluid max-w-1200 d-flex justify-content-between align-items-center">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-3">
                     <a href="paziente_dettaglio.php?id=<?= $paziente_id ?>" class="btn btn-light border rounded-circle p-2 hover-lift d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -276,12 +181,15 @@ if ($haFattoAnamnesi) {
         </main>
     </div>
 
+    <!-- Script per AJAX -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
     document.getElementById('anamnesi-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // MOSTRA LOADING OVERLAY
-        document.getElementById('loadingOverlay').style.display = 'flex';
+        // mostra loading
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = 'flex';
         
         const formData = new FormData(this);
         
@@ -294,19 +202,43 @@ if ($haFattoAnamnesi) {
             const result = await response.json();
             
             if (result.success) {
-                // Se OK, reindirizza direttamente al dettaglio del paziente mostrando i nuovi pulsanti
-                window.location.href = 'paziente_dettaglio.php?id=<?= $paziente_id ?>';
+                if (overlay) overlay.style.display = 'none';
+                Swal.fire({
+                    title: 'Salvato!',
+                    text: 'L\'anamnesi è stata salvata con successo.',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    customClass: { popup: 'rounded-4 border-0 shadow' }
+                }).then(() => {
+                    window.location.href = 'paziente_dettaglio.php?id=<?= $paziente_id ?>';
+                });
             } else {
-                alert('Errore nel salvataggio: ' + (result.error || 'Errore sconosciuto'));
-                document.getElementById('loadingOverlay').style.display = 'none';
+                if (overlay) overlay.style.display = 'none';
+                Swal.fire({
+                    title: 'Errore',
+                    text: result.error || 'Errore nel salvataggio',
+                    icon: 'error',
+                    customClass: { popup: 'rounded-4 border-0 shadow' }
+                });
             }
-            
         } catch (error) {
-            console.error('Errore chiamata AJAX:', error);
-            alert('Si è verificato un errore di rete.');
-            document.getElementById('loadingOverlay').style.display = 'none';
+            console.error(error);
+            if (overlay) overlay.style.display = 'none';
+            Swal.fire({
+                title: 'Errore di Rete',
+                text: 'Si è verificato un errore durante la comunicazione con il server.',
+                icon: 'error',
+                customClass: { popup: 'rounded-4 border-0 shadow' }
+            });
         }
     });
     </script>
-</body>
-</html>
+
+    <!-- Overlay di caricamento -->
+    <div class="saving-overlay" id="loadingOverlay">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+        <h4 class="mt-3 text-dark fw-bold">Salvataggio Anamnesi in corso...</h4>
+    </div>
+
+    <?php include 'includes/footer.php'; ?>

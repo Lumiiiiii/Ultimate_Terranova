@@ -52,10 +52,6 @@ $anamnesi_passata = $patientManager->getAnamnesi($paziente_id);
     <link rel="icon" type="image/png" href="assets/img/logo.png">
     
     <!-- Collegamento alla libreria Bootstrap 5 per la griglia e i componenti stilizzati -->
-<script>
-  // 1. Forza immediatamente il tema light per evitare che Bootstrap applichi il nero
-  document.documentElement.setAttribute('data-bs-theme', 'light');
-</script>
 
 <style>
   /* 2. Definisci subito lo sfondo esatto della tua dashboard nel root */
@@ -84,21 +80,6 @@ $anamnesi_passata = $patientManager->getAnamnesi($paziente_id);
         
         /* Forza bordi più arrotondati sulle card */
         .rounded-4 { border-radius: 1rem !important; }
-
-        /* Effetto speciale per i pulsanti di "Salvataggio": Sfondo sfumato e ombra colorata */
-        .btn-gradient {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-accent)) !important;
-            color: white !important;
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
-        }
-        
-        /* Lo sfondo della pagina. Messo grigio chiarissimo per far risaltare il form bianco. */
-        .main-content {
             background-color: #f8f9fa;
             min-height: 100vh; /* Forza un'altezza minima pari a tutto lo schermo */
         }
@@ -145,7 +126,7 @@ $anamnesi_passata = $patientManager->getAnamnesi($paziente_id);
         
         <!-- BARRA DI NAVIGAZIONE IN ALTO (Header Sottile) -->
         <nav class="navbar navbar-light bg-white shadow-sm px-4 py-3 sticky-top">
-            <div class="container-fluid max-w-1200 d-flex justify-content-between align-items-center">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-3">
                     <!-- Tasto Freccia "Indietro": ci riporta al dettaglio del paziente saltando ogni compilazione -->
                     <a href="paziente_dettaglio.php?id=<?= $paziente_id ?>" class="btn btn-light border rounded-circle p-2 hover-lift d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
@@ -547,6 +528,4 @@ $anamnesi_passata = $patientManager->getAnamnesi($paziente_id);
     </script>
     
     <!-- Script Bootstrap 5 JS - Obbligatorio per far funzionare la tendina animata Accordion -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <?php include 'includes/footer.php'; ?>

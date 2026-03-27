@@ -102,3 +102,12 @@ CREATE TABLE promemoria_veloce (
 
 -- Inseriamo subito una riga vuota che il gestionale andrà sempre ad aggiornare (invece di crearne di nuove)
 INSERT INTO promemoria_veloce (id, testo) VALUES (1, '');
+
+CREATE TABLE `eventi` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `start` datetime NOT NULL,
+  `end` datetime DEFAULT NULL,
+  `color` varchar(20) DEFAULT '#2ecc71',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
