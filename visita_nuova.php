@@ -182,96 +182,53 @@ include 'includes/header.php';
                     </div>
                 </div>
 
-                <!-- SEZIONE 2: Stato Psicofisico -->
-                <h6 class="text-primary border-bottom pb-2 mt-5 mb-3 d-flex align-items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Stato Psicofisico Attuale
-                </h6>
-                <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <label class="form-label small fw-semibold text-muted">Livello di Stress Percepito (1=Nullo, 10=Massimo)</label>
-                        <input type="number" name="livello_stress" class="form-control bg-light py-2" min="1" max="10" placeholder="Es. 7">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label small fw-semibold text-muted">Livello di Energia Diffusa (1=Spossato, 10=Energico)</label>
-                        <input type="number" name="livello_energia" class="form-control bg-light py-2" min="1" max="10" placeholder="Es. 4">
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label small fw-semibold text-muted">Stato Emotivo Generale</label>
-                        <textarea name="stato_emotivo" class="form-control bg-light" rows="3" placeholder="Es. Sente molta ansia a causa del nuovo lavoro, piange facilmente..."></textarea>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label small fw-semibold text-muted">Livello di Concentrazione e Lucidità Mentale</label>
-                        <textarea name="concentrazione" class="form-control bg-light" rows="2" placeholder="Es. Riferisce nebbia mentale specie nel pomeriggio..."></textarea>
-                    </div>
-                </div>
-
-                <!-- SEZIONE 3: Sonno e Riposo -->
-                <h6 class="text-primary border-bottom pb-2 mt-5 mb-3 d-flex align-items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                    </svg>
-                    Sonno e Riposo
-                </h6>
-                <div class="row g-4 mb-4">
-                    <div class="col-md-4">
-                        <label class="form-label small fw-semibold text-muted">Peso (kg)</label>
-                        <input type="number" step="0.1" name="peso" class="form-control bg-light py-2" placeholder="Es. 70.5" min="20" max="300">
-                    </div>
-                    <div class="col-md-8">
-                        <label class="form-label small fw-semibold text-muted">Qualità del Sonno Percepita</label>
-                        <textarea name="qualita_sonno_percepita" class="form-control bg-light" rows="2" placeholder="Es. Sonno poco profondo, si sveglia stanco..."></textarea>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label small fw-semibold text-muted">Difficoltà ad addormentarsi o Risvegli Notturni?</label>
-                        <textarea name="difficolta_addormentarsi_risvegli_notturni" class="form-control bg-light" rows="3" placeholder="Es. Difficoltà ad addormentarsi. Si sveglia fissa alle 3:00 del mattino (Fegato)..."></textarea>
-                    </div>
-                </div>
-
-                <!-- SEZIONE 4: Stile di Vita -->
+                <!-- SEZIONE 2: Campi Fissi -->
                 <h6 class="text-primary border-bottom pb-2 mt-5 mb-3 d-flex align-items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
-                    Stile di Vita, Alimentazione e Fisiologia
+                    Informazioni Base
                 </h6>
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">
-                        <label class="form-label small fw-semibold text-muted">Alimentazione Recente</label>
-                        <textarea name="alimentazione_recente" class="form-control bg-light" rows="3" placeholder="Es. Riconosce di aver sgarrato molto con zuccheri e latticini..."></textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label small fw-semibold text-muted">Livello Idratazione (Acqua bevuta)</label>
-                        <textarea name="idratazione" class="form-control bg-light" rows="3" placeholder="Es. Beve poco, circa 3 bicchieri al giorno..."></textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label small fw-semibold text-muted">Regolarità Intestinale (Feci e Alvo)</label>
-                        <textarea name="regolarita_intestinale" class="form-control bg-light" rows="3" placeholder="Es. Stipsi ostinata. Evacua ogni 3 giorni, feci caprine..."></textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label small fw-semibold text-muted">Appetito e Digestione Piani</label>
-                        <textarea name="appetito_e_digestione" class="form-control bg-light" rows="3" placeholder="Es. Riferisce perenne gonfiore post-prandiale..."></textarea>
-                    </div>
-                    <div class="col-12">
                         <label class="form-label small fw-semibold text-muted">Attività Fisica / Sportiva</label>
                         <textarea name="attivita_fisica" class="form-control bg-light" rows="2" placeholder="Es. Sedentario, solo una camminata la domenica..."></textarea>
                     </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-muted">Ore di Sonno (media)</label>
+                        <input type="number" step="0.5" name="ore_sonno" class="form-control bg-light py-2" placeholder="Es. 7" min="0" max="24">
+                    </div>
                 </div>
 
-                <!-- SEZIONE 5: Supporti Naturopatici -->
+                <!-- SEZIONE 3: Domande Aggiuntive (Dinamiche) -->
+                <h6 class="text-primary border-bottom pb-2 mt-5 mb-3 d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Domande Aggiuntive
+                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill ms-auto px-3 py-1 small" id="contatore-domande">0 / 15</span>
+                </h6>
+                <p class="text-muted small mb-3">Aggiungi domande personalizzate per questa visita. Ogni visita può avere domande diverse. Massimo 15.</p>
+
+                <div id="domande-container">
+                    <!-- Le domande aggiuntive verranno inserite qui dinamicamente -->
+                </div>
+
+                <button type="button" id="btn-aggiungi-domanda" class="btn btn-outline-primary rounded-3 px-4 py-2 mb-4 d-flex align-items-center gap-2 hover-lift shadow-sm" onclick="aggiungiDomanda()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Aggiungi Domanda
+                </button>
+
+                <!-- SEZIONE 4: Note Finali -->
                 <h6 class="text-primary border-bottom pb-2 mt-5 mb-3 d-flex align-items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                     </svg>
-                    Supporti Naturopatici e Conclusioni
+                    Conclusioni
                 </h6>
                 <div class="row g-4 mb-4">
-                    <div class="col-12">
-                        <label class="form-label small fw-semibold text-muted">Supporti e Integrazioni Attualmente in Uso (o Consigliati)</label>
-                        <textarea name="supporti_in_uso" class="form-control bg-light" rows="3" placeholder="Es. Omega 3 a colazione. Fiori di Bach prescritti oggi: Centaury e Mimulus."></textarea>
-                    </div>
                     <div class="col-12">
                         <label class="form-label small fw-semibold text-muted">Note Finali del Naturopata</label>
                         <textarea name="note_finali" class="form-control bg-light" rows="4" placeholder="Appunti liberi (visibili solo a te). Es. Paziente molto collaborativo, prossimo controllo tra 40 gg."></textarea>
