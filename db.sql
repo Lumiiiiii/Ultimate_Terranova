@@ -32,20 +32,40 @@ CREATE TABLE visite(
 id INT AUTO_INCREMENT PRIMARY KEY,
 paziente_id INT NOT NULL,
 data_visita DATE,
-motivazione TEXT, -- esempio: il paziente ha avuto una frattura al braccio sinistro nel 2020
-concentrazione VARCHAR(100), -- esempio: il paziente ha avuto una frattura al braccio sinistro nel 2020
-stato_emotivo TEXT, -- esempio: il paziente è contento
-attivita_fisica TEXT, -- esempio: il paziente fa esercizio fisico 3-4 volte al settimana
-idratazione TEXT, -- esempio: il paziente beve 2-3 litri di acqua al giorno
-qualita_sonno_percepita TEXT, -- esempio: il paziente si sente stanco spesso
-ore_sonno DECIMAL(4,2), -- esempio: 7-8 ore
-regolarita_intestinale TEXT, 
-appetito_e_digestione TEXT, -- esempio: il paziente ha un buon appetito e digerisce bene
-difficolta_addormentarsi_risvegli_notturni TEXT, -- esempio: il paziente ha difficoltà a addormentarsi e risveglia spesso
-livello_stress INT, -- livello da 1 a 10 
-livello_energia INT, -- livello da 1 a 10
-supporti_in_uso TEXT,
-alimentazione_recente TEXT,
+motivazione TEXT,
+attivita_fisica TEXT,
+ore_sonno DECIMAL(4,2),
+-- 15 coppie domanda/risposta aggiuntive (contenuto variabile per ogni visita)
+domanda_aggiuntiva_1 VARCHAR(255),
+risposta_aggiuntiva_1 TEXT,
+domanda_aggiuntiva_2 VARCHAR(255),
+risposta_aggiuntiva_2 TEXT,
+domanda_aggiuntiva_3 VARCHAR(255),
+risposta_aggiuntiva_3 TEXT,
+domanda_aggiuntiva_4 VARCHAR(255),
+risposta_aggiuntiva_4 TEXT,
+domanda_aggiuntiva_5 VARCHAR(255),
+risposta_aggiuntiva_5 TEXT,
+domanda_aggiuntiva_6 VARCHAR(255),
+risposta_aggiuntiva_6 TEXT,
+domanda_aggiuntiva_7 VARCHAR(255),
+risposta_aggiuntiva_7 TEXT,
+domanda_aggiuntiva_8 VARCHAR(255),
+risposta_aggiuntiva_8 TEXT,
+domanda_aggiuntiva_9 VARCHAR(255),
+risposta_aggiuntiva_9 TEXT,
+domanda_aggiuntiva_10 VARCHAR(255),
+risposta_aggiuntiva_10 TEXT,
+domanda_aggiuntiva_11 VARCHAR(255),
+risposta_aggiuntiva_11 TEXT,
+domanda_aggiuntiva_12 VARCHAR(255),
+risposta_aggiuntiva_12 TEXT,
+domanda_aggiuntiva_13 VARCHAR(255),
+risposta_aggiuntiva_13 TEXT,
+domanda_aggiuntiva_14 VARCHAR(255),
+risposta_aggiuntiva_14 TEXT,
+domanda_aggiuntiva_15 VARCHAR(255),
+risposta_aggiuntiva_15 TEXT,
 note_finali TEXT,
 data_modifica TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 FOREIGN KEY (paziente_id) REFERENCES pazienti(id) ON DELETE CASCADE
