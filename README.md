@@ -26,6 +26,7 @@ Permette di gestire pazienti, visite, prescrizioni e medicinali tramite un'inter
   - [logout.php](#10-logoutphp--disconnessione)
   - [db.sql](#11-dbsql--script-di-creazione-database)
 - [Come installare e avviare il progetto](#-come-installare-e-avviare-il-progetto)
+- [Changelog](#-changelog)
 
 ---
 
@@ -127,24 +128,60 @@ Il database `terranova_naturopata` contiene **7 tabelle** relazionate tra loro:
 Ultimate_Terranova/
 │
 ├── config/
-│   └── database.php          ← Connessione al database (Singleton Pattern)
+│   ├── database.php           ← Connessione al database (Singleton Pattern)
+│   └── README.md              ← Note sulla configurazione
 │
-├── includes/
+├── includes/                  ← COMPONENTI CONDIVISI E CLASSI
+│   ├── header.php             ← <head> HTML condiviso (anti-flicker, Bootstrap, CSS)
+│   ├── sidebar.php            ← Sidebar navigazione + toggle tema chiaro/scuro
+│   ├── footer.php             ← Chiusura HTML + Bootstrap JS
 │   ├── Patient.php            ← Classe per la gestione dei pazienti (CRUD)
-│   ├── Visit.php              ← Classe per la gestione delle visite (storico e nuove visite)
+│   ├── Visit.php              ← Classe per la gestione delle visite
 │   └── Note.php               ← Classe per il promemoria veloce
+│
+├── assets/
+│   ├── css/style.css          ← CSS globale (temi, dark mode, componenti)
+│   └── img/logo.png           ← Logo Aequa
 │
 ├── login.php                  ← Pagina di autenticazione
 ├── index.php                  ← Dashboard principale (homepage)
 ├── paziente_nuovo.php         ← Form per registrare un nuovo paziente
-├── paziente_dettaglio.php     ← Pagina dettagli, storico visite e modifica dati
-├── ajax_notes.php             ← Endpoint API per il salvataggio note via AJAX
-├── ajax_handlers.php          ← Gestore API per upload, modifiche pazienti, ecc.
-├── logout.php                 ← Script di disconnessione
-├── db.sql                     ← Script SQL per creare il database e le tabelle
+├── paziente_dettaglio.php     ← Dettagli paziente, storico visite, modifica dati
+├── visita_anamnesi.php        ← Form anamnesi (prima visita)
+├── visita_nuova.php           ← Form visita di controllo
+├── visita_dettaglio.php       ← Dettaglio di una visita passata
+├── calendario.php             ← Calendario appuntamenti (FullCalendar)
+├── medicinali_gestione.php    ← Archivio medicinali/integratori
 │
+├── ajax_handlers.php          ← API centrale: CRUD pazienti, anamnesi, visite
+├── ajax_notes.php             ← API per salvataggio note veloci
+├── aggiungi_evento.php        ← API: crea evento nel calendario
+├── modifica_evento.php        ← API: modifica evento nel calendario
+├── elimina_evento.php         ← API: elimina evento dal calendario
+├── carica_eventi.php          ← API: carica eventi per FullCalendar
+│
+├── logout.php                 ← Script di disconnessione
+├── db.sql                     ← Script SQL per creare il database
 └── README.md                  ← Questo file
 ```
+
+### Architettura Include Condivisi
+
+Le pagine principali usano un sistema di **include condivisi** per evitare duplicazione:
+
+```php
+// Ogni pagina con sidebar segue questo schema:
+$pageTitle = "Titolo";        // → appare nel <title>
+$currentPage = "calendario";  // → evidenzia il link attivo nella sidebar
+include 'includes/header.php';   // → <html>, <head>, anti-flicker, CSS
+include 'includes/sidebar.php';  // → sidebar navigazione + toggle tema
+// ... contenuto pagina ...
+include 'includes/footer.php';   // → Bootstrap JS, </body>, </html>
+```
+
+- **`header.php`**: contiene lo script anti-flicker che imposta il tema salvato in `localStorage` PRIMA del caricamento CSS, prevenendo flash nel dark mode.
+- **`sidebar.php`**: sidebar fissa con navigazione e toggle tema chiaro/scuro. Gestisce `data-theme` per il dark mode.
+- **`style.css`**: unico file CSS con variabili, dark mode completo, e tutti gli stili dei componenti.
 
 ---
 
@@ -855,44 +892,40 @@ Quando l'utente seleziona una data nel datepicker, JavaScript converte il format
 
 📍 **Percorso:** `paziente_dettaglio.php`
 
-**Scopo:** Fornisce una panoramica completa di un paziente. Mostra i suoi dettagli anagrafici, offre un modal (Bootstrap) per modificarli al volo, e un elenco per consultare lo storico delle visite.
+**Scopo:** Panoramica completa del paziente: profilo anagrafico, bottone per avviare una nuova visita (o anamnesi), storico visite, modal di modifica, e conferma eliminazione con SweetAlert2.
 
-#### Design System "Aequa"
-Come per `index.php` e `paziente_nuovo.php`, anche la pagina di dettaglio applica il medesimo styling visual "Aequa", per offrire una sensazione premium coerente:
-- **Sidebar persistente** e responsive con header dedicato.
-- **Card in Glassmorphism** stilizzate tramite la utility di utilità `.glass`.
-- Bottoni principali con design a gradiente animato (`.btn-gradient`) per incitare all'azione (es. "Nuova Visita").
-- Modali moderni (`.rounded-4`, `.border-0`, `.shadow-lg`) per i web-form (modifica paziente).
-- Utilizzo della libreria "Bootstrap Datepicker" standardizzata in tutta l'app per permettere agli utenti di scorrere velocemente le decadi durante l'inputizzazione dell'età.
+**Utilizza gli include condivisi** (`header.php`, `sidebar.php`, `footer.php`) — tutto il CSS è centralizzato in `style.css`.
 
-#### Visualizzazione Dati Dinamici e Modal AJAX
-Nella pagina, il form di modifica non ricarica l'intera finestra (il che guasterebbe la user experience), ma comunica in modo fully-Ajax verso `ajax_handlers.php`:
-```javascript
-const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData });
-const data = await res.json();
-if (data.success) location.reload();
-```
-Il salvataggio impedisce azioni doppie bloccando il button e mostrando l'icona spinner in tempo reale.
+#### Funzionalità principali:
+- **Profilo paziente** con avatar iniziale generato dinamicamente
+- **Bottone condizionale**: mostra "Fai Anamnesi" se non è stata ancora compilata, altrimenti "Nuova Visita"
+- **Modal modifica** con form AJAX (non ricarica la pagina)
+- **Eliminazione** con doppia conferma (modal Bootstrap + SweetAlert2)
+- **Bootstrap Datepicker** per la data di nascita nel modal di modifica
 
 ---
 
-### 8. `includes/Visit.php` — Classe Visite
+### 8. `visita_nuova.php` — Nuova Visita di Controllo
+
+📍 **Percorso:** `visita_nuova.php`
+
+**Scopo:** Form completo per registrare una visita naturopatica. Include un accordion con l'anamnesi precedente consultabile e modificabile.
+
+**Sezioni del form:** Dettagli Visita → Stato Psicofisico → Sonno e Riposo → Stile di Vita → Supporti Naturopatici.
+
+**Accordion Anamnesi:** Permette di consultare e aggiornare rapidamente i dati anamnestici senza lasciare la pagina della visita.
+
+---
+
+### 9. `includes/Visit.php` — Classe Visite
 
 📍 **Percorso:** `includes/Visit.php`
 
-**Scopo:** Isola in un oggetto unico e testabile tutte le operazioni del DB inerenti le visite naturopatiche di un paziente.
+**Scopo:** Gestisce tutte le operazioni CRUD sulle visite: creazione, lettura, aggiornamento e storico.
 
-```php
-class Visit {
-    public function getPatientVisits($paziente_id) {
-        $queryText = "SELECT * FROM visite WHERE paziente_id = :paziente_id ORDER BY data_visita DESC, id DESC";
-        $query = $this->db->prepare($queryText);
-        $query->execute([':paziente_id' => $paziente_id]);
-        return $query->fetchAll();
-    }
-}
-```
-L'ordinamento multiplo discendente (`ORDER BY data_visita DESC, id DESC`) fa sì che le visite più recenti appaiano in alto e, a parità di data (come i mock), vinca quella inserita per ultima nel sistema.
+Metodi principali: `createVisit()`, `getVisit()`, `updateVisit()`, `getVisitHistory()`.
+
+L'ordinamento `ORDER BY data_visita DESC, id DESC` garantisce che le visite più recenti appaiano sempre in cima.
 
 ---
 
@@ -1027,6 +1060,28 @@ CREATE TABLE pazienti (
    ```
 
 5. **Password di accesso:** `naturopata`
+
+---
+
+## 📝 Changelog
+
+### v1.1 — Ottimizzazione e Fix Dark Mode
+
+**Alleggerimento codice (zero cambiamenti alla logica):**
+- `paziente_dettaglio.php`: migrato a include condivisi (`header.php`, `sidebar.php`, `footer.php`) — da 633 a 346 righe (-45%)
+- `visita_nuova.php`: migrato a include condivisi — da 532 a 330 righe (-38%)
+- `ajax_handlers.php`: commenti tutorial sostituiti con intestazioni concise — da 264 a 185 righe (-30%)
+- CSS duplicato eliminato: ~200 righe di CSS inline spostate in `style.css`
+
+**Architettura Include Condivisi:**
+- Creato sistema di include con `header.php`, `sidebar.php`, `footer.php`
+- Tutte le pagine con sidebar seguono lo schema: `$pageTitle` → `header.php` → `sidebar.php` → contenuto → `footer.php`
+
+**Bug Fix Dark Mode:**
+- ✅ Note Veloci: testo ora visibile in dark mode (rimosso `text-dark` e stile inline conflittuale)
+- ✅ Barra di ricerca: rimosso contorno/ombra grigia sull'icona lente
+- ✅ Floating labels: rimosso sfondo bianco Bootstrap sulle label in dark mode
+- ✅ Datepicker: aggiunto CSS mancante (`bootstrap-datepicker3.min.css`) + stili dark mode completi
 
 ---
 

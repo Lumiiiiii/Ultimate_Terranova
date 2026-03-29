@@ -208,6 +208,26 @@ public function deletePatient($id)
     }
 
     /**
+     * Recupera i prossimi eventi/appuntamenti futuri dalla tabella eventi
+     */
+    public function getUpcomingEvents($limit = 5)
+    {
+        try {
+            $queryText = "SELECT id, title, start, color
+                    FROM eventi
+                    WHERE start >= NOW()
+                    ORDER BY start ASC
+                    LIMIT :limit";
+            $query = $this->db->prepare($queryText);
+            $query->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+            $query->execute();
+            return $query->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
      * Controlla se esiste già un paziente con lo stesso nome e data di nascita
      */
     public function isDuplicate($nome_cognome, $data_nascita)

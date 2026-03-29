@@ -26,8 +26,8 @@ $noteManager = new Note();
 // Chiama il metodo che conta quanti record totali ci sono nella tabella pazienti
 $totalPatients = $patientManager->countPatients(); 
 
-// Recupera i pazienti recenti (per la sezione "Pazienti Recenti")
-$allPatients = $patientManager->getRecentPatients(5);
+// Recupera i prossimi appuntamenti (per la sezione "Prossimi Appuntamenti")
+$upcomingEvents = $patientManager->getUpcomingEvents(5);
 
 // Recupera le visite recenti (per la sezione "Visite Recenti")
 $recentVisits = $patientManager->getRecentVisits();
@@ -64,40 +64,35 @@ include 'includes/sidebar.php';
                 </div>
             </div>
 
-            <!-- ── Pazienti Recenti ── -->
+            <!-- ── Prossimi Appuntamenti ── -->
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
-                    <div class="card-header bg-transparent border-bottom py-3 px-4">
-                        <h5 class="fw-bold mb-0">Pazienti Recenti</h5>
+                    <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">Prossimi Appuntamenti</h5>
+                        <a href="calendario.php" class="btn btn-sm btn-gradient px-3 py-1 rounded-3" style="font-size:0.78rem;">Vedi calendario</a>
                     </div>
-                    <div style="max-height: 190px; overflow-y: auto;">
-                        <?php if (empty($allPatients)): ?>
+                    <div style="max-height: 230px; overflow-y: auto;">
+                        <?php if (empty($upcomingEvents)): ?>
                             <div class="p-4 text-center text-muted">
-                                Nessun paziente registrato.
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="mb-2 opacity-40"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                <div class="small">Nessun appuntamento in programma.</div>
                             </div>
                         <?php else: ?>
-                            <?php foreach ($allPatients as $patient): ?>
-                                <div class="px-4 py-2 d-flex justify-content-between align-items-center border-bottom hover-lift" 
-                                     style="cursor:pointer" onclick="window.location.href='paziente_dettaglio.php?id=<?= $patient['id'] ?>'">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="avatar-circle bg-light text-primary" style="width:32px;height:32px;font-size:0.8rem;">
-                                            <?= strtoupper(substr($patient['nome_cognome'], 0, 1)) ?>
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold text-dark small"><?= $patient['nome_cognome'] ?></div>
-                                            <div class="text-muted" style="font-size:0.75rem;"><?= $patient['eta'] ?> anni • <?= $patient['telefono'] ?></div>
-                                        </div>
+                            <?php foreach ($upcomingEvents as $ev): ?>
+                                <?php
+                                    $dt     = new DateTime($ev['start']);
+                                    $giorno = $dt->format('d/m/Y');
+                                    $ora    = $dt->format('H:i');
+                                    $colore = !empty($ev['color']) ? $ev['color'] : '#2ecc71';
+                                ?>
+                                <div class="px-4 py-2 d-flex align-items-center gap-3 border-bottom hover-lift"
+                                     style="cursor:pointer" onclick="window.location.href='calendario.php'">
+                                    <span class="event-dot" style="background:<?= htmlspecialchars($colore) ?>; width:12px; height:12px; border-radius:50%; flex-shrink:0;"></span>
+                                    <div class="flex-grow-1 overflow-hidden">
+                                        <div class="fw-semibold text-dark small text-truncate"><?= htmlspecialchars($ev['title']) ?></div>
+                                        <div class="text-muted" style="font-size:0.75rem;"><?= $giorno ?> alle <?= $ora ?></div>
                                     </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <!-- Pulsante Elimina: event.stopPropagation() evita che cliccando qui si apra la scheda paziente -->
-                                        <button class="btn btn-sm btn-delete-paziente p-1 border-0" 
-                                                onclick="event.stopPropagation(); deletePatient(<?= $patient['id'] ?>, '<?= addslashes($patient['nome_cognome']) ?>')">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                        <span class="text-muted">›</span>
-                                    </div>
+                                    <span class="badge rounded-pill px-2 py-1" style="background:<?= htmlspecialchars($colore) ?>20; color:<?= htmlspecialchars($colore) ?>; font-size:0.7rem; font-weight:600;"><?= $ora ?></span>
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -120,7 +115,7 @@ include 'includes/sidebar.php';
             </div>
 
             <div class="col-12 mt-2 mb-1">
-                <div class="card border-0 rounded-4 shadow-sm p-2 hover-lift" style="background: linear-gradient(135deg, #ffffff 0%, #f4f7fe 100%); border: 1px solid rgba(59, 130, 246, 0.15) !important;">
+                <div class="card border-0 rounded-4 shadow-sm p-2 hover-lift search-card">
                     <div class="input-group input-group-lg align-items-center">
                         <span class="input-group-text bg-transparent border-0 text-primary ps-4 pe-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -144,7 +139,7 @@ include 'includes/sidebar.php';
                     </div>
                     <div class="card-body p-4 d-flex flex-column text-muted">
                         <!-- Area di testo col testo caricato dal DB -->
-                        <textarea id="quick-notes" class="form-control border-0 bg-light rounded-3 p-3 text-dark mb-3 flex-grow-1" placeholder="Scrivi un promemoria qui..." style="resize: none; background-color: #fdfbf7 !important; border-left: 3px solid #f6c23e !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); min-height: 180px;"><?= htmlspecialchars($noteText) ?></textarea>
+                        <textarea id="quick-notes" class="form-control border-0 bg-light rounded-3 p-3 mb-3 flex-grow-1" placeholder="Scrivi un promemoria qui..." style="resize: none; border-left: 3px solid #f6c23e !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); min-height: 180px;"><?= htmlspecialchars($noteText) ?></textarea>
                         
                         <div class="mt-auto d-flex justify-content-between align-items-center">
                             <small id="save-status" class="opacity-75">Modifiche salvate in automatico</small>

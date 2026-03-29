@@ -1,26 +1,19 @@
 <?php
-// ajax_handlers.php
-// Questo file gesterà le chiamate AJAX generali del gestionale (Pazienti, Visite, ecc.)
+// ajax_handlers.php — Gestisce tutte le chiamate AJAX del gestionale (Pazienti, Anamnesi, Visite)
 header('Content-Type: application/json');
 
-// Includiamo la connessione al database e le classi necessarie
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/Patient.php';
 
-// Inizializziamo le classi
 $patientManager = new Patient();
-
-// Controlliamo che azione è stata richiesta dal Javascript
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
 try {
     switch ($action) {
         
-        // --- GESTIONE PAZIENTI ---
+        // ── AGGIORNAMENTO PAZIENTE ──
         case 'update_patient':
-            // Chiamiamo la funzione updatePatient passando l'ID e tutti i campi del form
             $success = $patientManager->updatePatient($_POST['id'], $_POST);
-            
             if ($success) {
                 echo json_encode(['success' => true]);
             } else {
@@ -28,6 +21,7 @@ try {
             }
             break;
 
+        // ── CREAZIONE PAZIENTE ──
         case 'create_paziente':
             $data = [
                 'nome_cognome' => trim($_POST['nome_cognome'] ?? ''),
@@ -38,7 +32,7 @@ try {
                 'professione'  => trim($_POST['professione'] ?? '')
             ];
 
-            // Validazione
+            // Validazione campi obbligatori
             if (empty($data['nome_cognome'])) {
                 echo json_encode(['success' => false, 'error' => 'Il campo Nome e Cognome è obbligatorio.']);
                 break;
@@ -55,13 +49,10 @@ try {
             }
 
             $newId = $patientManager->createPatient($data);
-            if ($newId) {
-                echo json_encode(['success' => true, 'id' => $newId]);
-            } else {
-                echo json_encode(['success' => false, 'error' => 'Errore durante il salvataggio del paziente.']);
-            }
+            echo json_encode($newId ? ['success' => true, 'id' => $newId] : ['success' => false, 'error' => 'Errore durante il salvataggio del paziente.']);
             break;
 
+        // ── ELIMINAZIONE PAZIENTE ──
         case 'delete_paziente':
             $paz_id = $_POST['id'] ?? null;
             if (!$paz_id) {
@@ -69,14 +60,10 @@ try {
                 break;
             }
             $success = $patientManager->deletePatient($paz_id);
-            if ($success) {
-                echo json_encode(['success' => true]);
-            } else {
-                echo json_encode(['success' => false, 'error' => 'Errore durante l\'eliminazione del paziente.']);
-            }
+            echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore durante l\'eliminazione del paziente.']);
             break;
 
-        // --- GESTIONE ANAMNESI ---
+        // ── CREAZIONE ANAMNESI (PRIMA VISITA) ──
         case 'create_anamnesi':
             $paz_id = $_POST['paziente_id'] ?? null;
             if (!$paz_id) {
@@ -84,8 +71,8 @@ try {
                 break;
             }
 
-            // Prepared statement per inserire tutti i campi
-            $queryText = "INSERT INTO anamnesi (
+            $db = getDB();
+            $stmt = $db->prepare("INSERT INTO anamnesi (
                 paziente_id, allergie_intolleranze, farmaci_assunti, patologie_pregresse, 
                 interventi_chirurgici, esami_clinici_recenti, alcol, fumo, 
                 traumi_o_fratture, note_aggiuntive, altezza, peso
@@ -93,10 +80,7 @@ try {
                 :paziente_id, :allergie, :farmaci, :patologie, 
                 :interventi, :esami, :alcol, :fumo, 
                 :traumi, :note_aggiuntive, :altezza, :peso
-            )";
-
-            $db = getDB();
-            $stmt = $db->prepare($queryText);
+            )");
             
             $success = $stmt->execute([
                 ':paziente_id' => $paz_id,
@@ -113,14 +97,10 @@ try {
                 ':peso'       => !empty($_POST['peso']) ? (float)$_POST['peso'] : null
             ]);
 
-            if ($success) {
-                echo json_encode(['success' => true]);
-            } else {
-                echo json_encode(['success' => false, 'error' => 'Errore nel salvataggio dell\'anamnesi.']);
-            }
+            echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nel salvataggio dell\'anamnesi.']);
             break;
             
-        // --- GESTIONE MODIFICA ANAMNESI DA "VISITA_NUOVA.PHP" (ACCORDION RAPIDO) ---
+        // ── AGGIORNAMENTO RAPIDO ANAMNESI (da visita_nuova.php) ──
         case 'update_anamnesi_rapido':
             $paz_id = $_POST['paziente_id'] ?? null;
             if (!$paz_id) {
@@ -128,22 +108,13 @@ try {
                 break;
             }
 
-            // Prepariamo l'update statement toccando i soli campi esposti nel form rapido.
-            $queryText = "UPDATE anamnesi SET 
-                allergie_intolleranze = :allergie,
-                farmaci_assunti = :farmaci,
-                patologie_pregresse = :patologie,
-                interventi_chirurgici = :interventi,
-                traumi_o_fratture = :traumi,
-                note_aggiuntive = :note,
-                altezza = :altezza,
-                peso = :peso,
-                alcol = :alcol,
-                fumo = :fumo
-                WHERE paziente_id = :paz_id";
-
             $db = getDB();
-            $stmt = $db->prepare($queryText);
+            $stmt = $db->prepare("UPDATE anamnesi SET 
+                allergie_intolleranze = :allergie, farmaci_assunti = :farmaci,
+                patologie_pregresse = :patologie, interventi_chirurgici = :interventi,
+                traumi_o_fratture = :traumi, note_aggiuntive = :note,
+                altezza = :altezza, peso = :peso, alcol = :alcol, fumo = :fumo
+                WHERE paziente_id = :paz_id");
             
             $success = $stmt->execute([
                 ':paz_id'     => $paz_id,
@@ -159,38 +130,21 @@ try {
                 ':fumo'       => !empty(trim($_POST['fumo'])) ? trim($_POST['fumo']) : null
             ]);
 
-            if ($success) {
-                echo json_encode(['success' => true]);
-            } else {
-                echo json_encode(['success' => false, 'error' => 'Errore nell\'aggiornamento dell\'anamnesi.']);
-            }
+            echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nell\'aggiornamento dell\'anamnesi.']);
             break;
-
             
-        // --- GESTIONE VISITE DI CONTROLLO ---
-        // --- PASSAGGIO 3: GESTORE SQL PER LE NUOVE VISITE DI CONTROLLO ---
-        // Quando il server riceve 'create_visita' nell'indice action del POST, il codice devìa ed entra in questo Case.
+        // ── CREAZIONE VISITA DI CONTROLLO ──
         case 'create_visita':
-            
-            // 1. Estrapolazione Primaria Sicura (Estrazione Dati)
-            // Lavoriamo sempre i nodi essenziali che potrebbero essere manomessi e blocchiamo tutto se assenti
-            // L'operatore ?? restituisce null se l'indice dell'array POST non esiste (es se disattivano l'input form malignamente)
             $paz_id = $_POST['paziente_id'] ?? null;
             $data_visita = $_POST['data_visita'] ?? null;
             
-            // Se non mi viene fornito a che paziente appartiene la visita O non c'è una data... NON SI FA NIENTE.
             if (!$paz_id || !$data_visita) {
-                // Restituiamo una stringa JSON di fallimento per destare l'alert su lato Frontend (Javascript)
                 echo json_encode(['success' => false, 'error' => 'Campi vitali mancanti: ID Paziente o Data Visita.']);
-                // Interrompe bruscamente il ciclo 'case' e termina script.
                 break;
             }
 
-            // 2. Progettazione della Rete Parametrica (Prepared Statement)
-            // Qui redigiamo l'architettura cruda SQL "INSERT INTO". 
-            // Invece di concatenare le stringhe da form $_POST diretti in pasto (Vulnerabile a distruttivi SQL Injection), 
-            // incaselliamo la query usando i "Segnaposti/Alias" (Placeholders), quelli che iniziano con due punti (:nomecampofinto)
-            $queryText = "INSERT INTO visite (
+            $db = getDB();
+            $stmt = $db->prepare("INSERT INTO visite (
                 paziente_id, data_visita, motivazione, concentrazione, 
                 stato_emotivo, attivita_fisica, idratazione, qualita_sonno_percepita, 
                 ore_sonno, regolarita_intestinale, appetito_e_digestione, 
@@ -202,58 +156,32 @@ try {
                 :hsonno, :reg_int, :appetito, 
                 :diff_sonno, :stress, :energia, 
                 :supporti, :alim, :note_fin
-            )";
-
-            // 3. Prepariamo lo schema e connettiamoci al DB (Meccanica Architetturale Backend)
-            $db = getDB(); // Instanciamo la connessione viva al DB (Questa funzione globale è dichiarata dentro database.php integrato in alto)
-            $stmt = $db->prepare($queryText); // Il PDO Object "pre-compila" lo scheletro della query nel buffer senza ancora sparare alcun valore
+            )");
             
-            // 4. Esecuzione Parametrizzata Esatta
-            // Questo execute fa il "Binding" (Incollaggio) degli alias della query con il vero input dell'utente e lo spara fuori con un Boolean Vero o Falso di successo.
-            // Contemporaneamente compie "Sanitization": disarmando apici maligni o codici virali.
-            // NB: Laddove il campo possa essere non scritto, lo "forziamo" a far emettere "null" piuttosto che stringa vuota, tenendo pulito il DB.
+            // Binding parametri con sanitizzazione: campi vuoti → NULL
             $success = $stmt->execute([
                 ':paz_id'     => $paz_id, 
-                ':data_v'     => $data_visita, // Variabili controllate a monte, si bindano così.
-                
-                // Tutti i parametri Testuali normali se malauguratamente vuoti assumono NULL (null coalescing). Rispetta i campi TEXT MySQL
+                ':data_v'     => $data_visita,
                 ':mot'        => !empty(trim($_POST['motivazione'])) ? trim($_POST['motivazione']) : null,
                 ':conc'       => !empty(trim($_POST['concentrazione'])) ? trim($_POST['concentrazione']) : null,
                 ':stato_emo'  => !empty(trim($_POST['stato_emotivo'])) ? trim($_POST['stato_emotivo']) : null,
                 ':att_fis'    => !empty(trim($_POST['attivita_fisica'])) ? trim($_POST['attivita_fisica']) : null,
                 ':idrat'      => !empty(trim($_POST['idratazione'])) ? trim($_POST['idratazione']) : null,
                 ':qsonno'     => !empty(trim($_POST['qualita_sonno_percepita'])) ? trim($_POST['qualita_sonno_percepita']) : null,
-                
-                // Il parametro Ore Sonno è un numero "DECIMAL(4,2)", se è vuoto deve emettere NULL, altrimenti lo castiamo a puro Float prima di gettarlo nel DB
                 ':hsonno'     => !empty($_POST['ore_sonno']) ? (float)$_POST['ore_sonno'] : null,
-                
                 ':reg_int'    => !empty(trim($_POST['regolarita_intestinale'])) ? trim($_POST['regolarita_intestinale']) : null,
                 ':appetito'   => !empty(trim($_POST['appetito_e_digestione'])) ? trim($_POST['appetito_e_digestione']) : null,
                 ':diff_sonno' => !empty(trim($_POST['difficolta_addormentarsi_risvegli_notturni'])) ? trim($_POST['difficolta_addormentarsi_risvegli_notturni']) : null,
-                
-                // Stress e Energia sono Interi da 1 a 10 (Campi INT). Anche loro se tralasciati devono essere NULL. Altrimenti conversione esplicita "(int)"
                 ':stress'     => !empty($_POST['livello_stress']) ? (int)$_POST['livello_stress'] : null,
                 ':energia'    => !empty($_POST['livello_energia']) ? (int)$_POST['livello_energia'] : null,
-                
                 ':supporti'   => !empty(trim($_POST['supporti_in_uso'])) ? trim($_POST['supporti_in_uso']) : null,
                 ':alim'       => !empty(trim($_POST['alimentazione_recente'])) ? trim($_POST['alimentazione_recente']) : null,
                 ':note_fin'   => !empty(trim($_POST['note_finali'])) ? trim($_POST['note_finali']) : null
             ]);
 
-            // 5. Epilogo di Ritorno per il Fetch Javascript (Risposta JSON)
-            // Valutando il boolean uscito dal .execute
-            if ($success) {
-                // VaTuttoBene: codifichiamo una stringa di ok
-                echo json_encode(['success' => true]);
-            } else {
-                // Errore: la insert è fallita dal server db.
-                echo json_encode(['success' => false, 'error' => 'Errore fatale del Server MySQL: Salvataggio visita compromesso.']);
-            }
-            // Fine ramo, stacca il blocco di codice.
+            echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nel salvataggio della visita.']);
             break;
 
-
-            
         default:
             echo json_encode(['success' => false, 'error' => 'Azione non valida o non specificata.']);
     }

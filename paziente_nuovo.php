@@ -80,7 +80,7 @@ include 'includes/sidebar.php';
                                     <div class="col-md-3">
                                         <div class="form-floating">
                                             <input type="text" class="form-control rounded-3" id="data_visuale" 
-                                                   placeholder="Seleziona data" required autocomplete="off" readonly
+                                                   placeholder=" " required autocomplete="off" readonly
                                                    value="<?php
                                                        $val = $_POST['data_nascita'] ?? '';
                                                        if ($val && strpos($val, '-') !== false) {

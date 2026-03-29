@@ -1,40 +1,270 @@
-/* ── VARIABILI CSS GLOBALI ─────────────────────────────────────────────── */
+/* ── VARIABILI CSS GLOBALI - LIGHT MODE ──────────────────────────────────── */
 :root {
-    --color-primary: #2ecc71;          /* verde principale */
-    --color-primary-dark: #27ae60;     /* verde scuro (hover) */
-    --color-accent: #3b82f6;           /* blu accento gradiente */
-    --sidebar-width: 260px;            /* larghezza sidebar */
-    --sidebar-bg: #1a1a2e;             /* sfondo sidebar: blu scurissimo */
-    --sidebar-text: #a0aec0;           /* testo sidebar: grigio chiaro */
-    --sidebar-active: #ffffff;         /* testo voce attiva: bianco */
-    background-color: #f8f9fa !important;
+    /* Brand colors */
+    --color-primary: #2ecc71;
+    --color-primary-dark: #27ae60;
+    --color-accent: #3b82f6;
+
+    /* Sidebar (sempre dark) */
+    --sidebar-width: 260px;
+    --sidebar-bg: #1a1a2e;
+    --sidebar-text: #a0aec0;
+    --sidebar-active: #ffffff;
+
+    /* Light mode tokens */
+    --bg-page:       #f8f9fa;
+    --bg-card:       #ffffff;
+    --bg-input:      #f4f6f9;
+    --text-heading:  #1a1a2e;
+    --text-body:     #212529;
+    --text-muted:    #6c757d;
+    --border-color:  #e9ecef;
+    --card-shadow:   0 0.125rem 0.5rem rgba(0,0,0,0.07);
+    --toggle-bg:     rgba(255,255,255,0.10);
+}
+
+/* ── DARK MODE TOKENS ────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+    --bg-page:      #0f1117;
+    --bg-card:      #1a1d2b;
+    --bg-input:     #242838;
+    --text-heading: #f1f5f9;
+    --text-body:    #cbd5e1;
+    --text-muted:   #7e8ca3;
+    --border-color: #2a2f42;
+    --card-shadow:  0 2px 8px rgba(0,0,0,0.4);
+    --toggle-bg:    rgba(255,255,255,0.08);
+}
+
+/* ── BASE ────────────────────────────────────────────────────────────────── */
+html {
+    color-scheme: light;
 }
 
 body {
-    background-color: #f8f9fa !important;
-    visibility: visible !important;
+    background-color: var(--bg-page) !important;
+    color: var(--text-body) !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* 
+ * DARK MODE: OVERRIDE DI TUTTI GLI ELEMENTI BOOTSTRAP
+ * Bootstrap resta in data-bs-theme="light", noi gestiamo il dark da qui.  
+ */
+
+/* ── HEADINGS, TESTO, LABELS ─────────────────────────────────────────────── */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] .fw-bold,
+[data-theme="dark"] .fw-semibold,
+[data-theme="dark"] .display-1,
+[data-theme="dark"] .display-2,
+[data-theme="dark"] .display-3,
+[data-theme="dark"] .display-4,
+[data-theme="dark"] .display-5,
+[data-theme="dark"] .display-6 {
+    color: var(--text-heading) !important;
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] span:not(.badge),
+[data-theme="dark"] div,
+[data-theme="dark"] label,
+[data-theme="dark"] .form-label,
+[data-theme="dark"] .form-floating > label {
+    color: var(--text-body);
+}
+
+[data-theme="dark"] .text-dark {
+    color: var(--text-heading) !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .text-body {
+    color: var(--text-body) !important;
+}
+
+/* ── SFONDO PAGINA, CARD, INPUT ──────────────────────────────────────────── */
+[data-theme="dark"] .bg-white {
+    background-color: var(--bg-card) !important;
+}
+
+[data-theme="dark"] .bg-light {
+    background-color: var(--bg-input) !important;
+}
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .modal-content {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-body) !important;
+}
+
+[data-theme="dark"] .card-header {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .modal-footer {
+    border-color: var(--border-color) !important;
+}
+
+/* ── FORM CONTROLS ──────────────────────────────────────────────────────── */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+    background-color: var(--bg-input) !important;
+    color: var(--text-heading) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* bg-transparent inputs (es. barra di ricerca) devono restare trasparenti */
+[data-theme="dark"] .form-control.bg-transparent {
+    background-color: transparent !important;
+}
+
+[data-theme="dark"] .form-control.bg-light,
+[data-theme="dark"] textarea.bg-light {
+    background-color: var(--bg-input) !important;
+    color: var(--text-heading) !important;
+}
+
+[data-theme="dark"] .form-control::placeholder {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .form-floating > label {
+    color: var(--text-muted) !important;
+}
+[data-theme="dark"] .form-floating > .form-control:focus ~ label,
+[data-theme="dark"] .form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--text-muted) !important;
+    background-color: transparent !important;
+}
+/* Rimuovi il "background-clip" bianco che Bootstrap usa per le label floating */
+[data-theme="dark"] .form-floating > .form-control:focus ~ label::after,
+[data-theme="dark"] .form-floating > .form-control:not(:placeholder-shown) ~ label::after {
+    background-color: transparent !important;
+}
+
+[data-theme="dark"] .input-group-text {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: var(--text-muted) !important;
+    box-shadow: none !important;
+}
+
+/* ── NOTE VELOCI - TEXTAREA ──────────────────────────────────────────────── */
+#quick-notes {
+    background-color: #fdfbf7 !important;
+    color: #212529;
+}
+[data-theme="dark"] #quick-notes {
+    background-color: var(--bg-input) !important;
+    color: var(--text-heading) !important;
+    border-left-color: #f6c23e !important;
+    box-shadow: none !important;
+}
+
+/* ── SEARCH BAR - DARK MODE FIX ──────────────────────────────────────────── */
+[data-theme="dark"] .search-card .input-group-text {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+[data-theme="dark"] .search-card .form-control {
+    box-shadow: none !important;
+    outline: none !important;
+}
+[data-theme="dark"] .search-card {
+    border-color: var(--border-color) !important;
+}
+
+/* ── BOTTONI ─────────────────────────────────────────────────────────────── */
+[data-theme="dark"] .btn-light {
+    background-color: var(--bg-input) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-heading) !important;
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+    border-color: var(--border-color) !important;
+    color: var(--text-body) !important;
+}
+
+/* ── BORDI ───────────────────────────────────────────────────────────────── */
+[data-theme="dark"] .border-bottom,
+[data-theme="dark"] .border-top,
+[data-theme="dark"] .border {
+    border-color: var(--border-color) !important;
+}
+
+/* ── SWEETALERT2 ─────────────────────────────────────────────────────────── */
+[data-theme="dark"] .swal2-popup {
+    background-color: var(--bg-card) !important;
+    color: var(--text-heading) !important;
+}
+[data-theme="dark"] .swal2-title {
+    color: var(--text-heading) !important;
+}
+[data-theme="dark"] .swal2-html-container {
+    color: var(--text-body) !important;
+}
+
+/* ── TABLE ───────────────────────────────────────────────────────────────── */
+[data-theme="dark"] .table {
+    color: var(--text-body) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .table > :not(caption) > * > * {
+    background-color: var(--bg-card) !important;
+    border-bottom-color: var(--border-color) !important;
+    color: var(--text-body) !important;
+}
+
+/* ── HOVER E BG OPACITY ──────────────────────────────────────────────────── */
+[data-theme="dark"] .bg-success.bg-opacity-10 {
+    background-color: rgba(46, 204, 113, 0.12) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════ */
 /* ── CLASSI DI UTILITÀ E RESET ─────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════════════════════ */
+
 .hover-lift { transition: transform 0.2s ease; }
 .hover-lift:hover { transform: translateY(-5px) !important; }
 
 .rounded-4 { border-radius: 1rem !important; }
 
-.glass { 
-    background: rgba(255, 255, 255, 0.7); 
-    backdrop-filter: blur(10px); 
-    border: 1px solid rgba(255,255,255,0.1); 
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .glass {
+    background: rgba(26, 29, 43, 0.85);
+    border-color: var(--border-color);
 }
 
-.avatar-circle { 
-    width: 40px; 
-    height: 40px; 
-    border-radius: 50%; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    font-weight: bold; 
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+[data-theme="dark"] .avatar-circle.bg-light {
+    background-color: var(--bg-input) !important;
 }
 
 .btn-gradient {
@@ -88,7 +318,7 @@ body {
     font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    color: rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.25) !important;
     padding: 12px 16px 6px;
     font-weight: 600;
 }
@@ -98,7 +328,7 @@ body {
     align-items: center;
     gap: 12px;
     padding: 11px 16px;
-    color: var(--sidebar-text);
+    color: var(--sidebar-text) !important;
     text-decoration: none;
     border-radius: 10px;
     font-size: 0.92rem;
@@ -109,12 +339,12 @@ body {
 
 .sidebar-nav a:hover {
     background: rgba(255,255,255,0.08);
-    color: white;
+    color: white !important;
 }
 
 .sidebar-nav a.active {
     background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(59, 130, 246, 0.15));
-    color: white;
+    color: white !important;
 }
 
 .sidebar-nav a svg {
@@ -137,7 +367,7 @@ body {
     align-items: center;
     gap: 8px;
     padding: 6px 14px;
-    color: #e57373;
+    color: #e57373 !important;
     text-decoration: none;
     border-radius: 8px;
     font-size: 0.8rem;
@@ -146,12 +376,38 @@ body {
 }
 .sidebar-footer a:hover {
     background: rgba(229, 115, 115, 0.1);
-    color: #ef5350;
+    color: #ef5350 !important;
 }
 .sidebar-footer a svg {
     width: 16px;
     height: 16px;
     opacity: 0.7;
+}
+
+/* ── THEME TOGGLE BUTTON ─────────────────────────────────────────────────── */
+.theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    color: rgba(255,255,255,0.55) !important;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-bottom: 10px;
+}
+.theme-toggle-btn:hover {
+    background: rgba(255,255,255,0.10);
+    color: white !important;
+}
+.theme-toggle-btn .theme-icon {
+    font-size: 1.1rem;
+    line-height: 1;
 }
 
 .main-content {
@@ -211,7 +467,7 @@ body {
     width: 28px; height: 28px; border-radius: 50%; display: inline-block;
     margin: 4px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;
 }
-.swal-color-option.selected { border-color: rgba(0,0,0,0.1); transform: scale(1.15); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.swal-color-option.selected { border-color: rgba(0,0,0,0.25); transform: scale(1.15); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
 
 /* ── OVERLAY E UI AGGIUNTIVA ─────────────────────────────────────────── */
 .saving-overlay {
@@ -224,6 +480,9 @@ body {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+}
+[data-theme="dark"] .saving-overlay {
+    background: rgba(15,17,23,0.85);
 }
 
 .max-w-1200 {
@@ -240,4 +499,173 @@ textarea.form-control {
 textarea.form-control:focus {
     border-color: var(--color-accent);
     box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.1);
+}
+
+/* ── BARRA DI RICERCA DASHBOARD ──────────────────────────────────────────── */
+.search-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f4f7fe 100%);
+    border: 1px solid rgba(59, 130, 246, 0.15) !important;
+}
+[data-theme="dark"] .search-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ── PROSSIMI APPUNTAMENTI - Badge colore evento ─────────────────────── */
+.event-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+/* ── BOTTONE SALVA (WAVE EFFECT) ──────────────────────────────────────── */
+.btn-save {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+.btn-save::before {
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: linear-gradient(
+        135deg, transparent 0%, transparent 38%, rgba(46, 204, 113, 0.12) 44%,
+        rgba(59, 130, 246, 0.18) 50%, rgba(46, 204, 113, 0.12) 56%, transparent 62%, transparent 100%
+    );
+    animation: saveWave 3s ease-in-out infinite; z-index: -1; pointer-events: none;
+}
+@keyframes saveWave {
+    0%   { transform: translate(-60%, -60%); }
+    100% { transform: translate(60%, 60%); }
+}
+.btn-save:hover {
+    transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46, 180, 160, 0.2);
+    border-color: rgba(59, 130, 246, 0.3); color: #1e293b;
+}
+[data-theme="dark"] .btn-save {
+    background: var(--bg-input);
+    border-color: var(--border-color);
+    color: var(--text-heading);
+}
+
+/* ── AVATAR PROFILO PAZIENTE ─────────────────────────────────────────── */
+.avatar-circle-large {
+    width: 80px; height: 80px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; font-weight: bold; margin: 0 auto;
+}
+
+/* ── NAVBAR PAGINE INTERNE (sticky-top) ────────────────────────────────── */
+[data-theme="dark"] .navbar.bg-white,
+[data-theme="dark"] .navbar-light.bg-white {
+    background-color: var(--bg-card) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+[data-theme="dark"] .accordion-button {
+    background-color: var(--bg-input) !important;
+    color: var(--text-heading) !important;
+}
+[data-theme="dark"] .accordion-button.collapsed {
+    background-color: rgba(46, 204, 113, 0.08) !important;
+}
+[data-theme="dark"] .accordion-body {
+    background-color: var(--bg-card) !important;
+}
+[data-theme="dark"] .list-group-item {
+    background-color: transparent !important;
+    color: var(--text-body) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── CALENDARIO - DARK MODE ────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════ */
+[data-theme="dark"] #calendar-container {
+    background: var(--bg-card) !important;
+}
+[data-theme="dark"] .fc-toolbar-title {
+    color: var(--text-heading) !important;
+}
+[data-theme="dark"] .fc-button-primary {
+    background-color: var(--bg-input) !important;
+    color: var(--text-heading) !important;
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .fc-button-primary:hover,
+[data-theme="dark"] .fc-button-primary:not(:disabled).fc-button-active,
+[data-theme="dark"] .fc-button-primary:not(:disabled):active {
+    background-color: #333854 !important;
+    color: #fff !important;
+}
+[data-theme="dark"] .fc-theme-standard td,
+[data-theme="dark"] .fc-theme-standard th {
+    border-color: var(--border-color) !important;
+}
+[data-theme="dark"] .fc-col-header-cell {
+    background: var(--bg-input) !important;
+    color: var(--text-muted) !important;
+}
+[data-theme="dark"] .fc-daygrid-day-number,
+[data-theme="dark"] .fc-col-header-cell-cushion {
+    color: var(--text-heading) !important;
+}
+[data-theme="dark"] .fc-day-today {
+    background-color: rgba(46, 204, 113, 0.06) !important;
+}
+[data-theme="dark"] .fc-daygrid-day:hover {
+    background-color: rgba(255,255,255,0.03) !important;
+}
+[data-theme="dark"] .fc-timegrid-slot-label-cushion,
+[data-theme="dark"] .fc-timegrid-axis-cushion {
+    color: var(--text-muted) !important;
+}
+[data-theme="dark"] .fc-scrollgrid {
+    border-color: var(--border-color) !important;
+}
+
+/* ── BOOTSTRAP DATEPICKER - DARK MODE ─────────────────────────────────── */
+[data-theme="dark"] .datepicker {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-heading) !important;
+}
+[data-theme="dark"] .datepicker table tr td,
+[data-theme="dark"] .datepicker table tr th {
+    color: var(--text-heading) !important;
+}
+[data-theme="dark"] .datepicker table tr td.day:hover,
+[data-theme="dark"] .datepicker table tr td span:hover {
+    background: var(--bg-input) !important;
+    color: var(--text-heading) !important;
+}
+[data-theme="dark"] .datepicker table tr td.active,
+[data-theme="dark"] .datepicker table tr td.active:hover,
+[data-theme="dark"] .datepicker table tr td span.active,
+[data-theme="dark"] .datepicker table tr td span.active:hover {
+    background: var(--color-primary) !important;
+    color: #fff !important;
+}
+[data-theme="dark"] .datepicker table tr td.today,
+[data-theme="dark"] .datepicker table tr td.today:hover {
+    background: rgba(46, 204, 113, 0.15) !important;
+    color: var(--color-primary) !important;
+}
+[data-theme="dark"] .datepicker table tr td.old,
+[data-theme="dark"] .datepicker table tr td.new {
+    color: var(--text-muted) !important;
+}
+[data-theme="dark"] .datepicker .datepicker-switch,
+[data-theme="dark"] .datepicker .prev,
+[data-theme="dark"] .datepicker .next {
+    color: var(--text-heading) !important;
+}
+[data-theme="dark"] .datepicker .datepicker-switch:hover,
+[data-theme="dark"] .datepicker .prev:hover,
+[data-theme="dark"] .datepicker .next:hover {
+    background: var(--bg-input) !important;
 }

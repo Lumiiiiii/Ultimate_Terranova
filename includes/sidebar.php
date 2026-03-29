@@ -34,6 +34,11 @@
         </a>
     </nav>
     <div class="sidebar-footer">
+        <!-- Pulsante Theme Toggle -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">
+            <span class="theme-icon" id="themeIcon">🌙</span>
+            <span id="themeLabel">Tema Scuro</span>
+        </button>
         <a href="logout.php">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -42,3 +47,32 @@
         </a>
     </div>
 </aside>
+
+<script>
+  // Aggiorna l'icona e il testo del pulsante in base al tema corrente
+  (function() {
+    function updateToggleUI() {
+      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      var icon = document.getElementById('themeIcon');
+      var label = document.getElementById('themeLabel');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Tema Chiaro' : 'Tema Scuro';
+    }
+    updateToggleUI();
+  })();
+
+  function toggleTheme() {
+    var html = document.documentElement;
+    var isDark = html.getAttribute('data-theme') === 'dark';
+    var newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    // data-bs-theme resta SEMPRE "light" — il dark mode lo gestiamo noi via CSS
+    html.setAttribute('data-bs-theme', 'light');
+    try { localStorage.setItem('aequa-theme', newTheme); } catch(e) {}
+    // Aggiorna icona
+    var icon = document.getElementById('themeIcon');
+    var label = document.getElementById('themeLabel');
+    if (icon) icon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    if (label) label.textContent = newTheme === 'dark' ? 'Tema Chiaro' : 'Tema Scuro';
+  }
+</script>

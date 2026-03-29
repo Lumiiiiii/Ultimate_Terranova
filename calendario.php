@@ -138,7 +138,7 @@ include 'includes/header.php';
           headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek'
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
           },
           themeSystem: 'bootstrap5',
           events: 'carica_eventi.php',
@@ -211,9 +211,9 @@ include 'includes/header.php';
                                 <label class="form-label small fw-bold text-muted mb-1">Ora</label>
                                 <input type="time" id="swal-hour" class="form-control form-control-sm border-0 bg-light" value="09:00" style="font-size: 0.9rem; padding: 8px;">
                             </div>
-                            <div> 
+                            <div class="col-7"> 
                             <label class="form-label small fw-bold text-muted mb-1">Data</label>
-                            <input type="date" id="swal-date" class="form-control form-control-sm border-0 bg-light" value="<?= date('Y-m-d') ?>" style="font-size: 0.9rem; padding: 8px;">
+                            <input type="date" id="swal-date" class="form-control form-control-sm border-0 bg-light" value="" style="font-size: 0.9rem; padding: 8px;">
                             </div>
                             <div class="col-7">
                                 <label class="form-label small fw-bold text-muted mb-1">Scegli Colore</label>
@@ -235,7 +235,10 @@ include 'includes/header.php';
                       cancelButton: 'btn btn-light px-4'
                   },
                   buttonsStyling: false,
-                  didOpen: () => {
+                  didOpen: (popup) => {
+                      // Pre-popola la data con quella cliccata sul calendario
+                      const dateField = document.getElementById('swal-date');
+                      if (dateField) dateField.value = info.dateStr;
                       const colorOptions = document.querySelectorAll('.swal-color-option');
                       colorOptions.forEach(opt => {
                           opt.addEventListener('click', () => {

@@ -1,7 +1,7 @@
 <?php
 ob_start();
 session_start();
-if(!isset($_SESSION['logged_in'])  || $_SESSION['logged_in'] !== true){
+if(!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true){
     header('Location: login.php');
     exit;
 }
@@ -9,221 +9,22 @@ require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/Patient.php';
 require_once __DIR__ . '/includes/Visit.php';
 
-$id=$_GET['id'] ?? 0;
-$patientManager=new Patient();
-$visitManager=new Visit();
-$patient=$patientManager->getPatient($id);
+$id = $_GET['id'] ?? 0;
+$patientManager = new Patient();
+$visitManager = new Visit();
+$patient = $patientManager->getPatient($id);
 if(!$patient){
     header('Location: index.php');
     exit;
 }
 $visits = $visitManager->getVisitHistory($id);
-
-// Verifica se il paziente ha già fatto la prima anamnesi
 $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
+
+$pageTitle = htmlspecialchars($patient['nome_cognome']) . " - Dettaglio";
+$currentPage = "index";
+include 'includes/header.php';
+include 'includes/sidebar.php';
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($patient['nome_cognome']) ?> - Dettaglio - Aequa</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="assets/img/logo.png">
-    
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Datepicker CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker3.min.css">
-    
-    <style>
-<script>
-  
-  document.documentElement.setAttribute('data-bs-theme', 'light');
-</script>
-
-<style>
-  /* 2. Definisci subito lo sfondo esatto della tua dashboard nel root */
-  :root { 
-    background-color: #f8f9fa !important; /* Il grigio chiaro di Bootstrap */
-  }
-  body { 
-    background-color: #f8f9fa !important; 
-    visibility: visible !important;
-  }
-</style>
-</head>
-<body>
-    <style>
-
-        /* ── VARIABILI CSS GLOBALI ─────────────────────────────────────────────── */
-        :root {
-            --color-primary: #2ecc71;
-            --color-primary-dark: #27ae60;
-            --color-accent: #3b82f6;
-            --sidebar-width: 260px;
-            --sidebar-bg: #1a1a2e;
-            --sidebar-text: #a0aec0;
-            --sidebar-active: #ffffff;
-        }
-
-        /* ── CLASSI DI UTILITÀ E RESET ─────────────────────────────────────── */
-        html, body { background-color: #f8f9fa; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .hover-lift { transition: transform 0.2s ease; }
-        .hover-lift:hover { transform: translateY(-5px) !important; }
-        .rounded-4 { border-radius: 1rem !important; }
-
-        /* ── SIDEBAR ────────────────────────────────────────────────────────── */
-        .sidebar {
-            position: fixed; top: 0; left: 0; bottom: 0;
-            width: var(--sidebar-width);
-            background: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            display: flex; flex-direction: column;
-            z-index: 1000;
-            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-        .sidebar-header { padding: 28px 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .sidebar-header h4 { color: white; font-weight: 700; font-size: 1.15rem; margin: 0; }
-        .sidebar-header small { color: var(--sidebar-text); font-size: 0.75rem; opacity: 0.7; }
-        .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
-        .nav-section-label {
-            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px;
-            color: rgba(255,255,255,0.25); padding: 12px 16px 6px; font-weight: 600;
-        }
-        .sidebar-nav a {
-            display: flex; align-items: center; gap: 12px;
-            padding: 11px 16px; color: var(--sidebar-text); text-decoration: none;
-            border-radius: 10px; font-size: 0.92rem; font-weight: 500;
-            transition: all 0.2s ease; margin-bottom: 2px;
-        }
-        .sidebar-nav a:hover { background: rgba(255,255,255,0.08); color: white; }
-        .sidebar-nav a.active { background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(59, 130, 246, 0.15)); color: white; }
-        .sidebar-nav a svg { width: 20px; height: 20px; flex-shrink: 0; opacity: 0.6; }
-        .sidebar-nav a:hover svg, .sidebar-nav a.active svg { opacity: 1; }
-        .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
-        .sidebar-footer a {
-            display: flex; align-items: center; gap: 8px;
-            padding: 6px 14px; color: #e57373; text-decoration: none;
-            border-radius: 8px; font-size: 0.8rem; font-weight: 500; transition: all 0.2s ease;
-        }
-        .sidebar-footer a:hover { background: rgba(229, 115, 115, 0.1); color: #ef5350; }
-        .sidebar-footer a svg { width: 16px; height: 16px; opacity: 0.7; }
-        
-        .main-content { margin-left: var(--sidebar-width); }
-
-        /* ── RESPONSIVE ────────────────────────────────────────────────────── */
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-            .mobile-menu-btn { display: flex !important; }
-        }
-        .mobile-menu-btn {
-            display: none; position: fixed; top: 16px; left: 16px; z-index: 1100;
-            width: 48px; height: 48px; border-radius: 12px; background: var(--sidebar-bg);
-            border: none; color: white; font-size: 1.4rem; cursor: pointer;
-            align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        /* ── CUSTOM STYLES PER DETTAGLIO ────────────────────────────────────── */
-        .avatar-circle-large {
-            width: 80px; height: 80px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2.5rem; font-weight: bold; margin: 0 auto;
-        }
-
-        .btn-gradient {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-accent)) !important;
-            color: white !important;
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
-            color: white !important;
-        }
-
-        .btn-save {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            color: #1e293b;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-        .btn-save::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(
-                135deg, transparent 0%, transparent 38%, rgba(46, 204, 113, 0.12) 44%,
-                rgba(59, 130, 246, 0.18) 50%, rgba(46, 204, 113, 0.12) 56%, transparent 62%, transparent 100%
-            );
-            animation: saveWave 3s ease-in-out infinite; z-index: -1; pointer-events: none;
-        }
-        @keyframes saveWave {
-            0%   { transform: translate(-60%, -60%); }
-            100% { transform: translate(60%, 60%); }
-        }
-        .btn-save:hover {
-            transform: translateY(-2px); box-shadow: 0 6px 20px rgba(46, 180, 160, 0.2);
-            border-color: rgba(59, 130, 246, 0.3); color: #1e293b;
-        }
-    </style>
-</head>
-<body class="bg-light">
-
-    <!-- Pulsante hamburger mobile -->
-    <button class="mobile-menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
-
-    <!-- ══ SIDEBAR ═══════════════════════════════════════════════════════════ -->
-    <aside class="sidebar">
-        <div class="sidebar-header d-flex align-items-center gap-2" style="padding-left: 20px;">
-            <img src="assets/img/logo.png" alt="Aequa Logo" style="width: 46px; height: 46px; object-fit: contain; flex-shrink: 0;">
-            <h3 class="mb-0 fw-bold pb-1" style="background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; letter-spacing: 0.5px;">Aequa</h3>
-        </div>
-        <nav class="sidebar-nav">
-            <div class="nav-section-label">Principale</div>
-            <a href="index.php">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" />
-                </svg>
-                Dashboard
-            </a>
-            <div class="nav-section-label">Gestione</div>
-            <a href="calendario.php">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                Calendario
-            </a>
-            <a href="paziente_nuovo.php">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                </svg>
-                Nuovo Paziente
-            </a>
-            <a href="medicinali_gestione.php">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
-                </svg>
-                Archivio
-            </a>
-        </nav>
-        <div class="sidebar-footer">
-            <a href="logout.php">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Esci
-            </a>
-        </div>
-    </aside>
 
     <!-- ══ CONTENUTO PRINCIPALE ══════════════════════════════════════════════ -->
     <div class="main-content">
@@ -255,7 +56,7 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
                 <div class="col-lg-4">
                     <div class="card border-0 shadow-sm rounded-4 bg-white text-center p-4 h-100 position-relative">
                         
-                        <!-- Bottone Elimina Paziente (Cestino in alto a destra) -->
+                        <!-- Bottone Elimina Paziente -->
                         <button type="button" class="btn btn-sm btn-outline-danger position-absolute border-0 hover-lift" style="top: 15px; right: 15px;" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" title="Elimina Paziente">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -329,7 +130,7 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
                             </div>
                         </div>
                         
-                        <!-- Bottone per aprire il Modal Bootstrap -->
+                        <!-- Bottone Modifica -->
                         <button type="button" class="btn btn-light w-100 rounded-3 mt-4 shadow-sm text-muted fw-medium d-flex align-items-center justify-content-center gap-2 hover-lift" data-bs-toggle="modal" data-bs-target="#editModal">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -395,7 +196,7 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
         </main>
     </div>
 
-    <!-- Edit Modal (Bootstrap) -->
+    <!-- Edit Modal -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -479,75 +280,50 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
         </div>
     </div>
 
-    <!-- Script per gestire l'invio del form e l'eliminazione -->
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
+        // Gestione modifica paziente
         document.getElementById('edit-form').addEventListener('submit', async function (e) {
             e.preventDefault(); 
-            
             const btn = document.getElementById('saveEditBtn');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Salvataggio...';
             btn.classList.add('disabled');
             
-            const formData = new FormData(this);
-            
             try {
-                const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData });
+                const res = await fetch('ajax_handlers.php', { method: 'POST', body: new FormData(this) });
                 const data = await res.json();
                 
                 if (data.success) {
                     Swal.fire({
-                        title: 'Aggiornato!',
-                        text: 'I dati del paziente sono stati salvati.',
-                        icon: 'success',
-                        timer: 1500,
-                        showConfirmButton: false,
+                        title: 'Aggiornato!', text: 'I dati del paziente sono stati salvati.',
+                        icon: 'success', timer: 1500, showConfirmButton: false,
                         customClass: { popup: 'rounded-4 border-0 shadow' }
-                    }).then(() => {
-                        location.reload();
-                    });
+                    }).then(() => location.reload());
                 } else {
-                    Swal.fire({
-                        title: 'Errore',
-                        text: (data.message || 'Errore nel salvataggio'),
-                        icon: 'error',
-                        customClass: { popup: 'rounded-4 border-0 shadow' }
-                    });
+                    Swal.fire({ title: 'Errore', text: (data.message || 'Errore nel salvataggio'), icon: 'error', customClass: { popup: 'rounded-4 border-0 shadow' } });
                     btn.innerHTML = originalText;
                     btn.classList.remove('disabled');
                 }
             } catch (e) { 
                 console.error(e); 
-                Swal.fire({
-                    title: 'Errore di Rete',
-                    text: 'Impossibile comunicare con il server.',
-                    icon: 'error',
-                    customClass: { popup: 'rounded-4 border-0 shadow' }
-                });
+                Swal.fire({ title: 'Errore di Rete', text: 'Impossibile comunicare con il server.', icon: 'error', customClass: { popup: 'rounded-4 border-0 shadow' } });
                 btn.innerHTML = originalText;
                 btn.classList.remove('disabled');
             }
         });
 
-        // Script per eliminare il paziente con SweetAlert2
+        // Gestione eliminazione paziente
         document.getElementById('confirmDeleteBtnDettaglio')?.addEventListener('click', function () {
             Swal.fire({
                 title: 'Sei sicuro?',
                 text: "Questa azione non può essere annullata. Tutti i dati del paziente verranno eliminati.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sì, elimina definitivamente',
-                cancelButtonText: 'Annulla',
-                customClass: {
-                    popup: 'rounded-4 border-0 shadow',
-                    confirmButton: 'btn btn-danger px-4 mx-2',
-                    cancelButton: 'btn btn-light px-4 mx-2'
-                },
-                buttonsStyling: false,
-                reverseButtons: true
+                icon: 'warning', showCancelButton: true,
+                confirmButtonText: 'Sì, elimina definitivamente', cancelButtonText: 'Annulla',
+                customClass: { popup: 'rounded-4 border-0 shadow', confirmButton: 'btn btn-danger px-4 mx-2', cancelButton: 'btn btn-light px-4 mx-2' },
+                buttonsStyling: false, reverseButtons: true
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     const btn = this;
@@ -563,70 +339,37 @@ $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
                         const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData });
                         const data = await res.json();
                         if (data.success) {
-                            Swal.fire({
-                                title: 'Eliminato!',
-                                text: 'Il paziente è stato rimosso.',
-                                icon: 'success',
-                                timer: 1500,
-                                showConfirmButton: false,
-                                customClass: { popup: 'rounded-4 border-0 shadow' }
-                            }).then(() => {
-                                window.location.href = 'index.php';
-                            });
+                            Swal.fire({ title: 'Eliminato!', text: 'Il paziente è stato rimosso.', icon: 'success', timer: 1500, showConfirmButton: false, customClass: { popup: 'rounded-4 border-0 shadow' } })
+                            .then(() => window.location.href = 'index.php');
                         } else {
-                            Swal.fire({
-                                title: 'Errore',
-                                text: data.error || 'Impossibile eliminare il paziente.',
-                                icon: 'error',
-                                customClass: { popup: 'rounded-4 border-0 shadow' }
-                            });
-                            btn.innerHTML = originalText;
-                            btn.disabled = false;
+                            Swal.fire({ title: 'Errore', text: data.error || 'Impossibile eliminare.', icon: 'error', customClass: { popup: 'rounded-4 border-0 shadow' } });
+                            btn.innerHTML = originalText; btn.disabled = false;
                         }
                     } catch (error) {
-                        console.error('Errore:', error);
-                        Swal.fire({
-                            title: 'Errore di Rete',
-                            text: 'Impossibile completare l\'operazione.',
-                            icon: 'error',
-                            customClass: { popup: 'rounded-4 border-0 shadow' }
-                        });
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
+                        console.error(error);
+                        Swal.fire({ title: 'Errore di Rete', text: 'Impossibile completare l\'operazione.', icon: 'error', customClass: { popup: 'rounded-4 border-0 shadow' } });
+                        btn.innerHTML = originalText; btn.disabled = false;
                     }
                 }
             });
         });
     </script>
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Bootstrap Datepicker JS + Italiano -->
+    <!-- Bootstrap Datepicker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker3.min.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/locales/bootstrap-datepicker.it.min.js"></script>
     
     <script>
-        // Inizializza Bootstrap Datepicker
         $('#data_visuale').datepicker({
-            language: 'it',
-            format: 'dd/mm/yyyy',
-            startView: 2,          // Parte dalla vista DECENNI
-            minViewMode: 0,
-            endDate: new Date(),   // Non oltre oggi
-            startDate: '01/01/1920',
-            autoclose: true,
-            todayHighlight: true,
-            orientation: 'bottom auto'
+            language: 'it', format: 'dd/mm/yyyy', startView: 2, minViewMode: 0,
+            endDate: new Date(), startDate: '01/01/1920', autoclose: true,
+            todayHighlight: true, orientation: 'bottom auto'
         }).on('changeDate', function(e) {
-            // Aggiorna il campo nascosto in formato SQL per il salvataggio
-            const date = e.date;
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            document.getElementById('data_nascita').value = year + '-' + month + '-' + day;
+            const d = e.date;
+            document.getElementById('data_nascita').value = 
+                d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
         });
     </script>
-</body>
-</html>
+    <?php include 'includes/footer.php'; ?>
