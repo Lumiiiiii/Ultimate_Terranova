@@ -182,6 +182,21 @@ try {
             echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nel salvataggio della visita.']);
             break;
 
+        // ── RICERCA PAZIENTI (GET) ──
+        case 'search_pazienti':
+            $q = $_GET['q'] ?? '';
+            if (strlen(trim($q)) < 2) {
+                echo json_encode(['results' => []]);
+                break;
+            }
+            $results = $patientManager->searchPatients(trim($q));
+            // Aggiungiamo checkAnamnesi per mostrare il bottone corretto nella ricerca
+            foreach ($results as &$r) {
+                $r['ha_anamnesi'] = $patientManager->checkAnamnesi($r['id']);
+            }
+            echo json_encode(['results' => $results]);
+            break;
+
         default:
             echo json_encode(['success' => false, 'error' => 'Azione non valida o non specificata.']);
     }

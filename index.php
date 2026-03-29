@@ -114,8 +114,8 @@ include 'includes/sidebar.php';
                 </a>
             </div>
 
-            <div class="col-12 mt-2 mb-1">
-                <div class="card border-0 rounded-4 shadow-sm p-2 hover-lift search-card">
+            <div class="col-12 mt-2 mb-3 align-items-center position-relative">
+                <div class="card border-0 rounded-4 shadow-sm p-2 search-card border border-primary border-opacity-25" style="background-color: var(--bg-card); box-shadow: 0 4px 20px rgba(var(--color-primary-rgb), 0.1) !important;">
                     <div class="input-group input-group-lg align-items-center">
                         <span class="input-group-text bg-transparent border-0 text-primary ps-4 pe-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -123,9 +123,12 @@ include 'includes/sidebar.php';
                             </svg>
                         </span>
                         <input type="text" id="search-input" class="form-control border-0 bg-transparent shadow-none fs-5 py-3 fw-medium" 
-                               placeholder="Cerca paziente per nome, email o telefono..." autocomplete="off">
+                               placeholder="Cerca un paziente per avviare istantaneamente una visita..." autocomplete="off">
+                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 me-3 d-none d-md-block">Ricerca Rapida ⚡</span>
                     </div>
                 </div>
+                <!-- Dropdown risultati ricerca -->
+                <div id="search-results" class="position-absolute w-100 shadow-lg rounded-4 mt-2 border border-light" style="display:none; top:100%; left:0; z-index:1050; max-height:400px; overflow-y:auto; background-color: var(--bg-card); padding-right: 5px;"></div>
             </div>
 
             <!-- ── COLONNA 1: Note Veloci (Nuovo) ── -->
@@ -224,12 +227,191 @@ include 'includes/sidebar.php';
                     </div>
                     <div class="d-grid gap-2 d-md-flex justify-content-center">
                         <button type="button" class="btn btn-light px-4 py-2 rounded-3 fw-semibold" data-bs-dismiss="modal">Annulla</button>
-                        <button type="button" id="confirmDeleteBtn" class="btn btn-danger px-4 py-2 rounde    <?php include 'includes/footer.php'; ?>
-);
+                        <button type="button" id="confirmDeleteBtn" class="btn btn-danger px-4 py-2 rounded-3 fw-semibold">Elimina ora</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // ── RICERCA PAZIENTI ──────────────────────────────────────────
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.getElementById('search-results');
+            let searchTimer;
+
+            if (searchInput && searchResults) {
+                searchInput.addEventListener('input', function () {
+                    clearTimeout(searchTimer);
+                    const query = this.value.trim();
+
+                    if (query.length < 2) {
+                        searchResults.style.display = 'none';
+                        searchResults.innerHTML = '';
+                        return;
+                    }
+
+                    searchTimer = setTimeout(() => {
+                        fetch('ajax_handlers.php?action=search_pazienti&q=' + encodeURIComponent(query))
+                            .then(r => r.json())
+                            .then(data => {
+                                if (!data.results || data.results.length === 0) {
+                                    searchResults.innerHTML = '<div class="p-3 text-center text-muted small">Nessun risultato per "' + query + '"</div>';
+                                    searchResults.style.display = 'block';
+                                    return;
+                                }
+                                let html = '';
+                                data.results.forEach(p => {
+                                    const initial = p.nome_cognome.charAt(0).toUpperCase();
+                                    const eta = p.eta ? p.eta + ' anni' : '';
+                                    
+                                    const linkVisita = p.ha_anamnesi ? `visita_nuova.php?paziente_id=${p.id}` : `visita_anamnesi.php?paziente_id=${p.id}`;
+                                    const btnIcon = p.ha_anamnesi 
+                                        ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>` 
+                                        : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`;
+                                    const btnText = p.ha_anamnesi ? 'Nuova Visita' : 'Anamnesi';
+                                    const btnBadge = p.ha_anamnesi ? '' : '<span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"><span class="visually-hidden">Nuovo</span></span>';
+
+                                    html += `
+                                        <div class="d-flex align-items-center justify-content-between px-4 py-3 border-bottom hover-lift">
+                                            <a href="paziente_dettaglio.php?id=${p.id}" class="d-flex align-items-center gap-3 text-decoration-none flex-grow-1" style="cursor:pointer">
+                                                <div class="avatar-circle bg-light text-primary flex-shrink-0" style="width:36px;height:36px;font-size:0.85rem;">${initial}</div>
+                                                <div class="overflow-hidden pe-2">
+                                                    <div class="fw-semibold text-dark small text-truncate">${p.nome_cognome}</div>
+                                                    <div class="text-muted text-truncate" style="font-size:0.75rem;">${eta}${p.telefono ? ' • ' + p.telefono : ''}${p.email ? ' • ' + p.email : ''}</div>
+                                                </div>
+                                            </a>
+                                            <a href="${linkVisita}" class="btn btn-sm btn-gradient rounded-pill px-3 py-1 shadow-sm d-flex align-items-center gap-1 position-relative flex-shrink-0" style="font-size:0.75rem;">
+                                                ${btnIcon} <span class="d-none d-sm-inline">${btnText}</span>
+                                                ${btnBadge}
+                                            </a>
+                                        </div>`;
+                                });
+                                searchResults.innerHTML = html;
+                                searchResults.style.display = 'block';
+                            })
+                            .catch(err => {
+                                console.error('Errore ricerca:', err);
+                                searchResults.style.display = 'none';
+                            });
+                    }, 300);
+                });
+
+                // Chiudi risultati se si clicca fuori
+                document.addEventListener('click', function (e) {
+                    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                        searchResults.style.display = 'none';
+                    }
+                });
+            }
+
+            // ── ELIMINAZIONE PAZIENTE (CON MODAL) ─────────────────────────
+            let pazienteIdToDelete = null;
+            const deleteModalEl = document.getElementById('deleteConfirmModal');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+            if (deleteModalEl) {
+                const deleteModal = new bootstrap.Modal(deleteModalEl);
+
+                window.deletePatient = function(id, nome) {
+                    pazienteIdToDelete = id;
+                    document.getElementById('deletePazienteNome').textContent = nome;
+                    deleteModal.show();
+                };
+
+                if (confirmDeleteBtn) {
+                    confirmDeleteBtn.addEventListener('click', function() {
+                        if (!pazienteIdToDelete) return;
+
+                        const originalText = confirmDeleteBtn.innerHTML;
+                        confirmDeleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminazione...';
+                        confirmDeleteBtn.disabled = true;
+
+                        const formData = new FormData();
+                        formData.append('action', 'delete_paziente');
+                        formData.append('id', pazienteIdToDelete);
+
+                        fetch('ajax_handlers.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Eliminato!', text: 'Il paziente è stato rimosso.',
+                                    icon: 'success', timer: 1500, showConfirmButton: false,
+                                    customClass: { popup: 'rounded-4 border-0 shadow' }
+                                }).then(() => window.location.reload());
+                            } else {
+                                Swal.fire({ title: 'Errore', text: data.error || 'Impossibile eliminare il paziente.', icon: 'error', customClass: { popup: 'rounded-4 border-0 shadow' } });
+                                confirmDeleteBtn.innerHTML = originalText;
+                                confirmDeleteBtn.disabled = false;
+                                deleteModal.hide();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Errore durante l\'eliminazione:', error);
+                            Swal.fire({ title: 'Errore di Rete', text: 'Si è verificato un errore di rete.', icon: 'error', customClass: { popup: 'rounded-4 border-0 shadow' } });
+                            confirmDeleteBtn.innerHTML = originalText;
+                            confirmDeleteBtn.disabled = false;
+                        });
+                    });
+                }
+            }
+
+            // ── SALVATAGGIO AUTOMATICO NOTE VELOCI ─────────────────────────
+            const notesTextarea = document.getElementById('quick-notes');
+            const saveStatus = document.getElementById('save-status');
+            let typingTimer;
+            const doneTypingInterval = 1000;
+
+            if (notesTextarea && saveStatus) {
+                notesTextarea.addEventListener('input', function () {
+                    clearTimeout(typingTimer);
+                    saveStatus.textContent = "Salvataggio in corso...";
+                    saveStatus.classList.add('text-warning');
+                    saveStatus.classList.remove('text-success', 'text-danger');
+
+                    typingTimer = setTimeout(saveNotes, doneTypingInterval);
+                });
+            }
+
+            function saveNotes() {
+                const text = notesTextarea.value;
+
+                fetch('ajax_notes.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ testo: text })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const now = new Date();
+                        const timeString = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                        saveStatus.textContent = "Salvato alle " + timeString;
+                        saveStatus.classList.remove('text-warning', 'text-danger');
+                        saveStatus.classList.add('text-success');
+                    } else {
+                        throw new Error(data.error || "Errore sconosciuto");
+                    }
+                })
+                .catch(error => {
+                    console.error('Errore durante il salvataggio:', error);
+                    saveStatus.textContent = "Errore durante il salvataggio!";
+                    saveStatus.classList.remove('text-warning', 'text-success');
                     saveStatus.classList.add('text-danger');
                 });
             }
         });
     </script>
-</body>
-</html>
+
+    <?php include 'includes/footer.php'; ?>
