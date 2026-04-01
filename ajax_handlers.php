@@ -143,41 +143,41 @@ try {
                 break;
             }
 
-            $db = getDB();
-            $stmt = $db->prepare("INSERT INTO visite (
-                paziente_id, data_visita, motivazione, concentrazione, 
-                stato_emotivo, attivita_fisica, idratazione, qualita_sonno_percepita, 
-                ore_sonno, regolarita_intestinale, appetito_e_digestione, 
-                difficolta_addormentarsi_risvegli_notturni, livello_stress, livello_energia, 
-                supporti_in_uso, alimentazione_recente, note_finali
-            ) VALUES (
-                :paz_id, :data_v, :mot, :conc, 
-                :stato_emo, :att_fis, :idrat, :qsonno, 
-                :hsonno, :reg_int, :appetito, 
-                :diff_sonno, :stress, :energia, 
-                :supporti, :alim, :note_fin
-            )");
+            // Prepariamoci per le domande aggiuntive (max 15)
+            $domande = $_POST['domande'] ?? [];
+            $risposte = $_POST['risposte'] ?? [];
             
-            // Binding parametri con sanitizzazione: campi vuoti → NULL
-            $success = $stmt->execute([
-                ':paz_id'     => $paz_id, 
-                ':data_v'     => $data_visita,
-                ':mot'        => !empty(trim($_POST['motivazione'])) ? trim($_POST['motivazione']) : null,
-                ':conc'       => !empty(trim($_POST['concentrazione'])) ? trim($_POST['concentrazione']) : null,
-                ':stato_emo'  => !empty(trim($_POST['stato_emotivo'])) ? trim($_POST['stato_emotivo']) : null,
-                ':att_fis'    => !empty(trim($_POST['attivita_fisica'])) ? trim($_POST['attivita_fisica']) : null,
-                ':idrat'      => !empty(trim($_POST['idratazione'])) ? trim($_POST['idratazione']) : null,
-                ':qsonno'     => !empty(trim($_POST['qualita_sonno_percepita'])) ? trim($_POST['qualita_sonno_percepita']) : null,
-                ':hsonno'     => !empty($_POST['ore_sonno']) ? (float)$_POST['ore_sonno'] : null,
-                ':reg_int'    => !empty(trim($_POST['regolarita_intestinale'])) ? trim($_POST['regolarita_intestinale']) : null,
-                ':appetito'   => !empty(trim($_POST['appetito_e_digestione'])) ? trim($_POST['appetito_e_digestione']) : null,
-                ':diff_sonno' => !empty(trim($_POST['difficolta_addormentarsi_risvegli_notturni'])) ? trim($_POST['difficolta_addormentarsi_risvegli_notturni']) : null,
-                ':stress'     => !empty($_POST['livello_stress']) ? (int)$_POST['livello_stress'] : null,
-                ':energia'    => !empty($_POST['livello_energia']) ? (int)$_POST['livello_energia'] : null,
-                ':supporti'   => !empty(trim($_POST['supporti_in_uso'])) ? trim($_POST['supporti_in_uso']) : null,
-                ':alim'       => !empty(trim($_POST['alimentazione_recente'])) ? trim($_POST['alimentazione_recente']) : null,
-                ':note_fin'   => !empty(trim($_POST['note_finali'])) ? trim($_POST['note_finali']) : null
-            ]);
+            // Build dynamic columns and params for query
+            $colNames = ['paziente_id', 'data_visita', 'motivazione', 'attivita_fisica', 'ore_sonno', 'note_finali'];
+            $colParams = [':paz_id', ':data_v', ':mot', ':att_fis', ':hsonno', ':note_fin'];
+            
+            for ($i = 0; $i < 15; $i++) {
+                $colNames[] = "domanda_aggiuntiva_" . ($i + 1);
+                $colNames[] = "risposta_aggiuntiva_" . ($i + 1);
+                $colParams[] = ":dom_" . ($i + 1);
+                $colParams[] = ":risp_" . ($i + 1);
+            }
+
+            $query = "INSERT INTO visite (" . implode(", ", $colNames) . ") VALUES (" . implode(", ", $colParams) . ")";
+
+            $db = getDB();
+            $stmt = $db->prepare($query);
+            
+            $binds = [
+                ':paz_id'   => $paz_id, 
+                ':data_v'   => $data_visita,
+                ':mot'      => !empty(trim($_POST['motivazione'])) ? trim($_POST['motivazione']) : null,
+                ':att_fis'  => !empty(trim($_POST['attivita_fisica'])) ? trim($_POST['attivita_fisica']) : null,
+                ':hsonno'   => !empty($_POST['ore_sonno']) ? (float)$_POST['ore_sonno'] : null,
+                ':note_fin' => !empty(trim($_POST['note_finali'])) ? trim($_POST['note_finali']) : null
+            ];
+            
+            for ($i = 0; $i < 15; $i++) {
+                $binds[":dom_" . ($i + 1)] = !empty(trim($domande[$i] ?? '')) ? trim($domande[$i]) : null;
+                $binds[":risp_" . ($i + 1)] = !empty(trim($risposte[$i] ?? '')) ? trim($risposte[$i]) : null;
+            }
+
+            $success = $stmt->execute($binds);
 
             echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nel salvataggio della visita.']);
             break;

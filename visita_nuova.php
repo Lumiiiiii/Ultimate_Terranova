@@ -76,15 +76,15 @@ include 'includes/header.php';
             <div class="accordion mb-5 shadow-sm rounded-4 overflow-hidden" id="accordionAnamnesi">
                 <div class="accordion-item border-0">
                     <h2 class="accordion-header" id="headingAnamnesi">
-                        <button class="accordion-button collapsed fw-bold text-primary bg-primary bg-opacity-10" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAnamnesi" aria-expanded="false" aria-controls="collapseAnamnesi">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="me-2">
+                        <button class="accordion-button collapsed fw-bold custom-anamnesi-btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAnamnesi" aria-expanded="false" aria-controls="collapseAnamnesi">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="me-2 text-primary">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             Consulta Storico Anamnesi (Prima Visita)
                         </button>
                     </h2>
                     <div id="collapseAnamnesi" class="accordion-collapse collapse" aria-labelledby="headingAnamnesi" data-bs-parent="#accordionAnamnesi">
-                        <div class="accordion-body bg-white p-4">
+                        <div class="accordion-body p-4">
                             <form id="anamnesi-update-form">
                                 <input type="hidden" name="action" value="update_anamnesi_rapido">
                                 <input type="hidden" name="paziente_id" value="<?= $paziente_id ?>">
@@ -251,11 +251,67 @@ include 'includes/header.php';
         </main>
     </div>
 
-    <!-- SCRIPT: Invio visita via AJAX -->
+    <!-- SCRIPT: Invio visita via AJAX e Gestione Domande -->
     <script>
+    let contatoreDomande = 0;
+    const MAX_DOMANDE = 15;
+
+    function aggiornaContatore() {
+        const badge = document.getElementById('contatore-domande');
+        if (badge) badge.innerText = contatoreDomande + ' / ' + MAX_DOMANDE;
+        
+        const btn = document.getElementById('btn-aggiungi-domanda');
+        if (btn) {
+            btn.style.display = (contatoreDomande >= MAX_DOMANDE) ? 'none' : 'flex';
+        }
+    }
+
+    function aggiungiDomanda() {
+        if (contatoreDomande >= MAX_DOMANDE) return;
+        
+        contatoreDomande++;
+        
+        const container = document.getElementById('domande-container');
+        const dDiv = document.createElement('div');
+        dDiv.className = 'card border-0 shadow-sm bg-light p-3 mb-3 position-relative domanda-item';
+        dDiv.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="form-label small fw-semibold text-muted mb-0">Domanda ${contatoreDomande}:</label>
+                <button type="button" class="btn btn-sm btn-outline-danger fw-bold shadow-none" onclick="rimuoviDomanda(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="me-1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Rimuovi
+                </button>
+            </div>
+            <input type="text" name="domande[]" class="form-control mb-3" placeholder="Es. Hai avuto mal di testa questa settimana?" required>
+            <div>
+                <label class="form-label small fw-semibold text-muted">Risposta:</label>
+                <textarea name="risposte[]" class="form-control" rows="2" placeholder="Es. Sì, soprattutto il martedì..." required></textarea>
+            </div>
+        `;
+        container.appendChild(dDiv);
+        aggiornaContatore();
+    }
+
+    window.rimuoviDomanda = function(btn) {
+        btn.closest('.domanda-item').remove();
+        contatoreDomande--;
+        
+        // Rinumeriamo le etichette per tenere ordine visivo
+        const items = document.querySelectorAll('.domanda-item');
+        items.forEach((item, index) => {
+            const label = item.querySelector('label');
+            if (label) label.innerText = 'Domanda ' + (index + 1) + ':';
+        });
+        
+        aggiornaContatore();
+    };
+
     document.getElementById('visita-form').addEventListener('submit', async function(e) {
         e.preventDefault();
-        document.getElementById('loadingOverlay').style.display = 'flex';
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = 'flex';
         
         try {
             const response = await fetch('ajax_handlers.php', { method: 'POST', body: new FormData(this) });

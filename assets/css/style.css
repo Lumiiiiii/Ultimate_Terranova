@@ -44,7 +44,16 @@ html {
 body {
     background-color: var(--bg-page) !important;
     color: var(--text-body) !important;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* Transizioni fluide per il toggle tema — bloccate all'apertura da anti-flicker */
+.card, .modal-content, .bg-white, .bg-light,
+.form-control, .form-select, .input-group-text,
+.table > :not(caption) > * > *,
+.navbar, .accordion-button, .accordion-body,
+.list-group-item, .alert {
+    transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 }
 
 /* 
@@ -602,18 +611,30 @@ textarea.form-control:focus {
     font-size: 2.5rem; font-weight: bold; margin: 0 auto;
 }
 
-/* ── NAVBAR PAGINE INTERNE (sticky-top) ────────────────────────────────── */
+/* ── NAVBAR PAGINE INTERNE E ACCORDION ─────────────────────────────────── */
+.custom-anamnesi-btn {
+    background-color: rgba(46, 204, 113, 0.1) !important;
+    color: var(--color-primary-dark) !important;
+}
+.custom-anamnesi-btn:not(.collapsed) {
+    background-color: rgba(46, 204, 113, 0.15) !important;
+    color: var(--color-primary-dark) !important;
+}
+
 [data-theme="dark"] .navbar.bg-white,
 [data-theme="dark"] .navbar-light.bg-white {
     background-color: var(--bg-card) !important;
     border-bottom: 1px solid var(--border-color) !important;
 }
-[data-theme="dark"] .accordion-button {
+[data-theme="dark"] .accordion-button,
+[data-theme="dark"] .accordion-button.custom-anamnesi-btn {
     background-color: var(--bg-input) !important;
     color: var(--text-heading) !important;
 }
-[data-theme="dark"] .accordion-button.collapsed {
+[data-theme="dark"] .accordion-button.collapsed,
+[data-theme="dark"] .accordion-button.custom-anamnesi-btn.collapsed {
     background-color: rgba(46, 204, 113, 0.08) !important;
+    color: var(--text-heading) !important;
 }
 [data-theme="dark"] .accordion-body {
     background-color: var(--bg-card) !important;

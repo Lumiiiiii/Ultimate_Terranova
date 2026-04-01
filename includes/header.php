@@ -8,16 +8,35 @@
     <link rel="icon" type="image/png" href="assets/img/logo.png">
 
     <script>
-      // ANTI-FLICKER: eseguito PRIMA di qualsiasi CSS — imposta data-theme dal localStorage
-      // NOTA: data-bs-theme resta SEMPRE "light" per non attivare il dark mode di Bootstrap
+      // ── ANTI-FLICKER ENGINE ──────────────────────────────────────────────────
+      // Eseguito PRIMA di qualsiasi CSS. Imposta data-theme dal localStorage
+      // e inietta CSS critico inline per prevenire qualsiasi flash visivo.
       (function() {
         var saved = 'light';
         try { saved = localStorage.getItem('aequa-theme') || 'light'; } catch(e) {}
-        document.documentElement.setAttribute('data-theme', saved);
-        // Forza sempre light per Bootstrap — il dark mode lo gestiamo noi via CSS
-        document.documentElement.setAttribute('data-bs-theme', 'light');
-        // Blocca color-scheme del browser
-        document.documentElement.style.colorScheme = 'light';
+        var html = document.documentElement;
+        html.setAttribute('data-theme', saved);
+        // data-bs-theme resta SEMPRE "light" — il dark mode lo gestiamo noi via CSS
+        html.setAttribute('data-bs-theme', 'light');
+        html.style.colorScheme = 'light';
+
+        // Inietta CSS critico inline PRIMA che Bootstrap/style.css vengano caricati
+        // Questo garantisce che lo sfondo corretto sia visibile fin dal primo frame
+        var s = document.createElement('style');
+        s.id = 'anti-flicker-critical';
+        var css = '*, *::before, *::after { transition: none !important; animation-duration: 0s !important; }';
+        if (saved === 'dark') {
+          css += 'html, body { background-color: #0f1117 !important; color: #cbd5e1 !important; }';
+          css += '.card, .modal-content, .bg-white { background-color: #1a1d2b !important; color: #cbd5e1 !important; }';
+          css += '.bg-light { background-color: #242838 !important; }';
+          css += '.text-dark { color: #f1f5f9 !important; }';
+          css += '.text-muted { color: #7e8ca3 !important; }';
+          css += '.border-bottom, .border { border-color: #2a2f42 !important; }';
+        } else {
+          css += 'html, body { background-color: #f8f9fa !important; color: #212529 !important; }';
+        }
+        s.textContent = css;
+        document.head.appendChild(s);
       })();
     </script>
 
@@ -29,5 +48,26 @@
     
     <!-- CSS Globale -->
     <link href="assets/css/style.css?v=<?= time() ?>" rel="stylesheet">
+
+    <script>
+      // Rimuovi il blocca-transizioni dopo che il CSS è stato processato
+      // Double-rAF assicura che il browser abbia completato il primo paint col tema giusto
+      (function() {
+        function enableTransitions() {
+          requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+              var el = document.getElementById('anti-flicker-critical');
+              if (el) el.remove();
+            });
+          });
+        }
+        // Se il body esiste già, abilita subito; altrimenti aspetta DOMContentLoaded
+        if (document.body) {
+          enableTransitions();
+        } else {
+          document.addEventListener('DOMContentLoaded', enableTransitions);
+        }
+      })();
+    </script>
 </head>
 <body>
