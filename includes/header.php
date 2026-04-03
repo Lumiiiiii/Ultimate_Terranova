@@ -70,4 +70,4 @@
       })();
     </script>
 </head>
-<body>
+<body data-instant-intensity="15">

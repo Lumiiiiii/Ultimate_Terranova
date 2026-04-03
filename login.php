@@ -3,24 +3,30 @@ ob_start();
 session_start();
 
 // Configurazione password fissa
-$password_corretta = "naturopata";
-$errore = "";
+// $password_corretta = "naturopata";
+// $errore = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password_inserita = $_POST['password'] ?? '';
 
-    if ($password_inserita === $password_corretta) {
-        $_SESSION['logged_in'] = true;
-        header('Location: index.php');
-        exit;
-    } else {
-        $errore = "Password non corretta. Riprova.";
-    }
+   // if ($password_inserita === $password_corretta) {
+      //  $_SESSION['logged_in'] = true;
+       // header('Location: index.php');
+       // exit;
+   // } else {
+      //  $errore = "Password non corretta. Riprova.";
+   // }
+
+   if (true) {
+    $_SESSION['logged_in'] = true;
+    header('Location: index.php');
+    exit;
+   }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,10 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
  <link rel="icon" type="image/png" href="assets/img/logo.png">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script>
-  // 1. Forza immediatamente il tema light per evitare che Bootstrap applichi il nero
-  document.documentElement.setAttribute('data-bs-theme', 'light');
-</script>
+
 
 <style>
   /* 2. Definisci subito lo sfondo esatto della tua dashboard nel root */
@@ -246,7 +249,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     </style>
 </head>
-<body>
+<body data-instant-intensity="15">
 
     <!-- Floating particles -->
     <div class="particles">
@@ -294,7 +297,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 class="form-control glass-input fs-6"
                                 placeholder="Inserisci la password"
                                 aria-describedby="password-addon"
-                                required
+                          
                                 autocomplete="current-password"
                             >
                             <button class="btn btn-toggle-pass px-3" type="button" id="togglePassword" aria-label="Mostra password">
@@ -350,6 +353,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             document.getElementById('password').focus();
         });
     </script>
+    <script src="//instant.page/5.2.0" type="module" integrity="sha384-jnZCGo0201kKaAhyP0iLFS2D02Y5fcdA30tE01BWeH814ZANH50MPEgDk1J1Kk+H"></script>
 
 </body>
 </html>

@@ -197,6 +197,22 @@ include 'includes/header.php';
               });
           },
           dateClick: function(info) {
+              apriModalNuovo(info.dateStr, calendar);
+          },
+          buttonText: {
+            today:    'Oggi',
+            month:    'Mese',
+            week:     'Settimana',
+            day:      'Giorno'
+          }
+        });
+        calendar.render();
+
+        // ── FUNZIONI DI GESTIONE EVENTI ───────────────────────────────────────
+        function apriModalNuovo(dateString, calendarInstance) {
+              let dateVal = dateString.split('T')[0];
+              let timeVal = dateString.includes('T') ? dateString.split('T')[1].substring(0, 5) : '09:00';
+
               Swal.fire({
                   title: 'Nuovo Appuntamento',
                   html: `
@@ -209,11 +225,11 @@ include 'includes/header.php';
                         <div class="row g-3">
                             <div class="col-5">
                                 <label class="form-label small fw-bold text-muted mb-1">Ora</label>
-                                <input type="time" id="swal-hour" class="form-control form-control-sm border-0 bg-light" value="09:00" style="font-size: 0.9rem; padding: 8px;">
+                                <input type="time" id="swal-hour" class="form-control form-control-sm border-0 bg-light" value="${timeVal}" style="font-size: 0.9rem; padding: 8px;">
                             </div>
                             <div class="col-7"> 
                             <label class="form-label small fw-bold text-muted mb-1">Data</label>
-                            <input type="date" id="swal-date" class="form-control form-control-sm border-0 bg-light" value="" style="font-size: 0.9rem; padding: 8px;">
+                            <input type="date" id="swal-date" class="form-control form-control-sm border-0 bg-light" value="${dateVal}" style="font-size: 0.9rem; padding: 8px;">
                             </div>
                             <div class="col-7">
                                 <label class="form-label small fw-bold text-muted mb-1">Scegli Colore</label>
@@ -236,9 +252,6 @@ include 'includes/header.php';
                   },
                   buttonsStyling: false,
                   didOpen: (popup) => {
-                      // Pre-popola la data con quella cliccata sul calendario
-                      const dateField = document.getElementById('swal-date');
-                      if (dateField) dateField.value = info.dateStr;
                       const colorOptions = document.querySelectorAll('.swal-color-option');
                       colorOptions.forEach(opt => {
                           opt.addEventListener('click', () => {
@@ -277,7 +290,7 @@ include 'includes/header.php';
                       .then(response => response.json())
                       .then(data => {
                           if (data.success) {
-                              calendar.refetchEvents();
+                              calendarInstance.refetchEvents();
                               Swal.fire({
                                   title: 'Salvato!',
                                   icon: 'success',
@@ -291,17 +304,7 @@ include 'includes/header.php';
                       });
                   }
               });
-          },
-          buttonText: {
-            today:    'Oggi',
-            month:    'Mese',
-            week:     'Settimana',
-            day:      'Giorno'
-          }
-        });
-        calendar.render();
-
-        // ── FUNZIONI DI GESTIONE EVENTI ───────────────────────────────────────
+        }
         function apriModalModifica(event, startDate, startTime, eventColor, calendarInstance) {
             Swal.fire({
                 title: 'Modifica Appuntamento',
@@ -319,7 +322,7 @@ include 'includes/header.php';
                         <div class="col-7">
                             <label class="form-label small fw-bold text-muted mb-1">Colore</label>
                             <div class="d-flex gap-2" id="swal-edit-color-picker">
-                                <div class="swal-color-option ${eventColor === '#2ecc71' ? 'selected' : ''}" style="background: #2ecc71" data-color="#2ecc71"></div>
+                                <div class="swal-color-option ${eventColor === '#159c52ff' ? 'selected' : ''}" style="background: #2ecc71" data-color="#2ecc71"></div>
                                 <div class="swal-color-option ${eventColor === '#3b82f6' ? 'selected' : ''}" style="background: #3b82f6" data-color="#3b82f6"></div>
                                 <div class="swal-color-option ${eventColor === '#e74c3c' ? 'selected' : ''}" style="background: #e74c3c" data-color="#e74c3c"></div>
                                 <div class="swal-color-option ${eventColor === '#f1c40f' ? 'selected' : ''}" style="background: #f1c40f" data-color="#f1c40f"></div>

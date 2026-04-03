@@ -135,7 +135,7 @@ public function deletePatient($id)
         $queryText = "SELECT *, TIMESTAMPDIFF(YEAR, data_nascita, CURDATE()) AS eta 
                 FROM pazienti 
                 WHERE nome_cognome LIKE ? OR telefono LIKE ? OR email LIKE ?
-                LIMIT 20"; // massimo 20 risultati
+                LIMIT 10"; // massimo 10 risultati
         $query = $this->db->prepare($queryText);
         $query->execute([$term, $term, $term]); // $term mandato 3 volte: per nome, telefono ed email
         return $query->fetchAll();
