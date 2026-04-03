@@ -44,7 +44,7 @@ html {
 body {
     background-color: var(--bg-page) !important;
     color: var(--text-body) !important;
-    transition: background-color 0.35s ease, color 0.35s ease;
+
 }
 
 /* Transizioni fluide per il toggle tema — bloccate all'apertura da anti-flicker */
@@ -296,6 +296,7 @@ html[data-theme="dark"] .alert-info {
     background-color: var(--bg-card) !important;
     border-bottom-color: var(--border-color) !important;
     color: var(--text-body) !important;
+    box-shadow: none !important;
 }
 
 /* ── HOVER E BG OPACITY ──────────────────────────────────────────────────── */
@@ -758,27 +759,51 @@ textarea.form-control:focus {
     color: #fff !important;
 }
 
+/* ── STRUTTURA E GRIGLIA CALENDARIO ──────────────────────────────────────── */
 [data-theme="dark"] .fc-theme-standard td,
-[data-theme="dark"] .fc-theme-standard th {
-    border-color: var(--border-color) !important;
+[data-theme="dark"] .fc-theme-standard th,
+[data-theme="dark"] .fc-theme-bootstrap5 td,
+[data-theme="dark"] .fc-theme-bootstrap5 th,
+[data-theme="dark"] .fc-scrollgrid {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
+[data-theme="dark"] .fc-theme-standard .fc-scrollgrid,
+[data-theme="dark"] .fc-theme-bootstrap5 .fc-scrollgrid {
+    border-collapse: collapse !important;
+}
+
+[data-theme="dark"] .fc-timegrid-slot {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ── INTESTAZIONI COLONNE E ANGOLI ───────────────────────────────────────── */
 [data-theme="dark"] .fc-col-header-cell {
-    background: var(--bg-input) !important;
-    color: var(--text-muted) !important;
+    background-color: var(--bg-input) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: none !important;
 }
 
-[data-theme="dark"] .fc-daygrid-day-number,
-[data-theme="dark"] .fc-col-header-cell-cushion {
+[data-theme="dark"] .fc-col-header-cell-cushion,
+[data-theme="dark"] .fc-daygrid-day-number {
     color: var(--text-heading) !important;
 }
 
-[data-theme="dark"] .fc-day-today {
-    background-color: rgba(46, 204, 113, 0.06) !important;
+[data-theme="dark"] .fc-col-header-cell-cushion {
+    padding: 8px 0 !important;
+    display: block;
 }
 
-[data-theme="dark"] .fc-daygrid-day:hover {
-    background-color: rgba(255, 255, 255, 0.03) !important;
+/* Fix per angoli bianchi e assi laterali */
+[data-theme="dark"] .fc .fc-timegrid-axis-frame,
+[data-theme="dark"] .fc-timegrid-axis,
+[data-theme="dark"] .fc-scrollgrid-corner,
+[data-theme="dark"] .fc-scrollgrid-corner-thin,
+[data-theme="dark"] .fc-scrollgrid-corner-thick,
+[data-theme="dark"] .fc-scrollgrid-section-header th.fc-timegrid-axis {
+    background-color: var(--bg-card) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: none !important;
 }
 
 [data-theme="dark"] .fc-timegrid-slot-label-cushion,
@@ -786,8 +811,29 @@ textarea.form-control:focus {
     color: var(--text-muted) !important;
 }
 
-[data-theme="dark"] .fc-scrollgrid {
-    border-color: var(--border-color) !important;
+/* ── EVIDENZIAZIONI (OGGI E HOVER) E PREVENZIONE BIANCHI BOOTSTRAP ─────── */
+[data-theme="dark"] .fc-day-today {
+    background-color: rgba(46, 204, 113, 0.08) !important;
+    box-shadow: none !important;
+}
+
+/* Preveniamo sfondi sbiaditi e bianchi sopra le intestazioni */
+[data-theme="dark"] th.fc-day-today {
+    background-color: #1a2228 !important; /* Oscuriamo solidamente la casella th di oggi */
+}
+
+[data-theme="dark"] .fc-daygrid-day:hover {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Pulizia degli underlays bianchi Bootstrap */
+[data-theme="dark"] .fc-theme-bootstrap5 .table-light,
+[data-theme="dark"] .fc-theme-bootstrap5 .table-active,
+[data-theme="dark"] .fc-theme-bootstrap5 thead th {
+    --bs-table-bg: transparent !important;
+    --bs-table-accent-bg: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
 }
 
 /* ── BOOTSTRAP DATEPICKER - DARK MODE ─────────────────────────────────── */
@@ -845,3 +891,4 @@ textarea.form-control:focus {
 [data-theme="dark"] .datepicker .next:hover {
     background: var(--bg-input) !important;
 }
+
