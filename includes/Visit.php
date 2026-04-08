@@ -83,4 +83,20 @@ class Visit
         $stmt->execute([$paziente_id]);
         return $stmt->fetchAll();
     }
+
+    /**
+     * Recupera tutte le domande aggiuntive di una visita dalla tabella normalizzata
+     * Ritorna un array di righe, ciascuna con: id, visita_id, numero_ordine, domanda, risposta
+     */
+    public function getDomandeAggiuntive($visita_id)
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT * FROM domande_aggiuntive WHERE visita_id = ? ORDER BY numero_ordine ASC");
+            $stmt->execute([$visita_id]);
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Errore in getDomandeAggiuntive: " . $e->getMessage());
+            return [];
+        }
+    }
 }

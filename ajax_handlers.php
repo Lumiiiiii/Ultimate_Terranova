@@ -143,43 +143,53 @@ try {
                 break;
             }
 
-            // Prepariamoci per le domande aggiuntive (max 15)
-            $domande = $_POST['domande'] ?? [];
+            $domande  = $_POST['domande']  ?? [];
             $risposte = $_POST['risposte'] ?? [];
-            
-            // Build dynamic columns and params for query
-            $colNames = ['paziente_id', 'data_visita', 'motivazione', 'attivita_fisica', 'ore_sonno', 'note_finali'];
-            $colParams = [':paz_id', ':data_v', ':mot', ':att_fis', ':hsonno', ':note_fin'];
-            
-            for ($i = 0; $i < 15; $i++) {
-                $colNames[] = "domanda_aggiuntiva_" . ($i + 1);
-                $colNames[] = "risposta_aggiuntiva_" . ($i + 1);
-                $colParams[] = ":dom_" . ($i + 1);
-                $colParams[] = ":risp_" . ($i + 1);
-            }
-
-            $query = "INSERT INTO visite (" . implode(", ", $colNames) . ") VALUES (" . implode(", ", $colParams) . ")";
 
             $db = getDB();
-            $stmt = $db->prepare($query);
-            
-            $binds = [
-                ':paz_id'   => $paz_id, 
-                ':data_v'   => $data_visita,
-                ':mot'      => !empty(trim($_POST['motivazione'])) ? trim($_POST['motivazione']) : null,
-                ':att_fis'  => !empty(trim($_POST['attivita_fisica'])) ? trim($_POST['attivita_fisica']) : null,
-                ':hsonno'   => !empty($_POST['ore_sonno']) ? (float)$_POST['ore_sonno'] : null,
-                ':note_fin' => !empty(trim($_POST['note_finali'])) ? trim($_POST['note_finali']) : null
-            ];
-            
-            for ($i = 0; $i < 15; $i++) {
-                $binds[":dom_" . ($i + 1)] = !empty(trim($domande[$i] ?? '')) ? trim($domande[$i]) : null;
-                $binds[":risp_" . ($i + 1)] = !empty(trim($risposte[$i] ?? '')) ? trim($risposte[$i]) : null;
+            $db->beginTransaction(); // transazione: o tutto ok, o niente viene salvato
+
+            try {
+                // 1) Inserisci la visita (tabella leggera, senza colonne domande)
+                $stmt = $db->prepare("INSERT INTO visite (paziente_id, data_visita, motivazione, attivita_fisica, ore_sonno, note_finali)
+                                      VALUES (:paz_id, :data_v, :mot, :att_fis, :hsonno, :note_fin)");
+                $stmt->execute([
+                    ':paz_id'   => $paz_id,
+                    ':data_v'   => $data_visita,
+                    ':mot'      => !empty(trim($_POST['motivazione'] ?? '')) ? trim($_POST['motivazione']) : null,
+                    ':att_fis'  => !empty(trim($_POST['attivita_fisica'] ?? '')) ? trim($_POST['attivita_fisica']) : null,
+                    ':hsonno'   => !empty($_POST['ore_sonno']) ? (float)$_POST['ore_sonno'] : null,
+                    ':note_fin' => !empty(trim($_POST['note_finali'] ?? '')) ? trim($_POST['note_finali']) : null
+                ]);
+
+                $visita_id = $db->lastInsertId();
+
+                // 2) Inserisci le domande aggiuntive nella tabella normalizzata (nessun limite)
+                if (!empty($domande)) {
+                    $stmtDom = $db->prepare("INSERT INTO domande_aggiuntive (visita_id, numero_ordine, domanda, risposta)
+                                             VALUES (:visita_id, :ordine, :domanda, :risposta)");
+                    
+                    foreach ($domande as $i => $domanda) {
+                        $domanda  = trim($domanda ?? '');
+                        $risposta = trim($risposte[$i] ?? '');
+                        
+                        if (!empty($domanda)) {
+                            $stmtDom->execute([
+                                ':visita_id' => $visita_id,
+                                ':ordine'    => $i + 1,
+                                ':domanda'   => $domanda,
+                                ':risposta'  => !empty($risposta) ? $risposta : null
+                            ]);
+                        }
+                    }
+                }
+
+                $db->commit();
+                echo json_encode(['success' => true]);
+            } catch (Exception $e) {
+                $db->rollBack();
+                echo json_encode(['success' => false, 'error' => 'Errore nel salvataggio della visita: ' . $e->getMessage()]);
             }
-
-            $success = $stmt->execute($binds);
-
-            echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nel salvataggio della visita.']);
             break;
 
         // ── RICERCA PAZIENTI (GET) ──

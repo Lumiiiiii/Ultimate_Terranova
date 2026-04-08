@@ -35,40 +35,19 @@ data_visita DATE,
 motivazione TEXT,
 attivita_fisica TEXT,
 ore_sonno DECIMAL(4,2),
--- 15 coppie domanda/risposta aggiuntive (contenuto variabile per ogni visita)
-domanda_aggiuntiva_1 VARCHAR(255),
-risposta_aggiuntiva_1 TEXT,
-domanda_aggiuntiva_2 VARCHAR(255),
-risposta_aggiuntiva_2 TEXT,
-domanda_aggiuntiva_3 VARCHAR(255),
-risposta_aggiuntiva_3 TEXT,
-domanda_aggiuntiva_4 VARCHAR(255),
-risposta_aggiuntiva_4 TEXT,
-domanda_aggiuntiva_5 VARCHAR(255),
-risposta_aggiuntiva_5 TEXT,
-domanda_aggiuntiva_6 VARCHAR(255),
-risposta_aggiuntiva_6 TEXT,
-domanda_aggiuntiva_7 VARCHAR(255),
-risposta_aggiuntiva_7 TEXT,
-domanda_aggiuntiva_8 VARCHAR(255),
-risposta_aggiuntiva_8 TEXT,
-domanda_aggiuntiva_9 VARCHAR(255),
-risposta_aggiuntiva_9 TEXT,
-domanda_aggiuntiva_10 VARCHAR(255),
-risposta_aggiuntiva_10 TEXT,
-domanda_aggiuntiva_11 VARCHAR(255),
-risposta_aggiuntiva_11 TEXT,
-domanda_aggiuntiva_12 VARCHAR(255),
-risposta_aggiuntiva_12 TEXT,
-domanda_aggiuntiva_13 VARCHAR(255),
-risposta_aggiuntiva_13 TEXT,
-domanda_aggiuntiva_14 VARCHAR(255),
-risposta_aggiuntiva_14 TEXT,
-domanda_aggiuntiva_15 VARCHAR(255),
-risposta_aggiuntiva_15 TEXT,
 note_finali TEXT,
 data_modifica TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 FOREIGN KEY (paziente_id) REFERENCES pazienti(id) ON DELETE CASCADE
+);
+-- Tabella normalizzata per le domande aggiuntive (collegate alla visita tramite FK)
+-- Permette un numero illimitato di domande per ogni visita, senza sprecare colonne
+CREATE TABLE domande_aggiuntive (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    visita_id INT NOT NULL,
+    numero_ordine INT NOT NULL,          -- mantiene l'ordine di inserimento (1, 2, 3...)
+    domanda VARCHAR(255) NOT NULL,
+    risposta TEXT,
+    FOREIGN KEY (visita_id) REFERENCES visite(id) ON DELETE CASCADE
 );
 CREATE TABLE medicinali (
 id INT AUTO_INCREMENT PRIMARY KEY,

@@ -206,9 +206,9 @@ include 'includes/header.php';
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     Domande Aggiuntive
-                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill ms-auto px-3 py-1 small" id="contatore-domande">0 / 15</span>
+                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill ms-auto px-3 py-1 small" id="contatore-domande">0 domande</span>
                 </h6>
-                <p class="text-muted small mb-3">Aggiungi domande personalizzate per questa visita. Ogni visita può avere domande diverse. Massimo 15.</p>
+                <p class="text-muted small mb-3">Aggiungi domande personalizzate per questa visita. Ogni visita può avere domande diverse.</p>
 
                 <div id="domande-container">
                     <!-- Le domande aggiuntive verranno inserite qui dinamicamente -->
@@ -254,21 +254,13 @@ include 'includes/header.php';
     <!-- SCRIPT: Invio visita via AJAX e Gestione Domande -->
     <script>
     let contatoreDomande = 0;
-    const MAX_DOMANDE = 15;
 
     function aggiornaContatore() {
         const badge = document.getElementById('contatore-domande');
-        if (badge) badge.innerText = contatoreDomande + ' / ' + MAX_DOMANDE;
-        
-        const btn = document.getElementById('btn-aggiungi-domanda');
-        if (btn) {
-            btn.style.display = (contatoreDomande >= MAX_DOMANDE) ? 'none' : 'flex';
-        }
+        if (badge) badge.innerText = contatoreDomande + (contatoreDomande === 1 ? ' domanda' : ' domande');
     }
 
     function aggiungiDomanda() {
-        if (contatoreDomande >= MAX_DOMANDE) return;
-        
         contatoreDomande++;
         
         const container = document.getElementById('domande-container');
