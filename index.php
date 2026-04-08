@@ -29,8 +29,20 @@ $totalPatients = $patientManager->countPatients();
 // Recupera i prossimi appuntamenti (per la sezione "Prossimi Appuntamenti")
 $upcomingEvents = $patientManager->getUpcomingEvents(5);
 
-// Recupera le visite recenti (per la sezione "Visite Recenti")
-$recentVisits = $patientManager->getRecentVisits();
+// Dati per il grafico Registrazioni (Ultimi 30 giorni)
+$registrationsData = $patientManager->getRegistrationsLastMonth();
+$regMap = [];
+foreach ($registrationsData as $row) {
+    $regMap[$row['data']] = $row['totale'];
+}
+$regLabels = [];
+$regCounts = [];
+for ($i = 29; $i >= 0; $i--) {
+    $dateObj = new DateTime("-$i days");
+    $dateStr = $dateObj->format('Y-m-d');
+    $regLabels[] = $dateObj->format('d/m');
+    $regCounts[] = $regMap[$dateStr] ?? 0;
+}
 
 // Recupera la nota veloce
 $noteText = $noteManager->getNote();
@@ -152,42 +164,16 @@ include 'includes/sidebar.php';
                 </div>
             </div>
 
-            <!-- ── COLONNA 2: Visite Recenti ── -->
+            <!-- ── COLONNA 2: Grafico Andamento Registrazioni ── -->
             <div class="col-md-4">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100">
-                    <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
-                        <h5 class="fw-bold mb-0">Visite Recenti</h5>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
+                <div class="card border-0 shadow-sm rounded-4 bg-white h-100 p-3">
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold mb-0">Nuovi Pazienti</h5>
+                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 small">Ultimi 30 giorni</span>
                     </div>
-                    <div id="visits-list" class="flex-grow-1" style="max-height: 420px; overflow-y: auto;">
-                        <?php if (empty($recentVisits)): ?>
-                            <div class="p-5 text-center text-muted h-100 d-flex align-items-center justify-content-center">
-                                <div>Nessuna visita registrata.</div>
-                            </div>
-                        <?php else: ?>
-                            <?php foreach ($recentVisits as $visit): ?>
-                                <div class="px-4 py-3 d-flex justify-content-between align-items-center border-bottom hover-lift" 
-                                     style="cursor:pointer" onclick="window.location.href='paziente_dettaglio.php?id=<?= $visit['paziente_id'] ?>'">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="avatar-circle bg-light text-primary">
-                                            <?= strtoupper(substr($visit['nome_cognome'], 0, 1)) ?>
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold text-dark"><?= $visit['nome_cognome'] ?></div>
-                                            <div class="text-muted small">
-                                                <?= $visit['data_visita'] ? date('d/m/Y', strtotime($visit['data_visita'])) : 'Data n/d' ?>
-                                                <?php if (!empty($visit['motivazione'])): ?>
-                                                    • <?= mb_strimwidth(htmlspecialchars($visit['motivazione']), 0, 30, '…') ?>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <span class="text-muted">›</span>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                    <div class="card-body p-0 d-flex align-items-end h-100" style="min-height: 200px; position: relative;">
+                        <!-- Canvas per Chart.js -->
+                        <canvas id="registrationsChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -234,11 +220,84 @@ include 'includes/sidebar.php';
         </div>
     </div>
 
-    <!-- SweetAlert2 -->
+    <!-- SweetAlert2 & Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            
+            // Inizializzazione Grafico Registrazioni
+            const ctxReg = document.getElementById('registrationsChart');
+            if (ctxReg) {
+                // Recuperiamo i dati da PHP
+                const labels = <?= json_encode($regLabels) ?>;
+                const dataPoints = <?= json_encode($regCounts) ?>;
+                
+                // Creazione gradiente
+                let gradient = ctxReg.getContext('2d').createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, 'rgba(46, 204, 113, 0.4)'); // Colore primary con opacità
+                gradient.addColorStop(1, 'rgba(46, 204, 113, 0.0)');
+
+                new Chart(ctxReg, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Nuovi Pazienti',
+                            data: dataPoints,
+                            borderColor: '#2ecc71', // var(--color-primary)
+                            borderWidth: 3,
+                            backgroundColor: gradient,
+                            fill: true,
+                            tension: 0.4, // Linea curva "smooth"
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#2ecc71',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleFont: { size: 13, family: "'Inter', sans-serif" },
+                                bodyFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { 
+                                    maxTicksLimit: 6,
+                                    color: '#64748b',
+                                    font: { size: 11 }
+                                }
+                            },
+                            y: {
+                                grid: { color: '#f1f5f9', borderDash: [4, 4] },
+                                ticks: { 
+                                    stepSize: 1, 
+                                    color: '#64748b',
+                                    font: { size: 11 }
+                                },
+                                beginAtZero: true
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index',
+                        },
+                    }
+                });
+            }
 
             // ── RICERCA PAZIENTI ──────────────────────────────────────────
             const searchInput = document.getElementById('search-input');

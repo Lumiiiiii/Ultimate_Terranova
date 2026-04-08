@@ -252,4 +252,45 @@ public function deletePatient($id)
             return false;
         }
     }
+
+    /**
+     * Dati per il grafico: andamento iscrizioni degli ultimi 30 giorni
+     */
+    public function getRegistrationsLastMonth()
+    {
+        try {
+            $queryText = "
+                SELECT DATE(data_creazione) as data, COUNT(*) as totale 
+                FROM pazienti 
+                WHERE data_creazione >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) 
+                GROUP BY DATE(data_creazione) 
+                ORDER BY data ASC
+            ";
+            $query = $this->db->prepare($queryText);
+            $query->execute();
+            return $query->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Dati per il grafico: andamento ore di sonno paziente
+     */
+    public function getSleepTrend($paziente_id)
+    {
+        try {
+            $queryText = "
+                SELECT data_visita, ore_sonno 
+                FROM visite 
+                WHERE paziente_id = :paziente_id AND ore_sonno IS NOT NULL 
+                ORDER BY data_visita ASC
+            ";
+            $query = $this->db->prepare($queryText);
+            $query->execute([':paziente_id' => $paziente_id]);
+            return $query->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
 }

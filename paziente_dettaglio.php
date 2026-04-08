@@ -20,6 +20,17 @@ if(!$patient){
 $visits = $visitManager->getVisitHistory($id);
 $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
 
+// Prepara i dati per il grafico del Sonno
+$sleepTrend = $patientManager->getSleepTrend($id);
+$sleepLabels = [];
+$sleepData = [];
+foreach ($sleepTrend as $row) {
+    if (!empty($row['data_visita'])) {
+        $sleepLabels[] = date('d/m/Y', strtotime($row['data_visita']));
+        $sleepData[] = (float)$row['ore_sonno'];
+    }
+}
+
 $pageTitle = htmlspecialchars($patient['nome_cognome']) . " - Dettaglio";
 $currentPage = "index";
 include 'includes/header.php';
@@ -52,9 +63,12 @@ include 'includes/sidebar.php';
 
             <div class="row g-4">
                 
-                <!-- Colonna Sinistra: Profilo Paziente -->
+                <!-- Colonna Sinistra: Profilo Paziente e Grafici -->
                 <div class="col-lg-4">
-                    <div class="card border-0 shadow-sm rounded-4 bg-white text-center p-4 h-100 position-relative">
+                    <div class="d-flex flex-column gap-4 h-100">
+                    
+                        <!-- Card Profilo Paziente -->
+                        <div class="card border-0 shadow-sm rounded-4 bg-white text-center p-4 position-relative">
                         
                         <!-- Bottone Elimina Paziente -->
                         <button type="button" class="btn btn-sm btn-outline-danger position-absolute border-0 hover-lift" style="top: 15px; right: 15px;" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" title="Elimina Paziente">
@@ -137,13 +151,31 @@ include 'includes/sidebar.php';
                             </svg>
                             Modifica Dati
                         </button>
-                    </div>
+                        </div> <!-- Fine Card Profilo -->
+
+                        <!-- Grafico Ore Sonno -->
+                        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 flex-grow-1 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold mb-0">Sonno</h5>
+                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 small fw-medium">Ore/Notte</span>
+                            </div>
+                            <div class="flex-grow-1" style="min-height: 180px; position: relative;">
+                                <?php if(empty($sleepData)): ?>
+                                    <div class="d-flex align-items-center justify-content-center h-100 bg-light rounded-3 border">
+                                        <p class="text-muted mb-0 small text-center p-2"><i class="bi bi-info-circle me-1"></i> Nessun dato registrato</p>
+                                    </div>
+                                <?php endif; ?>
+                                <canvas id="sleepChart" style="<?= empty($sleepData) ? 'display:none;' : '' ?>"></canvas>
+                            </div>
+                        </div>
+
+                    </div> <!-- Fine Colonna d-flex -->
                 </div>
                 
                 <!-- Colonna Destra: Storico Visite -->
                 <div class="col-lg-8">
                     <div class="card border-0 shadow-sm rounded-4 bg-white h-100">
-                        <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                            <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
                             <h5 class="fw-bold mb-0">Storico Visite</h5>
                             <span class="badge bg-light text-primary border rounded-pill px-3 py-2">
                                 <?= count($visits) ?> visite totali
@@ -355,13 +387,15 @@ include 'includes/sidebar.php';
         });
     </script>
 
-    <!-- Bootstrap Datepicker -->
+    <!-- Bootstrap Datepicker & SweetAlert2 & Chart.js -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker3.min.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/locales/bootstrap-datepicker.it.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
+        // Init Datepicker
         $('#data_visuale').datepicker({
             language: 'it', format: 'dd/mm/yyyy', startView: 2, minViewMode: 0,
             endDate: new Date(), startDate: '01/01/1920', autoclose: true,
@@ -370,6 +404,78 @@ include 'includes/sidebar.php';
             const d = e.date;
             document.getElementById('data_nascita').value = 
                 d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        });
+
+        // Init Chart.js
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctxSleep = document.getElementById('sleepChart');
+            if (ctxSleep) {
+                const labels = <?= json_encode($sleepLabels) ?>;
+                const dataPoints = <?= json_encode($sleepData) ?>;
+
+                let gradient = ctxSleep.getContext('2d').createLinearGradient(0, 0, 0, 300);
+                gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); // Colore accent (blu) con opacità
+                gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+                new Chart(ctxSleep, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Ore di Sonno',
+                            data: dataPoints,
+                            borderColor: '#3b82f6', 
+                            borderWidth: 3,
+                            backgroundColor: gradient,
+                            fill: true,
+                            tension: 0.4, 
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#3b82f6',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleFont: { size: 13, family: "'Inter', sans-serif" },
+                                bodyFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) { return context.parsed.y + ' ore'; }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#64748b', font: { size: 11 } }
+                            },
+                            y: {
+                                grid: { color: '#f1f5f9', borderDash: [4, 4] },
+                                ticks: { 
+                                    stepSize: 1, 
+                                    color: '#64748b',
+                                    font: { size: 11 }
+                                },
+                                min: 0,
+                                suggestedMax: 10
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index',
+                        },
+                    }
+                });
+            }
         });
     </script>
     <?php include 'includes/footer.php'; ?>
