@@ -280,7 +280,8 @@ include 'includes/header.php';
                   if (result.isConfirmed) {
                       var dati = new FormData();
                       dati.append('title', result.value.title);
-                      dati.append('start', result.value.date + ' ' + result.value.hour);
+                      dati.append('start', result.value.date);
+                      dati.append('hour', result.value.hour);
                       dati.append('color', result.value.color);
 
                       fetch('aggiungi_evento.php', {

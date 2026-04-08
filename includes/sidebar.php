@@ -58,7 +58,7 @@
   // Aggiorna l'icona e il testo del pulsante in base al tema corrente
   (function() {
     function updateToggleUI() {
-      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
       var icon = document.getElementById('themeIcon');
       var label = document.getElementById('themeLabel');
       if (icon) icon.textContent = isDark ? '☀️' : '🌙';
@@ -69,11 +69,10 @@
 
   function toggleTheme() {
     var html = document.documentElement;
-    var isDark = html.getAttribute('data-theme') === 'dark';
+    var isDark = html.getAttribute('data-bs-theme') === 'dark';
     var newTheme = isDark ? 'light' : 'dark';
-    html.setAttribute('data-theme', newTheme);
-    // data-bs-theme resta SEMPRE "light" — il dark mode lo gestiamo noi via CSS
-    html.setAttribute('data-bs-theme', 'light');
+    html.setAttribute('data-bs-theme', newTheme);
+    html.style.colorScheme = newTheme;
     try { localStorage.setItem('aequa-theme', newTheme); } catch(e) {}
     // Aggiorna icona
     var icon = document.getElementById('themeIcon');

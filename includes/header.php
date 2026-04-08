@@ -9,16 +9,14 @@
 
     <script>
       // ── ANTI-FLICKER ENGINE ──────────────────────────────────────────────────
-      // Eseguito PRIMA di qualsiasi CSS. Imposta data-theme dal localStorage
-      // e inietta CSS critico inline per prevenire qualsiasi flash visivo.
+      // Eseguito PRIMA di qualsiasi CSS. Imposta data-bs-theme dal localStorage
+      // Bootstrap 5.3 gestisce automaticamente il dark mode tramite questo attributo.
       (function() {
         var saved = 'light';
         try { saved = localStorage.getItem('aequa-theme') || 'light'; } catch(e) {}
         var html = document.documentElement;
-        html.setAttribute('data-theme', saved);
-        // data-bs-theme resta SEMPRE "light" — il dark mode lo gestiamo noi via CSS
-        html.setAttribute('data-bs-theme', 'light');
-        html.style.colorScheme = 'light';
+        html.setAttribute('data-bs-theme', saved);
+        html.style.colorScheme = saved;
 
         // Inietta CSS critico inline PRIMA che Bootstrap/style.css vengano caricati
         // Questo garantisce che lo sfondo corretto sia visibile fin dal primo frame
@@ -27,11 +25,6 @@
         var css = '*, *::before, *::after { transition: none !important; animation-duration: 0s !important; }';
         if (saved === 'dark') {
           css += 'html, body { background-color: #0f1117 !important; color: #cbd5e1 !important; }';
-          css += '.card, .modal-content, .bg-white { background-color: #1a1d2b !important; color: #cbd5e1 !important; }';
-          css += '.bg-light { background-color: #242838 !important; }';
-          css += '.text-dark { color: #f1f5f9 !important; }';
-          css += '.text-muted { color: #7e8ca3 !important; }';
-          css += '.border-bottom, .border { border-color: #2a2f42 !important; }';
         } else {
           css += 'html, body { background-color: #f8f9fa !important; color: #212529 !important; }';
         }

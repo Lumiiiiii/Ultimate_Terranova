@@ -1,30 +1,82 @@
-/* ── VARIABILI CSS GLOBALI - LIGHT MODE ──────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── VARIABILI CSS GLOBALI ──────────────────────────────────────────────── */
+/*                                                                          */
+/*  Design tokens usati in tutto il progetto. In light mode sono definiti   */
+/*  qui, in dark mode vengono sovrascritti nel blocco [data-bs-theme].      */
+/*  I colori brand (primary/accent) restano gli stessi in entrambi i temi.  */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
 :root {
-    /* Brand colors */
+    /* Colori brand — Verde primario e Blu accento, usati in bottoni, link, gradienti */
     --color-primary: #2ecc71;
     --color-primary-dark: #27ae60;
     --color-accent: #3b82f6;
 
-    /* Sidebar (sempre dark) */
+    /* Sidebar — È sempre scura indipendentemente dal tema, quindi ha i suoi token fissi */
     --sidebar-width: 260px;
     --sidebar-bg: #1a1a2e;
     --sidebar-text: #a0aec0;
     --sidebar-active: #ffffff;
 
-    /* Light mode tokens */
-    --bg-page: #f8f9fa;
-    --bg-card: #ffffff;
-    --bg-input: #f4f6f9;
-    --text-heading: #1a1a2e;
-    --text-body: #212529;
-    --text-muted: #6c757d;
-    --border-color: #e9ecef;
+    /* Token di superficie e testo — Light mode */
+    --bg-page: #f8f9fa;       /* Sfondo pagina principale */
+    --bg-card: #ffffff;        /* Sfondo card, modal, pannelli */
+    --bg-input: #f4f6f9;      /* Sfondo input, textarea, aree secondarie */
+    --text-heading: #1a1a2e;   /* Titoli e testi in evidenza */
+    --text-body: #212529;      /* Testo base paragrafi */
+    --text-muted: #6c757d;     /* Testo secondario, label, hint */
+    --border-color: #e9ecef;   /* Bordi card, separator, divisori */
     --card-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.07);
     --toggle-bg: rgba(255, 255, 255, 0.10);
 }
 
-/* ── DARK MODE TOKENS ────────────────────────────────────────────────────── */
-[data-theme="dark"] {
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── DARK MODE — Bootstrap 5.3 Nativo + Token Custom ────────────────────── */
+/*                                                                          */
+/*  Bootstrap 5.3 gestisce automaticamente card, modal, form, table,        */
+/*  badge, alert, accordion, navbar, ecc. quando data-bs-theme="dark".      */
+/*                                                                          */
+/*  Qui sovrascriviamo solo le variabili Bootstrap con i nostri colori      */
+/*  custom e ridefiniciamo i token usati da classi non-Bootstrap.            */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+[data-bs-theme="dark"] {
+    /* === Variabili Bootstrap === */
+
+    /* Corpo pagina */
+    --bs-body-bg: #0f1117;
+    --bs-body-color: #cbd5e1;
+
+    /* Sfondi (usati da .bg-body-secondary, .bg-body-tertiary ecc.) */
+    --bs-secondary-bg: #1a1d2b;
+    --bs-tertiary-bg: #242838;
+
+    /* Bordi generici (separatori, divisori) */
+    --bs-border-color: #2a2f42;
+
+    /* Testo "enfasi" (headings, .text-emphasis) */
+    --bs-emphasis-color: #f1f5f9;
+
+    /* Card (usato da .card in automatico) */
+    --bs-card-bg: #1a1d2b;
+    --bs-card-border-color: #2a2f42;
+    --bs-card-cap-bg: #1a1d2b;
+
+    /* Modal (usato da .modal-content in automatico) */
+    --bs-modal-bg: #1a1d2b;
+    --bs-modal-border-color: #2a2f42;
+
+    /* Form Controls (usato da .form-control, .form-select in automatico) */
+    --bs-form-control-bg: #242838;
+
+    /* Tabelle (usato da .table in automatico) */
+    --bs-table-bg: #1a1d2b;
+    --bs-table-border-color: #2a2f42;
+    --bs-table-striped-bg: #1e2233;
+    --bs-table-hover-bg: #222640;
+
+    /* === Token Custom (stessa struttura del light, colori scuri) === */
     --bg-page: #0f1117;
     --bg-card: #1a1d2b;
     --bg-input: #242838;
@@ -36,18 +88,23 @@
     --toggle-bg: rgba(255, 255, 255, 0.08);
 }
 
-/* ── BASE ────────────────────────────────────────────────────────────────── */
-html {
-    color-scheme: light;
-}
 
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── STILI DI BASE ───────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+/* Forza lo sfondo pagina dal nostro token (override --bs-body-bg se serve) */
 body {
     background-color: var(--bg-page) !important;
-    color: var(--text-body) !important;
-
 }
 
-/* Transizioni fluide per il toggle tema — bloccate all'apertura da anti-flicker */
+/*
+ * Transizioni fluide per il toggle tema.
+ * Quando l'utente switcha light↔dark, questi elementi transitano
+ * gradualmente invece di fare un salto brusco.
+ * All'apertura pagina, le transizioni sono disabilitate dall'anti-flicker
+ * in header.php per evitare flash di colore.
+ */
 .card,
 .modal-content,
 .bg-white,
@@ -64,250 +121,73 @@ body {
     transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 }
 
-/* 
- * DARK MODE: OVERRIDE DI TUTTI GLI ELEMENTI BOOTSTRAP
- * Bootstrap resta in data-bs-theme="light", noi gestiamo il dark da qui.  
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── DARK MODE — Override Classi Utility Bootstrap ───────────────────────── */
+/*                                                                          */
+/*  .bg-white e .bg-light sono classi "esplicite" che forzano un colore.    */
+/*  Bootstrap NON le inverte in automatico col dark mode, quindi le         */
+/*  sovrascriviamo noi per mappare ai colori scuri corretti.                */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+/* .bg-white → diventa il colore card scuro */
+[data-bs-theme="dark"] .bg-white {
+    background-color: var(--bg-card) !important;
+}
+
+/* .bg-light → diventa il colore input/area secondaria scuro */
+[data-bs-theme="dark"] .bg-light {
+    background-color: var(--bg-input) !important;
+}
+
+/*
+ * Fix form-floating in dark mode:
+ * Bootstrap usa uno pseudo-elemento ::after con sfondo bianco per
+ * "nascondere" il bordo dietro la label flottante quando l'input è
+ * focused/compilato. In dark mode quel bianco crea un artefatto visivo.
  */
-
-/* ── HEADINGS, TESTO, LABELS ─────────────────────────────────────────────── */
-[data-theme="dark"] h1,
-[data-theme="dark"] h2,
-[data-theme="dark"] h3,
-[data-theme="dark"] h4,
-[data-theme="dark"] h5,
-[data-theme="dark"] h6,
-[data-theme="dark"] .fw-bold,
-[data-theme="dark"] .fw-semibold,
-[data-theme="dark"] .display-1,
-[data-theme="dark"] .display-2,
-[data-theme="dark"] .display-3,
-[data-theme="dark"] .display-4,
-[data-theme="dark"] .display-5,
-[data-theme="dark"] .display-6 {
-    color: var(--text-heading) !important;
-}
-
-[data-theme="dark"] p,
-[data-theme="dark"] span:not(.badge),
-[data-theme="dark"] div,
-[data-theme="dark"] label,
-[data-theme="dark"] .form-label,
-[data-theme="dark"] .form-floating>label {
-    color: var(--text-body);
-}
-
-[data-theme="dark"] .text-dark {
-    color: var(--text-heading) !important;
-}
-
-[data-theme="dark"] .text-muted {
-    color: var(--text-muted) !important;
-}
-
-[data-theme="dark"] .text-body {
-    color: var(--text-body) !important;
-}
-
-/* ── SFONDO PAGINA, CARD, INPUT ──────────────────────────────────────────── */
-[data-theme="dark"] .bg-white {
-    background-color: var(--bg-card) !important;
-}
-
-[data-theme="dark"] .bg-light {
-    background-color: var(--bg-input) !important;
-}
-
-[data-theme="dark"] .card,
-[data-theme="dark"] .modal-content {
-    background-color: var(--bg-card) !important;
-    border-color: var(--border-color) !important;
-    color: var(--text-body) !important;
-}
-
-[data-theme="dark"] .card-header {
-    background-color: var(--bg-card) !important;
-    border-color: var(--border-color) !important;
-}
-
-[data-theme="dark"] .modal-header,
-[data-theme="dark"] .modal-footer {
-    border-color: var(--border-color) !important;
-}
-
-/* ── FORM CONTROLS ──────────────────────────────────────────────────────── */
-[data-theme="dark"] .form-control,
-[data-theme="dark"] .form-select {
-    background-color: var(--bg-input) !important;
-    color: var(--text-heading) !important;
-    border-color: var(--border-color) !important;
-}
-
-/* bg-transparent inputs (es. barra di ricerca) devono restare trasparenti */
-[data-theme="dark"] .form-control.bg-transparent {
+[data-bs-theme="dark"] .form-floating>.form-control:focus~label::after,
+[data-bs-theme="dark"] .form-floating>.form-control:not(:placeholder-shown)~label::after {
     background-color: transparent !important;
 }
 
-[data-theme="dark"] .form-control.bg-light,
-[data-theme="dark"] textarea.bg-light {
-    background-color: var(--bg-input) !important;
-    color: var(--text-heading) !important;
-}
-
-
-[data-theme="dark"] .form-floating>label {
-    color: var(--text-muted) !important;
-}
-
-[data-theme="dark"] .form-floating>.form-control:focus~label,
-[data-theme="dark"] .form-floating>.form-control:not(:placeholder-shown)~label {
-    color: var(--text-muted) !important;
-    background-color: transparent !important;
-}
-
-/* Rimuovi il "background-clip" bianco che Bootstrap usa per le label floating */
-[data-theme="dark"] .form-floating>.form-control:focus~label::after,
-[data-theme="dark"] .form-floating>.form-control:not(:placeholder-shown)~label::after {
-    background-color: transparent !important;
-}
-
-[data-theme="dark"] .input-group-text {
-    background-color: transparent !important;
-    border-color: transparent !important;
-    color: var(--text-muted) !important;
-    box-shadow: none !important;
-}
-
-/* ── NOTE VELOCI - TEXTAREA ──────────────────────────────────────────────── */
-#quick-notes {
-    background-color: #fdfbf7 !important;
-    color: #212529;
-}
-
-[data-theme="dark"] #quick-notes {
-    background-color: var(--bg-input) !important;
-    color: var(--text-heading) !important;
-    border-left-color: #f6c23e !important;
-    box-shadow: none !important;
-}
-
-/* ── SEARCH BAR - DARK MODE FIX ──────────────────────────────────────────── */
-[data-theme="dark"] .search-card .input-group-text {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-[data-theme="dark"] .search-card .form-control {
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-[data-theme="dark"] .search-card {
-    border-color: var(--border-color) !important;
-}
-
-/* ── BOTTONI ─────────────────────────────────────────────────────────────── */
-[data-theme="dark"] .btn-light {
+/*
+ * Fix .btn-light in dark mode:
+ * Bootstrap NON inverte btn-light (resta grigio chiaro). Lo rendiamo
+ * coerente col tema scuro. Usato es. dal bottone "Annulla" in paziente_nuovo.php
+ */
+[data-bs-theme="dark"] .btn-light {
     background-color: var(--bg-input) !important;
     border-color: var(--border-color) !important;
+    color: var(--text-body) !important;
+}
+
+[data-bs-theme="dark"] .btn-light:hover {
+    background-color: #2e3348 !important;
     color: var(--text-heading) !important;
 }
 
-[data-theme="dark"] .btn-outline-secondary {
-    border-color: var(--border-color) !important;
-    color: var(--text-body) !important;
-}
-
-/* ── BORDI ───────────────────────────────────────────────────────────────── */
-[data-theme="dark"] .border-bottom,
-[data-theme="dark"] .border-top,
-[data-theme="dark"] .border {
-    border-color: var(--border-color) !important;
-}
-
-/* ── BOOTSTRAP ALERTS - DARK MODE ─────────────────────────────────────────── */
-html[data-theme="dark"] .alert.alert-danger,
-html[data-theme="dark"] .alert-danger {
-    --bs-alert-bg: rgba(239, 68, 68, 0.15);
-    --bs-alert-color: #fca5a5;
-    --bs-alert-border-color: rgba(239, 68, 68, 0.3);
-    background-color: rgba(239, 68, 68, 0.15) !important;
-    border-color: rgba(239, 68, 68, 0.3) !important;
-    color: #fca5a5 !important;
-}
-
-html[data-theme="dark"] .alert-danger *,
-html[data-theme="dark"] .alert-danger svg {
-    color: #f87171 !important;
-}
-
-html[data-theme="dark"] .alert.alert-warning,
-html[data-theme="dark"] .alert-warning {
-    --bs-alert-bg: rgba(245, 158, 11, 0.15);
-    --bs-alert-color: #fcd34d;
-    --bs-alert-border-color: rgba(245, 158, 11, 0.3);
-    background-color: rgba(245, 158, 11, 0.15) !important;
-    border-color: rgba(245, 158, 11, 0.3) !important;
-    color: #fcd34d !important;
-}
-
-html[data-theme="dark"] .alert.alert-success,
-html[data-theme="dark"] .alert-success {
-    --bs-alert-bg: rgba(34, 197, 94, 0.15);
-    --bs-alert-color: #86efac;
-    --bs-alert-border-color: rgba(34, 197, 94, 0.3);
-    background-color: rgba(34, 197, 94, 0.15) !important;
-    border-color: rgba(34, 197, 94, 0.3) !important;
-    color: #86efac !important;
-}
-
-html[data-theme="dark"] .alert.alert-info,
-html[data-theme="dark"] .alert-info {
-    --bs-alert-bg: rgba(59, 130, 246, 0.15);
-    --bs-alert-color: #93c5fd;
-    --bs-alert-border-color: rgba(59, 130, 246, 0.3);
-    background-color: rgba(59, 130, 246, 0.15) !important;
-    border-color: rgba(59, 130, 246, 0.3) !important;
-    color: #93c5fd !important;
-}
-
-/* ── SWEETALERT2 ─────────────────────────────────────────────────────────── */
-[data-theme="dark"] .swal2-popup {
-    background-color: var(--bg-card) !important;
+/*
+ * Fix .text-dark in dark mode:
+ * Bootstrap NON inverte .text-dark (resta scuro). In dark mode il testo
+ * diventa quasi invisibile su sfondo scuro. Lo mappiamo al colore heading chiaro.
+ * Usato es. nel nome paziente in pazienti.php e nei breadcrumb.
+ */
+[data-bs-theme="dark"] .text-dark {
     color: var(--text-heading) !important;
 }
 
-[data-theme="dark"] .swal2-title {
-    color: var(--text-heading) !important;
-}
 
-[data-theme="dark"] .swal2-html-container {
-    color: var(--text-body) !important;
-}
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── CLASSI UTILITY CUSTOM ───────────────────────────────────────────────── */
+/*  Classi riutilizzabili che non fanno parte di Bootstrap                   */
+/* ══════════════════════════════════════════════════════════════════════════ */
 
-/* ── TABLE ───────────────────────────────────────────────────────────────── */
-[data-theme="dark"] .table {
-    color: var(--text-body) !important;
-    border-color: var(--border-color) !important;
-}
-
-[data-theme="dark"] .table> :not(caption)>*>* {
-    background-color: var(--bg-card) !important;
-    border-bottom-color: var(--border-color) !important;
-    color: var(--text-body) !important;
-    box-shadow: none !important;
-}
-
-/* ── HOVER E BG OPACITY ──────────────────────────────────────────────────── */
-[data-theme="dark"] .bg-success.bg-opacity-10 {
-    background-color: rgba(46, 204, 113, 0.12) !important;
-}
-
-/* ════════════════════════════════════════════════════════════════════════════ */
-/* ── CLASSI DI UTILITÀ E RESET ─────────────────────────────────────────── */
-/* ════════════════════════════════════════════════════════════════════════════ */
-
+/*
+ * Effetto "sollevamento" al hover: la card si alza di 5px.
+ * Usato sulle card pazienti nella lista (pazienti.php) e sulle card
+ * statistiche della dashboard (index.php).
+ */
 .hover-lift {
     transition: transform 0.2s ease;
 }
@@ -316,21 +196,32 @@ html[data-theme="dark"] .alert-info {
     transform: translateY(-5px) !important;
 }
 
+/* Border-radius grande (1rem = 16px), usato su card e pannelli per look arrotondato */
 .rounded-4 {
     border-radius: 1rem !important;
 }
 
+/*
+ * Effetto "vetro smerigliato" (glassmorphism):
+ * sfondo semitrasparente + blur. Non usato attualmente in molti punti,
+ * disponibile per componenti futuri.
+ */
 .glass {
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-[data-theme="dark"] .glass {
+[data-bs-theme="dark"] .glass {
     background: rgba(26, 29, 43, 0.85);
     border-color: var(--border-color);
 }
 
+/*
+ * Cerchio avatar piccolo (40×40px):
+ * Usato nelle liste pazienti (pazienti.php, index.php) per mostrare
+ * l'iniziale del nome del paziente in un cerchio colorato.
+ */
 .avatar-circle {
     width: 40px;
     height: 40px;
@@ -341,10 +232,10 @@ html[data-theme="dark"] .alert-info {
     font-weight: bold;
 }
 
-[data-theme="dark"] .avatar-circle.bg-light {
-    background-color: var(--bg-input) !important;
-}
-
+/*
+ * Bottone con sfondo gradiente verde→blu:
+ * Usato come CTA principale (es. "+ Nuovo Paziente", "+ Aggiungi Evento").
+ */
 .btn-gradient {
     background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     color: white;
@@ -361,12 +252,32 @@ html[data-theme="dark"] .alert-info {
     box-shadow: 0 4px 12px rgba(46, 204, 113, 0.25);
 }
 
+/*
+ * Focus verde sugli input:
+ * Quando un input è focused, mostra un alone verde chiaro
+ * e cambia il bordo in verde primario (override del blu Bootstrap).
+ */
 .form-control:focus {
     box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1);
     border-color: var(--color-primary) !important;
 }
 
-/* ── SIDEBAR ───────────────────────────────────────────────────────────── */
+/* Contenitore con larghezza massima 1200px, centrato. Usato nel layout delle pagine principali. */
+.max-w-1200 {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── SIDEBAR — Navigazione laterale fissa ─────────────────────────────── */
+/*                                                                          */
+/*  Pannello sempre scuro (indipendente dal tema light/dark).               */
+/*  Contiene: logo, link navigazione, toggle tema, pulsante logout.        */
+/*  Definita in includes/sidebar.php                                        */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+/* Container principale sidebar, posizione fissa a sinistra */
 .sidebar {
     position: fixed;
     top: 0;
@@ -382,6 +293,7 @@ html[data-theme="dark"] .alert-info {
     transition: transform 0.3s ease;
 }
 
+/* Header sidebar — contiene logo e nome app "Aequa" */
 .sidebar-header {
     padding: 28px 24px 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -394,12 +306,14 @@ html[data-theme="dark"] .alert-info {
     margin: 0;
 }
 
+/* Area scrollabile con i link di navigazione */
 .sidebar-nav {
     flex: 1;
     padding: 16px 12px;
     overflow-y: auto;
 }
 
+/* Etichette sezione: "PRINCIPALE", "GESTIONE" — micro testo uppercase */
 .nav-section-label {
     font-size: 0.65rem;
     text-transform: uppercase;
@@ -409,6 +323,7 @@ html[data-theme="dark"] .alert-info {
     font-weight: 600;
 }
 
+/* Singolo link di navigazione (Dashboard, Calendario, Pazienti, ecc.) */
 .sidebar-nav a {
     display: flex;
     align-items: center;
@@ -428,11 +343,13 @@ html[data-theme="dark"] .alert-info {
     color: white !important;
 }
 
+/* Link attivo (pagina corrente) — sfondo gradiente verde/blu trasparente */
 .sidebar-nav a.active {
     background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(59, 130, 246, 0.15));
     color: white !important;
 }
 
+/* Icone SVG nei link sidebar */
 .sidebar-nav a svg {
     width: 20px;
     height: 20px;
@@ -445,11 +362,13 @@ html[data-theme="dark"] .alert-info {
     opacity: 1;
 }
 
+/* Footer sidebar — contiene toggle tema e link logout */
 .sidebar-footer {
     padding: 16px 12px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+/* Link "Esci" (logout) — testo rosso chiaro */
 .sidebar-footer a {
     display: flex;
     align-items: center;
@@ -474,7 +393,10 @@ html[data-theme="dark"] .alert-info {
     opacity: 0.7;
 }
 
-/* ── THEME TOGGLE BUTTON ─────────────────────────────────────────────────── */
+/*
+ * Pulsante toggle tema (🌙/☀️) nella sidebar:
+ * Definito in sidebar.php, gestito via JS (toggleTheme())
+ */
 .theme-toggle-btn {
     display: flex;
     align-items: center;
@@ -497,15 +419,22 @@ html[data-theme="dark"] .alert-info {
     color: white !important;
 }
 
+/* Emoji luna/sole nel pulsante toggle */
 .theme-toggle-btn .theme-icon {
     font-size: 1.1rem;
     line-height: 1;
 }
 
+/* Contenuto principale — spostato a destra per fare spazio alla sidebar */
 .main-content {
     margin-left: var(--sidebar-width);
 }
 
+/*
+ * Responsive mobile (< 768px):
+ * La sidebar è nascosta fuori schermo e si apre con classe .open.
+ * Il contenuto principale occupa tutta la larghezza.
+ */
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
@@ -524,6 +453,7 @@ html[data-theme="dark"] .alert-info {
     }
 }
 
+/* Pulsante hamburger mobile — fisso in alto a sinistra, visibile solo su mobile */
 .mobile-menu-btn {
     display: none;
     position: fixed;
@@ -543,13 +473,23 @@ html[data-theme="dark"] .alert-info {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* ── ELEMENTI SPECIFICI ────────────────────────────────────────────────── */
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── COMPONENTI PAGINE SPECIFICHE ─────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+/*
+ * Pulsante elimina paziente (🗑️ rosso):
+ * Invisibile di default, appare in trasparenza al hover della card paziente.
+ * Usato in pazienti.php nella lista dei pazienti registrati.
+ */
 .btn-delete-paziente {
     opacity: 0;
     transition: all 0.2s ease;
     color: #e57373;
 }
 
+/* Mostra il pulsante quando si fa hover sulla card paziente */
 .hover-lift:hover .btn-delete-paziente {
     opacity: 0.6;
 }
@@ -560,6 +500,12 @@ html[data-theme="dark"] .alert-info {
     transform: scale(1.1);
 }
 
+/*
+ * Pallini colore nella modale SweetAlert del calendario:
+ * Quando si crea/modifica un evento, si può scegliere un colore.
+ * Ogni pallino è un cerchio colorato selezionabile.
+ * Usato in calendario.php nelle funzioni openNewEvent / openEditEvent.
+ */
 .swal-color-option {
     width: 28px;
     height: 28px;
@@ -571,13 +517,64 @@ html[data-theme="dark"] .alert-info {
     transition: all 0.2s;
 }
 
+/* Pallino colore selezionato — bordo + leggero ingrandimento */
 .swal-color-option.selected {
     border-color: rgba(0, 0, 0, 0.25);
     transform: scale(1.15);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* ── OVERLAY E UI AGGIUNTIVA ─────────────────────────────────────────── */
+/*
+ * Textarea "Note Veloci" nella dashboard (index.php):
+ * Ha uno sfondo caldo (beige chiaro) con bordo giallo a sinistra.
+ * In dark mode diventa sfondo scuro con bordo giallo mantenuto.
+ */
+#quick-notes {
+    background-color: #fdfbf7 !important;
+    color: #212529;
+}
+
+[data-bs-theme="dark"] #quick-notes {
+    background-color: var(--bg-input) !important;
+    color: var(--text-heading) !important;
+    border-left-color: #f6c23e !important;
+    box-shadow: none !important;
+}
+
+/*
+ * Barra di ricerca nella dashboard (index.php):
+ * Card con sfondo gradiente bianco→azzurrino e bordo blu sottile.
+ * Permette ricerca rapida pazienti per avviare nuova visita.
+ */
+.search-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f4f7fe 100%);
+    border: 1px solid rgba(59, 130, 246, 0.15) !important;
+}
+
+[data-bs-theme="dark"] .search-card {
+    background: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Rimuovi artefatti visivi dall'icona lente e input nella search bar in dark mode */
+[data-bs-theme="dark"] .search-card .input-group-text {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+[data-bs-theme="dark"] .search-card .form-control {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/*
+ * Overlay di salvataggio (schermo intero):
+ * Mostrato durante il salvataggio di un paziente/visita/anamnesi.
+ * Sfondo blur semitrasparente che impedisce interazione.
+ * Usato in paziente_nuovo.php, visita_nuova.php, visita_anamnesi.php.
+ */
 .saving-overlay {
     display: none;
     position: fixed;
@@ -593,16 +590,11 @@ html[data-theme="dark"] .alert-info {
     flex-direction: column;
 }
 
-[data-theme="dark"] .saving-overlay {
+[data-bs-theme="dark"] .saving-overlay {
     background: rgba(15, 17, 23, 0.85);
 }
 
-.max-w-1200 {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Stile textarea personalizzato */
+/* Textarea globali — bordi arrotondati e focus blu (usato ovunque ci sia un <textarea>) */
 textarea.form-control {
     border-radius: 0.75rem;
     border: 1px solid #dee2e6;
@@ -614,18 +606,11 @@ textarea.form-control:focus {
     box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.1);
 }
 
-/* ── BARRA DI RICERCA DASHBOARD ──────────────────────────────────────────── */
-.search-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f4f7fe 100%);
-    border: 1px solid rgba(59, 130, 246, 0.15) !important;
-}
-
-[data-theme="dark"] .search-card {
-    background: var(--bg-card) !important;
-    border-color: var(--border-color) !important;
-}
-
-/* ── PROSSIMI APPUNTAMENTI - Badge colore evento ─────────────────────── */
+/*
+ * Pallino colorato "evento" nei prossimi appuntamenti (dashboard):
+ * Piccolo cerchio che indica il colore dell'evento del calendario.
+ * Usato in index.php nel blocco "Prossimi Appuntamenti".
+ */
 .event-dot {
     width: 10px;
     height: 10px;
@@ -634,7 +619,12 @@ textarea.form-control:focus {
     display: inline-block;
 }
 
-/* ── BOTTONE SALVA (WAVE EFFECT) ──────────────────────────────────────── */
+/*
+ * Bottone "Salva" con effetto onda (wave):
+ * Sfondo bianco con un'onda luminosa verde/blu che lo attraversa
+ * continuamente (animazione saveWave). Dà un aspetto premium.
+ * Usato come pulsante di submit nei form (paziente_nuovo, visita_nuova).
+ */
 .btn-save {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -646,6 +636,7 @@ textarea.form-control:focus {
     z-index: 1;
 }
 
+/* Pseudo-elemento con il gradiente onda animata */
 .btn-save::before {
     content: '';
     position: absolute;
@@ -660,6 +651,7 @@ textarea.form-control:focus {
     pointer-events: none;
 }
 
+/* Animazione onda: si sposta da angolo in basso a sinistra verso alto destra */
 @keyframes saveWave {
     0% {
         transform: translate(-60%, -60%);
@@ -677,13 +669,18 @@ textarea.form-control:focus {
     color: #1e293b;
 }
 
-[data-theme="dark"] .btn-save {
+/* Dark mode: sfondo scuro e testo chiaro */
+[data-bs-theme="dark"] .btn-save {
     background: var(--bg-input);
     border-color: var(--border-color);
     color: var(--text-heading);
 }
 
-/* ── AVATAR PROFILO PAZIENTE ─────────────────────────────────────────── */
+/*
+ * Avatar grande del profilo paziente (80×80px):
+ * Cerchio con iniziale del nome. Mostrato nella pagina dettaglio
+ * paziente (paziente_dettaglio.php) nell'header del profilo.
+ */
 .avatar-circle-large {
     width: 80px;
     height: 80px;
@@ -696,199 +693,251 @@ textarea.form-control:focus {
     margin: 0 auto;
 }
 
-/* ── NAVBAR PAGINE INTERNE E ACCORDION ─────────────────────────────────── */
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── ANAMNESI — Accordion e Navbar pagine interne ─────────────────────── */
+/*                                                                          */
+/*  Stili per la pagina anamnesi (visita_anamnesi.php) e la pagina          */
+/*  nuova visita (visita_nuova.php) che usano un accordion Bootstrap        */
+/*  per le sezioni e una navbar interna fissa in alto.                       */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+/* Pulsante accordion con sfondo verde chiaro (sezioni anamnesi) */
 .custom-anamnesi-btn {
     background-color: rgba(46, 204, 113, 0.1) !important;
     color: var(--color-primary-dark) !important;
 }
 
+/* Sezione aperta: verde leggermente più intenso */
 .custom-anamnesi-btn:not(.collapsed) {
     background-color: rgba(46, 204, 113, 0.15) !important;
     color: var(--color-primary-dark) !important;
 }
 
-[data-theme="dark"] .navbar.bg-white,
-[data-theme="dark"] .navbar-light.bg-white {
-    background-color: var(--bg-card) !important;
-    border-bottom: 1px solid var(--border-color) !important;
-}
-
-[data-theme="dark"] .accordion-button,
-[data-theme="dark"] .accordion-button.custom-anamnesi-btn {
+/* Dark mode: sfondo scuro quando aperto */
+[data-bs-theme="dark"] .accordion-button.custom-anamnesi-btn {
     background-color: var(--bg-input) !important;
     color: var(--text-heading) !important;
 }
 
-[data-theme="dark"] .accordion-button.collapsed,
-[data-theme="dark"] .accordion-button.custom-anamnesi-btn.collapsed {
+/* Dark mode: sfondo verde trasparente quando chiuso */
+[data-bs-theme="dark"] .accordion-button.custom-anamnesi-btn.collapsed {
     background-color: rgba(46, 204, 113, 0.08) !important;
     color: var(--text-heading) !important;
 }
 
-[data-theme="dark"] .accordion-body {
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── SWEETALERT2 — Popup personalizzati ──────────────────────────────────── */
+/*                                                                          */
+/*  SweetAlert2 è una libreria esterna per popup/alert eleganti.            */
+/*  Non usa le variabili Bootstrap, quindi serve override manuale           */
+/*  per il dark mode. Usato per conferme, successi e form inline            */
+/*  (es. creazione/modifica eventi calendario, conferma eliminazione).       */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+[data-bs-theme="dark"] .swal2-popup {
     background-color: var(--bg-card) !important;
-}
-
-[data-theme="dark"] .list-group-item {
-    background-color: transparent !important;
-    color: var(--text-body) !important;
-    border-color: var(--border-color) !important;
-}
-
-/* ══════════════════════════════════════════════════════════════════════════ */
-/* ── CALENDARIO - DARK MODE ────────────────────────────────────────────── */
-/* ══════════════════════════════════════════════════════════════════════════ */
-[data-theme="dark"] #calendar-container {
-    background: var(--bg-card) !important;
-}
-
-[data-theme="dark"] .fc-toolbar-title {
     color: var(--text-heading) !important;
 }
 
-[data-theme="dark"] .fc-button-primary {
+[data-bs-theme="dark"] .swal2-title {
+    color: var(--text-heading) !important;
+}
+
+[data-bs-theme="dark"] .swal2-html-container {
+    color: var(--text-body) !important;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── FULLCALENDAR — Calendario appuntamenti ──────────────────────────────── */
+/*                                                                          */
+/*  FullCalendar è una libreria JS esterna per il calendario interattivo.   */
+/*  Usata in calendario.php per vista mese/settimana/giorno.                */
+/*  Non usa variabili Bootstrap, quindi serve override manuale per dark.     */
+/*                                                                          */
+/*  Prefissi:                                                               */
+/*    .fc-*  = classi generate da FullCalendar                              */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+/* Container esterno del calendario (il div wrapper) */
+[data-bs-theme="dark"] #calendar-container {
+    background: var(--bg-card) !important;
+}
+
+/* Titolo "Aprile 2026" nella toolbar del calendario */
+[data-bs-theme="dark"] .fc-toolbar-title {
+    color: var(--text-heading) !important;
+}
+
+/* Pulsanti toolbar: "Oggi", "< >", "Mese/Settimana/Giorno" */
+[data-bs-theme="dark"] .fc-button-primary {
     background-color: var(--bg-input) !important;
     color: var(--text-heading) !important;
     border-color: var(--border-color) !important;
 }
 
-[data-theme="dark"] .fc-button-primary:hover,
-[data-theme="dark"] .fc-button-primary:not(:disabled).fc-button-active,
-[data-theme="dark"] .fc-button-primary:not(:disabled):active {
+/* Pulsanti toolbar: hover e stato attivo */
+[data-bs-theme="dark"] .fc-button-primary:hover,
+[data-bs-theme="dark"] .fc-button-primary:not(:disabled).fc-button-active,
+[data-bs-theme="dark"] .fc-button-primary:not(:disabled):active {
     background-color: #333854 !important;
     color: #fff !important;
 }
 
-/* ── STRUTTURA E GRIGLIA CALENDARIO ──────────────────────────────────────── */
-[data-theme="dark"] .fc-theme-standard td,
-[data-theme="dark"] .fc-theme-standard th,
-[data-theme="dark"] .fc-theme-bootstrap5 td,
-[data-theme="dark"] .fc-theme-bootstrap5 th,
-[data-theme="dark"] .fc-scrollgrid {
+/* Bordi celle griglia del calendario */
+[data-bs-theme="dark"] .fc-theme-standard td,
+[data-bs-theme="dark"] .fc-theme-standard th,
+[data-bs-theme="dark"] .fc-theme-bootstrap5 td,
+[data-bs-theme="dark"] .fc-theme-bootstrap5 th,
+[data-bs-theme="dark"] .fc-scrollgrid {
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-[data-theme="dark"] .fc-theme-standard .fc-scrollgrid,
-[data-theme="dark"] .fc-theme-bootstrap5 .fc-scrollgrid {
+[data-bs-theme="dark"] .fc-theme-standard .fc-scrollgrid,
+[data-bs-theme="dark"] .fc-theme-bootstrap5 .fc-scrollgrid {
     border-collapse: collapse !important;
 }
 
-[data-theme="dark"] .fc-timegrid-slot {
+/* Righe orarie nella vista settimana/giorno */
+[data-bs-theme="dark"] .fc-timegrid-slot {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
-/* ── INTESTAZIONI COLONNE E ANGOLI ───────────────────────────────────────── */
-[data-theme="dark"] .fc-col-header-cell {
+/* Intestazioni colonne (LUN, MAR, MER...) */
+[data-bs-theme="dark"] .fc-col-header-cell {
     background-color: var(--bg-input) !important;
     border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
     box-shadow: none !important;
 }
 
-[data-theme="dark"] .fc-col-header-cell-cushion,
-[data-theme="dark"] .fc-daygrid-day-number {
+/* Testo intestazioni e numeri giorno */
+[data-bs-theme="dark"] .fc-col-header-cell-cushion,
+[data-bs-theme="dark"] .fc-daygrid-day-number {
     color: var(--text-heading) !important;
 }
 
-[data-theme="dark"] .fc-col-header-cell-cushion {
+[data-bs-theme="dark"] .fc-col-header-cell-cushion {
     padding: 8px 0 !important;
     display: block;
 }
 
-/* Fix per angoli bianchi e assi laterali */
-[data-theme="dark"] .fc .fc-timegrid-axis-frame,
-[data-theme="dark"] .fc-timegrid-axis,
-[data-theme="dark"] .fc-scrollgrid-corner,
-[data-theme="dark"] .fc-scrollgrid-corner-thin,
-[data-theme="dark"] .fc-scrollgrid-corner-thick,
-[data-theme="dark"] .fc-scrollgrid-section-header th.fc-timegrid-axis {
+/* Angoli e assi laterali della griglia (previene artefatti bianchi) */
+[data-bs-theme="dark"] .fc .fc-timegrid-axis-frame,
+[data-bs-theme="dark"] .fc-timegrid-axis,
+[data-bs-theme="dark"] .fc-scrollgrid-corner,
+[data-bs-theme="dark"] .fc-scrollgrid-corner-thin,
+[data-bs-theme="dark"] .fc-scrollgrid-corner-thick,
+[data-bs-theme="dark"] .fc-scrollgrid-section-header th.fc-timegrid-axis {
     background-color: var(--bg-card) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
     box-shadow: none !important;
 }
 
-[data-theme="dark"] .fc-timegrid-slot-label-cushion,
-[data-theme="dark"] .fc-timegrid-axis-cushion {
+/* Etichette orarie (08:00, 09:00...) nella colonna a sinistra */
+[data-bs-theme="dark"] .fc-timegrid-slot-label-cushion,
+[data-bs-theme="dark"] .fc-timegrid-axis-cushion {
     color: var(--text-muted) !important;
 }
 
-/* ── EVIDENZIAZIONI (OGGI E HOVER) E PREVENZIONE BIANCHI BOOTSTRAP ─────── */
-[data-theme="dark"] .fc-day-today {
+/* Cella "oggi" — sfondo verde molto tenue */
+[data-bs-theme="dark"] .fc-day-today {
     background-color: rgba(46, 204, 113, 0.08) !important;
     box-shadow: none !important;
 }
 
-/* Preveniamo sfondi sbiaditi e bianchi sopra le intestazioni */
-[data-theme="dark"] th.fc-day-today {
-    background-color: #1a2228 !important; /* Oscuriamo solidamente la casella th di oggi */
+/* Header cella "oggi" — sfondo solido per evitare trasparenza confusa */
+[data-bs-theme="dark"] th.fc-day-today {
+    background-color: #1a2228 !important;
 }
 
-[data-theme="dark"] .fc-daygrid-day:hover {
+/* Hover sulle celle giorno nella vista mese */
+[data-bs-theme="dark"] .fc-daygrid-day:hover {
     background-color: rgba(255, 255, 255, 0.03) !important;
 }
 
-/* Pulizia degli underlays bianchi Bootstrap */
-[data-theme="dark"] .fc-theme-bootstrap5 .table-light,
-[data-theme="dark"] .fc-theme-bootstrap5 .table-active,
-[data-theme="dark"] .fc-theme-bootstrap5 thead th {
+/* Pulizia sfondi bianchi che Bootstrap FullCalendar theme introduce */
+[data-bs-theme="dark"] .fc-theme-bootstrap5 .table-light,
+[data-bs-theme="dark"] .fc-theme-bootstrap5 .table-active,
+[data-bs-theme="dark"] .fc-theme-bootstrap5 thead th {
     --bs-table-bg: transparent !important;
     --bs-table-accent-bg: transparent !important;
     background-color: transparent !important;
     box-shadow: none !important;
 }
 
-/* ── BOOTSTRAP DATEPICKER - DARK MODE ─────────────────────────────────── */
-[data-theme="dark"] .datepicker {
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── BOOTSTRAP DATEPICKER — Selettore data ───────────────────────────────── */
+/*                                                                          */
+/*  Bootstrap Datepicker è un plugin jQuery per selezionare date.            */
+/*  Usato nella pagina nuovo paziente (paziente_nuovo.php) e nella          */
+/*  pagina dettaglio paziente (paziente_dettaglio.php) per la data          */
+/*  di nascita. Non usa variabili Bootstrap, serve override manuale.        */
+/*                                                                          */
+/*  Prefissi:                                                               */
+/*    .datepicker = classi del plugin datepicker                            */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+/* Container generale del datepicker popup */
+[data-bs-theme="dark"] .datepicker {
     background-color: var(--bg-card) !important;
     border-color: var(--border-color) !important;
     color: var(--text-heading) !important;
 }
 
-[data-theme="dark"] .datepicker table tr td,
-[data-theme="dark"] .datepicker table tr th {
+/* Celle numeri giorno e intestazioni settimana */
+[data-bs-theme="dark"] .datepicker table tr td,
+[data-bs-theme="dark"] .datepicker table tr th {
     color: var(--text-heading) !important;
 }
 
-[data-theme="dark"] .datepicker table tr td.day:hover,
-[data-theme="dark"] .datepicker table tr td.day.focused,
-[data-theme="dark"] .datepicker table tr td.day:focus,
-[data-theme="dark"] .datepicker table tr td span:hover,
-[data-theme="dark"] .datepicker table tr td.today.focused,
-[data-theme="dark"] .datepicker table tr td.today:focus {
+/* Hover e focus su un giorno */
+[data-bs-theme="dark"] .datepicker table tr td.day:hover,
+[data-bs-theme="dark"] .datepicker table tr td.day.focused,
+[data-bs-theme="dark"] .datepicker table tr td.day:focus,
+[data-bs-theme="dark"] .datepicker table tr td span:hover,
+[data-bs-theme="dark"] .datepicker table tr td.today.focused,
+[data-bs-theme="dark"] .datepicker table tr td.today:focus {
     background: var(--bg-input) !important;
     color: var(--text-heading) !important;
     outline: none !important;
 }
 
-[data-theme="dark"] .datepicker table tr td.active,
-[data-theme="dark"] .datepicker table tr td.active:hover,
-[data-theme="dark"] .datepicker table tr td span.active,
-[data-theme="dark"] .datepicker table tr td span.active:hover {
+/* Giorno selezionato — sfondo verde primario */
+[data-bs-theme="dark"] .datepicker table tr td.active,
+[data-bs-theme="dark"] .datepicker table tr td.active:hover,
+[data-bs-theme="dark"] .datepicker table tr td span.active,
+[data-bs-theme="dark"] .datepicker table tr td span.active:hover {
     background: var(--color-primary) !important;
     color: #fff !important;
 }
 
-[data-theme="dark"] .datepicker table tr td.today,
-[data-theme="dark"] .datepicker table tr td.today:hover,
-[data-theme="dark"] .datepicker table tr td span.focused,
-[data-theme="dark"] .datepicker table tr td span:focus {
+/* Giorno "oggi" — solo testo verde, nessuno sfondo */
+[data-bs-theme="dark"] .datepicker table tr td.today,
+[data-bs-theme="dark"] .datepicker table tr td.today:hover,
+[data-bs-theme="dark"] .datepicker table tr td span.focused,
+[data-bs-theme="dark"] .datepicker table tr td span:focus {
     background: rgba(32, 18, 18, 0) !important;
     color: var(--color-primary) !important;
 }
 
-[data-theme="dark"] .datepicker table tr td.old,
-[data-theme="dark"] .datepicker table tr td.new {
+/* Giorni del mese precedente/successivo — testo smorzato */
+[data-bs-theme="dark"] .datepicker table tr td.old,
+[data-bs-theme="dark"] .datepicker table tr td.new {
     color: var(--text-muted) !important;
 }
 
-[data-theme="dark"] .datepicker .datepicker-switch,
-[data-theme="dark"] .datepicker .prev,
-[data-theme="dark"] .datepicker .next {
+/* Frecce navigazione (< >) e nome mese/anno nel datepicker */
+[data-bs-theme="dark"] .datepicker .datepicker-switch,
+[data-bs-theme="dark"] .datepicker .prev,
+[data-bs-theme="dark"] .datepicker .next {
     color: var(--text-heading) !important;
 }
 
-[data-theme="dark"] .datepicker .datepicker-switch:hover,
-[data-theme="dark"] .datepicker .prev:hover,
-[data-theme="dark"] .datepicker .next:hover {
+[data-bs-theme="dark"] .datepicker .datepicker-switch:hover,
+[data-bs-theme="dark"] .datepicker .prev:hover,
+[data-bs-theme="dark"] .datepicker .next:hover {
     background: var(--bg-input) !important;
 }
-

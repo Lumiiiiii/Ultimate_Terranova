@@ -21,13 +21,32 @@ try {
         $color = $_POST['color'] ?? '#2ecc71';
 
         $start_datetime = $date . ' ' . $hour . ':00';
+        $end_datetime = date('Y-m-d H:i:s', strtotime($start_datetime) + 3600); // 1 ora di durata
 
-        $query = "UPDATE eventi SET title = :title, start = :start, color = :color WHERE id = :id";
+        // Controllo sovrapposizioni escludendo l'evento corrente
+        $check_query = "SELECT COUNT(*) as conflicts FROM eventi 
+                        WHERE id != :id AND (:new_start < IFNULL(end, DATE_ADD(start, INTERVAL 1 HOUR))) 
+                        AND (:new_end > start)";
+        $check_stmt = $db->prepare($check_query);
+        $check_stmt->execute([
+            ':id' => $id,
+            ':new_start' => $start_datetime,
+            ':new_end' => $end_datetime
+        ]);
+        $conflict_result = $check_stmt->fetch();
+
+        if ($conflict_result && $conflict_result['conflicts'] > 0) {
+            echo json_encode(['success' => false, 'error' => "Impossibile spostare: esiste già un appuntamento a quell'ora."]);
+            exit;
+        }
+
+        $query = "UPDATE eventi SET title = :title, start = :start, end = :end, color = :color WHERE id = :id";
         $statement = $db->prepare($query);
         $success = $statement->execute([
             ':id' => $id,
             ':title' => $title,
             ':start' => $start_datetime,
+            ':end' => $end_datetime,
             ':color' => $color
         ]);
         

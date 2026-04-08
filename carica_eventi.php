@@ -13,6 +13,15 @@ try {
     // Recuperiamo tutti i risultati come array associativo
     $risultati = $statement->fetchAll(PDO::FETCH_ASSOC);
     
+    // Imposta una durata di default di 1 ora e disattiva allDay per la vista settimanale/giornaliera
+    foreach ($risultati as &$evento) {
+        if (empty($evento['end']) && !empty($evento['start'])) {
+            $evento['end'] = date('Y-m-d H:i:s', strtotime($evento['start']) + 3600);
+        }
+        $evento['allDay'] = false;
+    }
+    unset($evento);
+    
     // 3. Comunichiamo al browser che stiamo inviando un file JSON
     header('Content-Type: application/json');
     
