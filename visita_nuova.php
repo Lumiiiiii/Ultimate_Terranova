@@ -24,6 +24,14 @@ if (!$patient) {
     exit;
 }
 
+// Pre-caricamento per Piano Terapeutico
+$db = getDB();
+$stmtMed = $db->query("SELECT id, nome, dosaggio_standard FROM medicinali WHERE attivo = 1 ORDER BY nome ASC");
+$lista_medicinali = $stmtMed->fetchAll(PDO::FETCH_ASSOC);
+
+$stmtAlim = $db->query("SELECT id, nome FROM lista_alimenti ORDER BY nome ASC");
+$lista_alimenti = $stmtAlim->fetchAll(PDO::FETCH_ASSOC);
+
 // Recupera l'anamnesi precedente per il widget accordion
 $anamnesi_passata = $patientManager->getAnamnesi($paziente_id);
 
@@ -31,6 +39,19 @@ $pageTitle = "Nuova Visita - " . htmlspecialchars($patient['nome_cognome']);
 $currentPage = "index";
 include 'includes/header.php';
 ?>
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <style>
+        .select2-container--bootstrap-5 .select2-selection {
+            min-height: calc(2.25rem + 2px);
+            padding: .375rem .75rem;
+            background-color: #f8f9fa; /* bg-light */
+            border: 1px solid #dee2e6;
+            border-radius: .375rem;
+        }
+    </style>
 
     <!-- Overlay di caricamento -->
     <div class="saving-overlay" id="loadingOverlay">
@@ -221,7 +242,59 @@ include 'includes/header.php';
                     Aggiungi Domanda
                 </button>
 
-                <!-- SEZIONE 4: Note Finali -->
+                <!-- SEZIONE 4: Piano Terapeutico (Nuova) -->
+                <h6 class="text-primary border-bottom pb-2 mt-5 mb-3 d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                    Piano Terapeutico
+                </h6>
+                <p class="text-muted small mb-3">Imposta i consigli nutrizionali e componi le prescrizioni di integratori per questo mese.</p>
+                
+                <div class="row g-4 mb-4">
+                    <!-- Colonna Integratori -->
+                    <div class="col-md-7">
+                        <label class="form-label small fw-bold text-dark">Integratori Prescritti</label>
+                        <div id="prescrizioni-container">
+                            <!-- Riga 1 (Base) -->
+                            <div class="d-flex gap-2 mb-2 prescrizione-row">
+                                <div class="flex-grow-1" style="flex-basis: 40%;">
+                                    <select name="integratori[]" class="form-select select2-medicinali">
+                                        <option value=""></option>
+                                        <?php foreach($lista_medicinali as $med): ?>
+                                            <option value="<?= $med['id'] ?>" data-dosaggio="<?= htmlspecialchars($med['dosaggio_standard']) ?>"><?= htmlspecialchars($med['nome']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div style="flex-basis: 35%;">
+                                    <input type="text" name="dosaggi[]" class="form-control bg-light" placeholder="Dosaggio es. 2 compresse">
+                                </div>
+                                <div style="flex-basis: 25%;">
+                                    <input type="text" name="durate[]" class="form-control bg-light" placeholder="Durata es. 30 gg">
+                                </div>
+                                <button type="button" class="btn btn-outline-danger btn-sm border-0 px-2 shadow-none hover-lift opacity-50" onclick="rimuoviPrescrizione(this)" title="Rimuovi riga">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-light fw-medium mt-2 hover-lift d-flex align-items-center gap-1" onclick="aggiungiPrescrizione()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Aggiungi Integratore
+                        </button>
+                    </div>
+
+                    <!-- Colonna Alimenti Evitare -->
+                    <div class="col-md-5">
+                        <label class="form-label small fw-bold text-dark">Alimenti da Evitare / Sospendere</label>
+                        <select name="alimenti[]" class="form-select select2-alimenti" multiple="multiple">
+                            <?php foreach($lista_alimenti as $alim): ?>
+                                <option value="<?= $alim['id'] ?>"><?= htmlspecialchars($alim['nome']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="form-text small opacity-75 mt-2">Gli alimenti selezionati resteranno <span class="fw-bold">Attivi</span> nella scheda paziente finché non verranno revocati.</div>
+                    </div>
+                </div>
+
+                <!-- SEZIONE 5: Note Finali -->
                 <h6 class="text-primary border-bottom pb-2 mt-5 mb-3 d-flex align-items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
@@ -251,9 +324,95 @@ include 'includes/header.php';
         </main>
     </div>
 
-    <!-- SCRIPT: Invio visita via AJAX e Gestione Domande -->
+    <!-- Bootstrap/jQuery base necessari per Select2 e App -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- SCRIPT: Invio visita via AJAX, Domande Dinamiche e Piano Terapeutico -->
     <script>
     let contatoreDomande = 0;
+
+    // --- Inizializzazione Select2 ---
+    function initSelect2() {
+        $('.select2-medicinali').select2({
+            theme: 'bootstrap-5',
+            placeholder: "Cerca e inserisci un rimedio...",
+            allowClear: true,
+            width: '100%'
+        }).on('select2:select', function (e) {
+            // Auto compilazione dose standard
+            var data = e.params.data;
+            var dosaggioStandard = $(data.element).attr('data-dosaggio');
+            var riga = $(this).closest('.prescrizione-row');
+            var inputDosaggio = riga.find('input[name="dosaggi[]"]');
+            if(dosaggioStandard && inputDosaggio.val() === '') {
+                inputDosaggio.val(dosaggioStandard);
+            }
+        });
+
+        $('.select2-alimenti').select2({
+            theme: 'bootstrap-5',
+            placeholder: "Cerca e aggiungi cibi da escludere temporaneamente...",
+            width: '100%'
+        });
+    }
+
+    $(document).ready(function() {
+        initSelect2();
+    });
+
+    // --- Piano Terapeutico: Aggiungi/Rimuovi righe ---
+    function aggiungiPrescrizione() {
+        const container = document.getElementById('prescrizioni-container');
+        const count = container.querySelectorAll('.prescrizione-row').length;
+        
+        const nuovaRiga = document.createElement('div');
+        nuovaRiga.className = 'd-flex gap-2 mb-2 prescrizione-row';
+        nuovaRiga.innerHTML = `
+            <div class="flex-grow-1" style="flex-basis: 40%;">
+                <select name="integratori[]" class="form-select select2-medicinali-dyn-${count}">
+                    <option value=""></option>
+                    <?php foreach($lista_medicinali as $med): ?>
+                        <option value="<?= $med['id'] ?>" data-dosaggio="<?= htmlspecialchars($med['dosaggio_standard']) ?>"><?= addslashes(htmlspecialchars($med['nome'])) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div style="flex-basis: 35%;">
+                <input type="text" name="dosaggi[]" class="form-control bg-light" placeholder="Dosaggio">
+            </div>
+            <div style="flex-basis: 25%;">
+                <input type="text" name="durate[]" class="form-control bg-light" placeholder="Durata">
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm border-0 px-2 shadow-none hover-lift opacity-50" onclick="rimuoviPrescrizione(this)" title="Rimuovi riga">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        `;
+        container.appendChild(nuovaRiga);
+        
+        // Inizializza select2 sulla nuova select
+        $('.select2-medicinali-dyn-' + count).select2({
+            theme: 'bootstrap-5',
+            placeholder: "Cerca e inserisci...",
+            allowClear: true,
+            width: '100%'
+        }).on('select2:select', function (e) {
+            var ds = $(e.params.data.element).attr('data-dosaggio');
+            var inputD = $(this).closest('.prescrizione-row').find('input[name="dosaggi[]"]');
+            if(ds && inputD.val() === '') inputD.val(ds);
+        });
+    }
+
+    function rimuoviPrescrizione(btn) {
+        // Se è l'ultima riga rimasta, svuotiamo solo i campi
+        let container = document.getElementById('prescrizioni-container');
+        if (container.querySelectorAll('.prescrizione-row').length > 1) {
+            btn.closest('.prescrizione-row').remove();
+        } else {
+            let row = btn.closest('.prescrizione-row');
+            $(row).find('select').val(null).trigger('change');
+            row.querySelectorAll('input').forEach(input => input.val = '');
+        }
+    }
 
     function aggiornaContatore() {
         const badge = document.getElementById('contatore-domande');

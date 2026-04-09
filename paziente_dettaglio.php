@@ -65,34 +65,30 @@ include 'includes/sidebar.php';
                 
                 <!-- Colonna Sinistra: Profilo Paziente e Grafici -->
                 <div class="col-lg-4">
-                    <div class="d-flex flex-column gap-4 h-100">
+                    <div class="d-flex flex-column gap-3 h-100">
                     
                         <!-- Card Profilo Paziente -->
-                        <div class="card border-0 shadow-sm rounded-4 bg-white text-center p-4 position-relative">
+                        <div class="card border-0 shadow-sm rounded-4 bg-white text-center p-3 position-relative">
                         
                         <!-- Bottone Elimina Paziente -->
-                        <button type="button" class="btn btn-sm btn-outline-danger position-absolute border-0 hover-lift" style="top: 15px; right: 15px;" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" title="Elimina Paziente">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <button type="button" class="btn btn-sm btn-outline-danger position-absolute border-0 hover-lift" style="top: 10px; right: 10px;" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" title="Elimina Paziente">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                         </button>
-
-                        <div class="avatar-circle-large bg-light text-primary mb-3 mt-2">
-                            <?= strtoupper(substr($patient['nome_cognome'], 0, 1)) ?>
-                        </div>
                         
-                        <h4 class="fw-bold mb-4"><?= htmlspecialchars($patient['nome_cognome']) ?></h4>
+                        <h5 class="fw-bold mb-3 mt-1"><?= htmlspecialchars($patient['nome_cognome']) ?></h5>
 
                         <?php if (!$haFattoAnamnesi): ?>
-                            <a href="visita_anamnesi.php?paziente_id=<?= $id ?>" class="btn btn-gradient btn-lg w-100 mb-4 rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <a href="visita_anamnesi.php?paziente_id=<?= $id ?>" class="btn btn-gradient w-100 mb-3 rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2" style="padding: 0.5rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 Fai anamnesi (prima visita)
                             </a>
                         <?php else: ?>
-                            <a href="visita_nuova.php?paziente_id=<?= $id ?>" class="btn btn-gradient btn-lg w-100 mb-4 rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <a href="visita_nuova.php?paziente_id=<?= $id ?>" class="btn btn-gradient w-100 mb-3 rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2" style="padding: 0.5rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                                 </svg>
                                 Nuova visita
@@ -100,8 +96,8 @@ include 'includes/sidebar.php';
                         <?php endif; ?>
 
                         <!-- Dettagli anagrafici -->
-                        <div class="text-start border-top pt-4 small flex-grow-1">
-                            <div class="d-flex justify-content-between mb-3">
+                        <div class="text-start border-top pt-3 small flex-grow-1">
+                            <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted d-flex align-items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -109,7 +105,7 @@ include 'includes/sidebar.php';
                                 </span>
                                 <span class="fw-medium text-dark"><?= !empty($patient['eta']) ? $patient['eta'] . ' anni' : '-' ?></span>
                             </div>
-                            <div class="d-flex justify-content-between mb-3">
+                            <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted d-flex align-items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -117,7 +113,7 @@ include 'includes/sidebar.php';
                                 </span>
                                 <span class="fw-medium text-dark text-end ms-3"><?= !empty($patient['telefono']) ? htmlspecialchars($patient['telefono']) : '-' ?></span>
                             </div>
-                            <div class="d-flex justify-content-between mb-3">
+                            <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted d-flex align-items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -125,7 +121,7 @@ include 'includes/sidebar.php';
                                 </span>
                                 <span class="fw-medium text-dark text-end ms-3"><?= !empty($patient['email']) ? htmlspecialchars($patient['email']) : '-' ?></span>
                             </div>
-                            <div class="d-flex justify-content-between mb-3">
+                            <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted d-flex align-items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -145,8 +141,8 @@ include 'includes/sidebar.php';
                         </div>
                         
                         <!-- Bottone Modifica -->
-                        <button type="button" class="btn btn-light w-100 rounded-3 mt-4 shadow-sm text-muted fw-medium d-flex align-items-center justify-content-center gap-2 hover-lift" data-bs-toggle="modal" data-bs-target="#editModal">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <button type="button" class="btn btn-light w-100 rounded-3 mt-3 py-1 shadow-sm text-muted fw-medium d-flex align-items-center justify-content-center gap-2 hover-lift" data-bs-toggle="modal" data-bs-target="#editModal">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                               <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                             Modifica Dati
@@ -154,12 +150,12 @@ include 'includes/sidebar.php';
                         </div> <!-- Fine Card Profilo -->
 
                         <!-- Grafico Ore Sonno -->
-                        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 flex-grow-1 d-flex flex-column">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="fw-bold mb-0">Sonno</h5>
-                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 small fw-medium">Ore/Notte</span>
+                        <div class="card border-0 shadow-sm rounded-4 bg-white p-3 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0">Sonno</h6>
+                                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-1 small fw-medium" style="font-size: 0.75rem;">Ore/Notte</span>
                             </div>
-                            <div class="flex-grow-1" style="min-height: 180px; position: relative;">
+                            <div style="height: 120px; position: relative;">
                                 <?php if(empty($sleepData)): ?>
                                     <div class="d-flex align-items-center justify-content-center h-100 bg-light rounded-3 border">
                                         <p class="text-muted mb-0 small text-center p-2"><i class="bi bi-info-circle me-1"></i> Nessun dato registrato</p>

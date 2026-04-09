@@ -180,7 +180,7 @@ include 'includes/sidebar.php';
 
             <!-- ── COLONNA 3: Medicinali (Esistente) ── -->
             <div class="col-md-4">
-                <a href="medicinali_gestione.php" class="card h-100 border-0 shadow-sm p-4 text-decoration-none glass hover-lift rounded-4">
+                <a href="catalogo_gestione.php" class="card h-100 border-0 shadow-sm p-4 text-decoration-none glass hover-lift rounded-4">
                     <div class="d-flex flex-column h-100 justify-content-center align-items-center text-center">
                         <div class="p-3 bg-light rounded-circle mb-3">
                             <!-- Icona SVG: cassetto / archivio -->

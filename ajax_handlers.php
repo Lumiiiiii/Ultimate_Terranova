@@ -184,6 +184,41 @@ try {
                     }
                 }
 
+                // 3) Inserisci Prescrizioni (Integratori)
+                $integratori = $_POST['integratori'] ?? [];
+                $dosaggi     = $_POST['dosaggi'] ?? [];
+                $durate      = $_POST['durate'] ?? [];
+                
+                if (!empty($integratori)) {
+                    $stmtPresc = $db->prepare("INSERT INTO prescrizioni (paziente_id, medicinale_id, visita_id, dosaggio, durata, attivo, data_inizio)
+                                               VALUES (:paz_id, :med_id, :visita_id, :dosaggio, :durata, 1, CURDATE())");
+                    foreach ($integratori as $idx => $med_id) {
+                        if (!empty($med_id)) {
+                            $stmtPresc->execute([
+                                ':paz_id'    => $paz_id,
+                                ':med_id'    => (int)$med_id,
+                                ':visita_id' => $visita_id,
+                                ':dosaggio'  => trim($dosaggi[$idx] ?? ''),
+                                ':durata'    => trim($durate[$idx] ?? '')
+                            ]);
+                        }
+                    }
+                }
+
+                // 4) Inserisci Alimenti da Evitare
+                $alimenti = $_POST['alimenti'] ?? [];
+                if (!empty($alimenti)) {
+                    $stmtAlim = $db->prepare("INSERT INTO alimenti_evitare (paziente_id, lista_alimenti_id, attivo) VALUES (:paz_id, :alim_id, 1)");
+                    foreach ($alimenti as $alim_id) {
+                        if (!empty($alim_id)) {
+                            $stmtAlim->execute([
+                                ':paz_id'  => $paz_id,
+                                ':alim_id' => (int)$alim_id
+                            ]);
+                        }
+                    }
+                }
+
                 $db->commit();
                 echo json_encode(['success' => true]);
             } catch (Exception $e) {
@@ -205,6 +240,58 @@ try {
                 $r['ha_anamnesi'] = $patientManager->checkAnamnesi($r['id']);
             }
             echo json_encode(['results' => $results]);
+            break;
+
+        // ── GESTIONE CATALOGO ──
+        case 'create_medicinale':
+            $nome = trim($_POST['nome'] ?? '');
+            $tipologia = trim($_POST['tipologia'] ?? '');
+            $dosaggio = trim($_POST['dosaggio_standard'] ?? '');
+            if (empty($nome)) {
+                echo json_encode(['success' => false, 'error' => 'Il nome è obbligatorio.']);
+                break;
+            }
+            $db = getDB();
+            $stmt = $db->prepare("INSERT INTO medicinali (nome, tipologia, dosaggio_standard, attivo) VALUES (:nome, :tipologia, :dosaggio, 1)");
+            $success = $stmt->execute([':nome' => $nome, ':tipologia' => !empty($tipologia) ? $tipologia : null, ':dosaggio' => !empty($dosaggio) ? $dosaggio : null]);
+            echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nel salvataggio.']);
+            break;
+
+        case 'toggle_medicinale':
+            $id = $_POST['id'] ?? null;
+            $attivo = isset($_POST['attivo']) ? (int)$_POST['attivo'] : null;
+            if (!$id || $attivo === null) {
+                echo json_encode(['success' => false, 'error' => 'Dati mancanti.']);
+                break;
+            }
+            $db = getDB();
+            $stmt = $db->prepare("UPDATE medicinali SET attivo = :attivo WHERE id = :id");
+            $success = $stmt->execute([':attivo' => $attivo, ':id' => $id]);
+            echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nell\'aggiornamento.']);
+            break;
+
+        case 'create_alimento':
+            $nome = trim($_POST['nome'] ?? '');
+            if (empty($nome)) {
+                echo json_encode(['success' => false, 'error' => 'Il nome dell\'alimento è obbligatorio.']);
+                break;
+            }
+            $db = getDB();
+            $stmt = $db->prepare("INSERT INTO lista_alimenti (nome) VALUES (:nome)");
+            $success = $stmt->execute([':nome' => $nome]);
+            echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nel salvataggio.']);
+            break;
+
+        case 'delete_alimento':
+            $id = $_POST['id'] ?? null;
+            if (!$id) {
+                echo json_encode(['success' => false, 'error' => 'ID mancante.']);
+                break;
+            }
+            $db = getDB();
+            $stmt = $db->prepare("DELETE FROM lista_alimenti WHERE id = :id");
+            $success = $stmt->execute([':id' => $id]);
+            echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nell\'eliminazione.']);
             break;
 
         default:
