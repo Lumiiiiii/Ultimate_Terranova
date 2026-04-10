@@ -415,7 +415,7 @@ include 'includes/header.php';
         </div>
     </div>
 
-    <!-- Bootstrap/jQuery base necessari per Select2 e App -->
+    <!-- Bootstrap/jQuery base necessari per Select2 e App  il wifiii!!-->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
