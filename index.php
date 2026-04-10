@@ -136,7 +136,7 @@ include 'includes/sidebar.php';
                         </span>
                         <input type="text" id="search-input" class="form-control border-0 bg-transparent shadow-none fs-5 py-3 fw-medium" 
                                placeholder="Cerca un paziente per avviare istantaneamente una visita..." autocomplete="off">
-                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 me-3 d-none d-md-block">Ricerca Rapida ⚡</span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 me-3 d-none d-md-block">Ricerca Rapida</span>
                     </div>
                 </div>
                 <!-- Dropdown risultati ricerca -->

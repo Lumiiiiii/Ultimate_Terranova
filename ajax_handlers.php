@@ -257,6 +257,20 @@ try {
             echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nel salvataggio.']);
             break;
 
+        case 'get_last_medicinale':
+            $db = getDB();
+            $stmt = $db->query("SELECT id FROM medicinali ORDER BY id DESC LIMIT 1");
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            echo json_encode($row ? ['success' => true, 'id' => $row['id']] : ['success' => false, 'error' => 'Nessun medicinale trovato.']);
+            break;
+
+        case 'get_last_alimento':
+            $db = getDB();
+            $stmt = $db->query("SELECT id FROM lista_alimenti ORDER BY id DESC LIMIT 1");
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            echo json_encode($row ? ['success' => true, 'id' => $row['id']] : ['success' => false, 'error' => 'Nessun alimento trovato.']);
+            break;
+
         case 'toggle_medicinale':
             $id = $_POST['id'] ?? null;
             $attivo = isset($_POST['attivo']) ? (int)$_POST['attivo'] : null;

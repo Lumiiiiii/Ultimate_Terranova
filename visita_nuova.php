@@ -267,29 +267,56 @@ include 'includes/header.php';
                                     </select>
                                 </div>
                                 <div style="flex-basis: 35%;">
-                                    <input type="text" name="dosaggi[]" class="form-control bg-light" placeholder="Dosaggio es. 2 compresse">
+                                    <input type="text" name="dosaggi[]" class="form-control bg-light" placeholder="Dosaggio">
                                 </div>
                                 <div style="flex-basis: 25%;">
-                                    <input type="text" name="durate[]" class="form-control bg-light" placeholder="Durata es. 30 gg">
+                                    <input type="text" name="durate[]" class="form-control bg-light" placeholder="Durata">
                                 </div>
-                                <button type="button" class="btn btn-outline-danger btn-sm border-0 px-2 shadow-none hover-lift opacity-50" onclick="rimuoviPrescrizione(this)" title="Rimuovi riga">
+                                <button type="button" class="btn btn-outline-danger btn-sm border-0 px-2 shadow-none opacity-50" onclick="rimuoviPrescrizione(this)" title="Rimuovi riga">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                 </button>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-sm btn-light fw-medium mt-2 hover-lift d-flex align-items-center gap-1" onclick="aggiungiPrescrizione()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Aggiungi Integratore
-                        </button>
+                        <div class="d-flex gap-2 mt-2 flex-wrap">
+                            <button type="button" class="btn btn-sm btn-light fw-medium d-flex align-items-center gap-1" onclick="aggiungiPrescrizione()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Aggiungi rimedio
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success fw-medium d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#modalNuovoRimedio">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Nuovo rimedio
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Colonna Alimenti Evitare -->
                     <div class="col-md-5">
                         <label class="form-label small fw-bold text-dark">Alimenti da Evitare / Sospendere</label>
-                        <select name="alimenti[]" class="form-select select2-alimenti" multiple="multiple">
-                            <?php foreach($lista_alimenti as $alim): ?>
-                                <option value="<?= $alim['id'] ?>"><?= htmlspecialchars($alim['nome']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                        <div id="alimenti-container">
+                            <!-- Riga 1 (Base) -->
+                            <div class="d-flex gap-2 mb-2 alimento-row">
+                                <div class="flex-grow-1" style="flex-basis: 60%;">
+                                    <select name="alimenti[]" class="form-select select2-alimenti">
+                                        <option value=""></option>
+                                        <?php foreach($lista_alimenti as $alim): ?>
+                                            <option value="<?= $alim['id'] ?>"><?= htmlspecialchars($alim['nome']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div style="flex-basis: 40%;">
+                                    <input type="text" name="durate_alimenti[]" class="form-control bg-light" placeholder="Durata">
+                                </div>
+                                <button type="button" class="btn btn-outline-danger btn-sm border-0 px-2 shadow-none opacity-50" onclick="rimuoviAlimento(this)" title="Rimuovi riga">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 mt-2 flex-wrap">
+                            <button type="button" class="btn btn-sm btn-light fw-medium d-flex align-items-center gap-1" onclick="aggiungiAlimento()">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>Aggiungi alimento
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success fw-medium d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#modalNuovoAlimento">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Nuovo alimento
+                            </button>
+                        </div>
                         <div class="form-text small opacity-75 mt-2">Gli alimenti selezionati resteranno <span class="fw-bold">Attivi</span> nella scheda paziente finché non verranno revocati.</div>
                     </div>
                 </div>
@@ -324,6 +351,70 @@ include 'includes/header.php';
         </main>
     </div>
 
+    <!-- Modal Nuovo Rimedio (inline durante visita) -->
+    <div class="modal fade" id="modalNuovoRimedio" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-bottom-0 pb-0 px-4 pt-4">
+                    <h5 class="modal-title fw-bold">Aggiungi Nuovo Rimedio</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="form-nuovo-rimedio-visita">
+                        <input type="hidden" name="action" value="create_medicinale">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Nome Prodotto *</label>
+                            <input type="text" name="nome" class="form-control bg-light" placeholder="Es. Vitamina C Liposomiale" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Tipologia</label>
+                            <select name="tipologia" class="form-select bg-light">
+                                <option value="Fitoterapico">Fitoterapico</option>
+                                <option value="Micoterapico">Micoterapico</option>
+                                <option value="Floriterapico">Floriterapico</option>
+                                <option value="Oligoelemento">Oligoelemento</option>
+                                <option value="Vitamina">Vitamina</option>
+                                <option value="Generico" selected>Altro / Generico</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold text-muted">Dosaggio consigliato predefinito</label>
+                            <input type="text" name="dosaggio_standard" class="form-control bg-light" placeholder="Es. 30 gocce mattina e sera (facoltativo)">
+                            <div class="form-text small opacity-75">Questo verrà autocompilato quando lo selezioni in visita.</div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary py-3 rounded-3 text-white fw-bold shadow-sm hover-lift" id="btn-salva-rimedio">Registra e Usa in Visita</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nuovo Alimento (inline durante visita) -->
+    <div class="modal fade" id="modalNuovoAlimento" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-bottom-0 pb-0 px-4 pt-4">
+                    <h5 class="modal-title fw-bold">Aggiungi Nuovo Alimento</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="form-nuovo-alimento-visita">
+                        <input type="hidden" name="action" value="create_alimento">
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold text-muted">Nome Alimento o Categoria *</label>
+                            <input type="text" name="nome" class="form-control bg-light" placeholder="Es. Latticini, Zucchero raffinato" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary py-3 rounded-3 text-white fw-bold shadow-sm hover-lift" id="btn-salva-alimento">Registra e Usa in Visita</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap/jQuery base necessari per Select2 e App -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -352,13 +443,130 @@ include 'includes/header.php';
 
         $('.select2-alimenti').select2({
             theme: 'bootstrap-5',
-            placeholder: "Cerca e aggiungi cibi da escludere temporaneamente...",
+            placeholder: "Cerca alimento...",
+            allowClear: true,
             width: '100%'
         });
     }
 
     $(document).ready(function() {
         initSelect2();
+
+        // --- Salvataggio nuovo rimedio da modal nella visita ---
+        document.getElementById('form-nuovo-rimedio-visita').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-salva-rimedio');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Salvataggio...';
+            btn.disabled = true;
+
+            try {
+                const formData = new FormData(this);
+                const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData }).then(r => r.json());
+
+                if (res.success) {
+                    // Recupera i dati inseriti
+                    const nome = formData.get('nome').trim();
+                    const dosaggio = formData.get('dosaggio_standard') ? formData.get('dosaggio_standard').trim() : '';
+
+                    // Recupera l'ID appena creato con una query rapida
+                    const listRes = await fetch('ajax_handlers.php?action=get_last_medicinale').then(r => r.json());
+                    const newId = listRes.id || Date.now(); // fallback
+
+                    // Inietta la nuova option in TUTTI i select medicinali presenti nella pagina
+                    document.querySelectorAll('select[name="integratori[]"]').forEach(function(sel) {
+                        const opt = new Option(nome, newId, false, false);
+                        opt.setAttribute('data-dosaggio', dosaggio);
+                        sel.appendChild(opt);
+                        // Aggiorna select2 se inizializzato
+                        if ($(sel).data('select2')) {
+                            $(sel).trigger('change.select2');
+                        }
+                    });
+
+                    // Chiudi il modale e resetta il form
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('modalNuovoRimedio'));
+                    if (modal) modal.hide();
+                    this.reset();
+
+                    // Feedback visivo temporaneo
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-success');
+                    btn.innerHTML = '✓ Rimedio aggiunto!';
+                    setTimeout(() => {
+                        btn.classList.remove('btn-success');
+                        btn.classList.add('btn-primary');
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }, 1500);
+                } else {
+                    alert('Errore: ' + (res.error || 'Errore sconosciuto'));
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Errore di comunicazione con il server.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // --- Salvataggio nuovo alimento da modal nella visita ---
+        document.getElementById('form-nuovo-alimento-visita').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-salva-alimento');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Salvataggio...';
+            btn.disabled = true;
+
+            try {
+                const formData = new FormData(this);
+                const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData }).then(r => r.json());
+
+                if (res.success) {
+                    const nome = formData.get('nome').trim();
+
+                    // Recupera l'ID appena creato
+                    const listRes = await fetch('ajax_handlers.php?action=get_last_alimento').then(r => r.json());
+                    const newId = listRes.id || Date.now();
+
+                    // Inietta la nuova option in TUTTI i select alimenti presenti nella pagina
+                    document.querySelectorAll('select[name="alimenti[]"]').forEach(function(sel) {
+                        const opt = new Option(nome, newId, false, false);
+                        sel.appendChild(opt);
+                        if ($(sel).data('select2')) {
+                            $(sel).trigger('change.select2');
+                        }
+                    });
+
+                    // Chiudi il modale e resetta il form
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('modalNuovoAlimento'));
+                    if (modal) modal.hide();
+                    this.reset();
+
+                    // Feedback visivo
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-success');
+                    btn.innerHTML = '✓ Alimento aggiunto!';
+                    setTimeout(() => {
+                        btn.classList.remove('btn-success');
+                        btn.classList.add('btn-primary');
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }, 1500);
+                } else {
+                    alert('Errore: ' + (res.error || 'Errore sconosciuto'));
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Errore di comunicazione con il server.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
     });
 
     // --- Piano Terapeutico: Aggiungi/Rimuovi righe ---
@@ -366,15 +574,24 @@ include 'includes/header.php';
         const container = document.getElementById('prescrizioni-container');
         const count = container.querySelectorAll('.prescrizione-row').length;
         
+        // Clona le opzioni dal primo select esistente (include rimedi aggiunti dinamicamente)
+        const primaSelect = container.querySelector('select[name="integratori[]"]');
+        let opzioniHTML = '<option value=""></option>';
+        if (primaSelect) {
+            Array.from(primaSelect.options).forEach(function(opt) {
+                if (opt.value) {
+                    const dosaggio = opt.getAttribute('data-dosaggio') || '';
+                    opzioniHTML += '<option value="' + opt.value + '" data-dosaggio="' + dosaggio.replace(/"/g, '&quot;') + '">' + opt.text + '</option>';
+                }
+            });
+        }
+        
         const nuovaRiga = document.createElement('div');
         nuovaRiga.className = 'd-flex gap-2 mb-2 prescrizione-row';
         nuovaRiga.innerHTML = `
             <div class="flex-grow-1" style="flex-basis: 40%;">
                 <select name="integratori[]" class="form-select select2-medicinali-dyn-${count}">
-                    <option value=""></option>
-                    <?php foreach($lista_medicinali as $med): ?>
-                        <option value="<?= $med['id'] ?>" data-dosaggio="<?= htmlspecialchars($med['dosaggio_standard']) ?>"><?= addslashes(htmlspecialchars($med['nome'])) ?></option>
-                    <?php endforeach; ?>
+                    ${opzioniHTML}
                 </select>
             </div>
             <div style="flex-basis: 35%;">
@@ -383,7 +600,7 @@ include 'includes/header.php';
             <div style="flex-basis: 25%;">
                 <input type="text" name="durate[]" class="form-control bg-light" placeholder="Durata">
             </div>
-            <button type="button" class="btn btn-outline-danger btn-sm border-0 px-2 shadow-none hover-lift opacity-50" onclick="rimuoviPrescrizione(this)" title="Rimuovi riga">
+            <button type="button" class="btn btn-outline-danger btn-sm border-0 px-2 shadow-none opacity-50" onclick="rimuoviPrescrizione(this)" title="Rimuovi riga">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         `;
@@ -411,6 +628,59 @@ include 'includes/header.php';
             let row = btn.closest('.prescrizione-row');
             $(row).find('select').val(null).trigger('change');
             row.querySelectorAll('input').forEach(input => input.val = '');
+        }
+    }
+
+    // --- Alimenti: Aggiungi/Rimuovi righe ---
+    function aggiungiAlimento() {
+        const container = document.getElementById('alimenti-container');
+        const count = container.querySelectorAll('.alimento-row').length;
+
+        // Clona le opzioni dal primo select esistente (include alimenti aggiunti dinamicamente)
+        const primaSelect = container.querySelector('select[name="alimenti[]"]');
+        let opzioniHTML = '<option value=""></option>';
+        if (primaSelect) {
+            Array.from(primaSelect.options).forEach(function(opt) {
+                if (opt.value) {
+                    opzioniHTML += '<option value="' + opt.value + '">' + opt.text + '</option>';
+                }
+            });
+        }
+
+        const nuovaRiga = document.createElement('div');
+        nuovaRiga.className = 'd-flex gap-2 mb-2 alimento-row';
+        nuovaRiga.innerHTML = `
+            <div class="flex-grow-1" style="flex-basis: 60%;">
+                <select name="alimenti[]" class="form-select select2-alimenti-dyn-${count}">
+                    ${opzioniHTML}
+                </select>
+            </div>
+            <div style="flex-basis: 40%;">
+                <input type="text" name="durate_alimenti[]" class="form-control bg-light" placeholder="Durata">
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm border-0 px-2 shadow-none opacity-50" onclick="rimuoviAlimento(this)" title="Rimuovi riga">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        `;
+        container.appendChild(nuovaRiga);
+
+        // Inizializza select2 sulla nuova select
+        $('.select2-alimenti-dyn-' + count).select2({
+            theme: 'bootstrap-5',
+            placeholder: "Cerca alimento...",
+            allowClear: true,
+            width: '100%'
+        });
+    }
+
+    function rimuoviAlimento(btn) {
+        let container = document.getElementById('alimenti-container');
+        if (container.querySelectorAll('.alimento-row').length > 1) {
+            btn.closest('.alimento-row').remove();
+        } else {
+            let row = btn.closest('.alimento-row');
+            $(row).find('select').val(null).trigger('change');
+            row.querySelectorAll('input').forEach(input => input.value = '');
         }
     }
 
