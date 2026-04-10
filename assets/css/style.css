@@ -941,3 +941,61 @@ textarea.form-control:focus {
 [data-bs-theme="dark"] .datepicker .next:hover {
     background: var(--bg-input) !important;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════ */
+/* ── COMPONENTI AGGIUNTIVI (Table-light & Select2) ───────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════ */
+
+/* Fix .table-light in dark mode */
+[data-bs-theme="dark"] .table-light {
+    --bs-table-bg: var(--bg-input);
+    --bs-table-color: var(--text-heading);
+    --bs-table-border-color: var(--border-color);
+}
+[data-bs-theme="dark"] .table-light th,
+[data-bs-theme="dark"] .table-light td {
+    background-color: var(--bg-input) !important;
+    color: var(--text-heading) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Select2 in Dark Mode / Light Mode */
+.select2-container--bootstrap-5 .select2-selection {
+    min-height: calc(2.25rem + 2px);
+    padding: .375rem .75rem;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: .375rem;
+}
+[data-bs-theme="dark"] .select2-container--bootstrap-5 .select2-selection {
+    background-color: var(--bg-input) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-body) !important;
+}
+[data-bs-theme="dark"] .select2-container--bootstrap-5 .select2-selection__rendered {
+    color: var(--text-heading) !important;
+}
+[data-bs-theme="dark"] .select2-dropdown {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+[data-bs-theme="dark"] .select2-results__option {
+    color: var(--text-body) !important;
+    background-color: var(--bg-card) !important;
+}
+[data-bs-theme="dark"] .select2-results__option[aria-selected="true"] {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-bs-theme="dark"] .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--color-primary) !important;
+    color: white !important;
+}
+[data-bs-theme="dark"] .select2-search__field {
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-heading) !important;
+}
+[data-bs-theme="dark"] .select2-container--bootstrap-5 .select2-dropdown .select2-search .select2-search__field:focus {
+    box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
+    border-color: var(--color-primary) !important;
+}
