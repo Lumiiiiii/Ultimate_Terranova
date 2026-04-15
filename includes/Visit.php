@@ -99,4 +99,27 @@ class Visit
             return [];
         }
     }
+
+    /**
+     * Recupera le prescrizioni (integratori) assegnate in una specifica visita
+     */
+    public function getPrescrizioniByVisita($visita_id)
+    {
+        try {
+            $queryText = "
+                SELECT p.id, p.dosaggio, p.frequenza, p.durata, p.note_prescrizione,
+                       p.data_inizio, p.data_fine, m.nome AS nome_rimedio
+                FROM prescrizioni p
+                JOIN medicinali m ON p.medicinale_id = m.id
+                WHERE p.visita_id = :visita_id
+                ORDER BY p.data_creazione ASC
+            ";
+            $stmt = $this->db->prepare($queryText);
+            $stmt->execute([':visita_id' => $visita_id]);
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Errore in getPrescrizioniByVisita: " . $e->getMessage());
+            return [];
+        }
+    }
 }

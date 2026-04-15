@@ -20,6 +20,10 @@ if(!$patient){
 $visits = $visitManager->getVisitHistory($id);
 $haFattoAnamnesi = $patientManager->checkAnamnesi($id);
 
+// Prepara i dati per i rimedi prescritti e gli alimenti da evitare
+$prescrizioni = $patientManager->getPrescrizioniAttive($id);
+$alimentiDaEvitare = $patientManager->getAlimentiEvitare($id);
+
 // Prepara i dati per il grafico del Sonno
 $sleepTrend = $patientManager->getSleepTrend($id);
 $sleepLabels = [];
@@ -149,6 +153,79 @@ include 'includes/sidebar.php';
                         </button>
                         </div> <!-- Fine Card Profilo -->
 
+                        <!-- Piano Terapeutico Attivo -->
+                        <div class="card border-0 shadow-sm rounded-4 bg-white p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0">Piano Terapeutico Attivo</h6>
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 small fw-medium"><?= count($prescrizioni) ?> rimedi</span>
+                            </div>
+                            <?php if(empty($prescrizioni)): ?>
+                                <p class="text-muted small mb-0 text-center py-2 bg-light rounded-3 border"><i class="bi bi-info-circle me-1"></i> Nessun rimedio in corso.</p>
+                            <?php else: ?>
+                                <ul class="list-group list-group-flush border-0">
+                                    <?php foreach($prescrizioni as $p): ?>
+                                        <li class="list-group-item px-0 py-2 border-bottom border-light bg-transparent">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <span class="fw-semibold text-dark d-block" style="font-size: 0.9rem;"><?= htmlspecialchars($p['nome_rimedio']) ?></span>
+                                                    <?php if(!empty($p['dosaggio']) || !empty($p['frequenza'])): ?>
+                                                        <small class="text-muted d-block" style="font-size: 0.82rem;">
+                                                            <strong>Dosi:</strong> <?= htmlspecialchars($p['dosaggio']) ?> <?= !empty($p['frequenza']) ? ' - ' . htmlspecialchars($p['frequenza']) : '' ?>
+                                                        </small>
+                                                    <?php endif; ?>
+                                                    <?php if(!empty($p['durata'])): ?>
+                                                        <small class="text-muted d-block" style="font-size: 0.82rem;">
+                                                            <strong>Durata:</strong> <?= htmlspecialchars($p['durata']) ?> 
+                                                            <span class="ms-1 opacity-75">(dal <?= date('d/m/Y', strtotime($p['data_inizio'])) ?>)</span>
+                                                        </small>
+                                                    <?php else: ?>
+                                                        <small class="text-muted d-block" style="font-size: 0.82rem;">
+                                                            <span class="opacity-75">Prescritto il <?= date('d/m/Y', strtotime($p['data_inizio'])) ?></span>
+                                                        </small>
+                                                    <?php endif; ?>
+                                                    <?php if(!empty($p['note_prescrizione'])): ?>
+                                                        <small class="text-muted d-block fst-italic mt-1" style="font-size: 0.75rem;"><i class="bi bi-info-circle me-1"></i><?= htmlspecialchars($p['note_prescrizione']) ?></small>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-success border-0 finish-prescrizione-btn flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px; padding: 0;" data-id="<?= $p['id'] ?>" title="Segna come terminato">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Alimenti da Evitare -->
+                        <div class="card border-0 shadow-sm rounded-4 bg-white p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0">Alimenti da Evitare</h6>
+                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2 py-1 small fw-medium"><?= count($alimentiDaEvitare) ?> alimenti</span>
+                            </div>
+                            <?php if(empty($alimentiDaEvitare)): ?>
+                                 <p class="text-muted small mb-0 text-center py-2 bg-light rounded-3 border"><i class="bi bi-info-circle me-1"></i> Nessuna restrizione alimentare.</p>
+                            <?php else: ?>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <?php foreach($alimentiDaEvitare as $a): ?>
+                                        <div class="badge rounded-pill fw-medium ps-3 pe-2 py-2 d-flex align-items-center gap-2" style="color: #dc2626; background-color: #fef2f2; border: 1px solid #fca5a5; font-size: 0.8rem;">
+                                            <div class="d-flex flex-column text-start">
+                                                <span><?= htmlspecialchars($a['nome']) ?></span>
+                                                <?php if(!empty($a['durata'])): ?>
+                                                    <small style="font-size: 0.65rem; opacity: 0.8; font-weight: normal;">Durata: <?= htmlspecialchars($a['durata']) ?> (dal <?= date('d/m/Y', strtotime($a['data_aggiunta'])) ?>)</small>
+                                                <?php else: ?>
+                                                    <small style="font-size: 0.65rem; opacity: 0.8; font-weight: normal;">Dal <?= date('d/m/Y', strtotime($a['data_aggiunta'])) ?></small>
+                                                <?php endif; ?>
+                                            </div>
+                                            <button type="button" class="btn-close ms-1 finish-alimento-btn" data-id="<?= $a['id'] ?>" aria-label="Rimuovi" style="font-size: 0.55rem; filter: invert(24%) sepia(87%) saturate(5833%) hue-rotate(349deg) brightness(92%) contrast(92%);" title="Rimuovi dai cibi da evitare"></button>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
                         <!-- Grafico Ore Sonno -->
                         <div class="card border-0 shadow-sm rounded-4 bg-white p-3 d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -186,7 +263,7 @@ include 'includes/sidebar.php';
                                     <p class="mb-0">Nessuna visita registrata per questo paziente.</p>
                                 </div>
                             <?php else: ?>
-                                <div class="list-group list-group-flush border-0">
+                                <div class="list-group list-group-flush border-0" style="max-height: 480px; overflow-y: auto; overflow-x: hidden;">
                                     <?php foreach ($visits as $visit): ?>
                                         <div class="list-group-item p-4 bg-transparent border-bottom hover-lift">
                                             <div class="d-flex justify-content-between align-items-center">
@@ -379,6 +456,68 @@ include 'includes/sidebar.php';
                         btn.innerHTML = originalText; btn.disabled = false;
                     }
                 }
+            });
+        });
+
+        // Termina prescrizione
+        document.querySelectorAll('.finish-prescrizione-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const pre_id = this.getAttribute('data-id');
+                Swal.fire({
+                    title: 'Termina Prescrizione',
+                    text: "Vuoi segnare questo rimedio come concluso?",
+                    icon: 'question', showCancelButton: true,
+                    confirmButtonText: 'Sì, concludi', cancelButtonText: 'Annulla',
+                    customClass: { popup: 'rounded-4 border-0 shadow', confirmButton: 'btn btn-success px-4 mx-2', cancelButton: 'btn btn-light px-4 mx-2' },
+                    buttonsStyling: false, reverseButtons: true
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData();
+                        formData.append('action', 'finish_prescrizione');
+                        formData.append('id', pre_id);
+                        
+                        try {
+                            const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData });
+                            const data = await res.json();
+                            if (data.success) { location.reload(); } 
+                            else { Swal.fire('Errore', data.error || 'Errore.', 'error'); }
+                        } catch (error) {
+                            console.error(error);
+                            Swal.fire('Errore', 'Errore di rete.', 'error');
+                        }
+                    }
+                });
+            });
+        });
+
+        // Rimuovi alimento da evitare
+        document.querySelectorAll('.finish-alimento-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const alim_id = this.getAttribute('data-id');
+                Swal.fire({
+                    title: 'Rimuovi Restrizione',
+                    text: "Il paziente può tornare a consumare regolarmente questo alimento?",
+                    icon: 'question', showCancelButton: true,
+                    confirmButtonText: 'Sì, rimuovi dalla lista', cancelButtonText: 'Annulla',
+                    customClass: { popup: 'rounded-4 border-0 shadow', confirmButton: 'btn btn-danger px-4 mx-2', cancelButton: 'btn btn-light px-4 mx-2' },
+                    buttonsStyling: false, reverseButtons: true
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const formData = new FormData();
+                        formData.append('action', 'finish_alimento');
+                        formData.append('id', alim_id);
+                        
+                        try {
+                            const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData });
+                            const data = await res.json();
+                            if (data.success) { location.reload(); } 
+                            else { Swal.fire('Errore', data.error || 'Errore.', 'error'); }
+                        } catch (error) {
+                            console.error(error);
+                            Swal.fire('Errore', 'Errore di rete.', 'error');
+                        }
+                    }
+                });
             });
         });
     </script>

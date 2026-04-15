@@ -207,13 +207,15 @@ try {
 
                 // 4) Inserisci Alimenti da Evitare
                 $alimenti = $_POST['alimenti'] ?? [];
+                $durate_alimenti = $_POST['durate_alimenti'] ?? [];
                 if (!empty($alimenti)) {
-                    $stmtAlim = $db->prepare("INSERT INTO alimenti_evitare (paziente_id, lista_alimenti_id, attivo) VALUES (:paz_id, :alim_id, 1)");
-                    foreach ($alimenti as $alim_id) {
+                    $stmtAlim = $db->prepare("INSERT INTO alimenti_evitare (paziente_id, lista_alimenti_id, durata, attivo) VALUES (:paz_id, :alim_id, :durata, 1)");
+                    foreach ($alimenti as $idx => $alim_id) {
                         if (!empty($alim_id)) {
                             $stmtAlim->execute([
                                 ':paz_id'  => $paz_id,
-                                ':alim_id' => (int)$alim_id
+                                ':alim_id' => (int)$alim_id,
+                                ':durata'  => trim($durate_alimenti[$idx] ?? null)
                             ]);
                         }
                     }
@@ -306,6 +308,30 @@ try {
             $stmt = $db->prepare("DELETE FROM lista_alimenti WHERE id = :id");
             $success = $stmt->execute([':id' => $id]);
             echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nell\'eliminazione.']);
+            break;
+
+        case 'finish_prescrizione':
+            $id = $_POST['id'] ?? null;
+            if (!$id) {
+                echo json_encode(['success' => false, 'error' => 'ID mancante.']);
+                break;
+            }
+            $db = getDB();
+            $stmt = $db->prepare("UPDATE prescrizioni SET attivo = 0 WHERE id = :id");
+            $success = $stmt->execute([':id' => $id]);
+            echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nell\'operazione.']);
+            break;
+
+        case 'finish_alimento':
+            $id = $_POST['id'] ?? null;
+            if (!$id) {
+                echo json_encode(['success' => false, 'error' => 'ID mancante.']);
+                break;
+            }
+            $db = getDB();
+            $stmt = $db->prepare("UPDATE alimenti_evitare SET attivo = 0 WHERE id = :id");
+            $success = $stmt->execute([':id' => $id]);
+            echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nell\'operazione.']);
             break;
 
         default:

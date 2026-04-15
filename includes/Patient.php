@@ -293,4 +293,51 @@ public function deletePatient($id)
             return [];
         }
     }
+
+    /**
+     * Recupera gli alimenti da evitare (attivi) per un paziente
+     * JOIN con lista_alimenti per ottenere il nome dell'alimento
+     */
+    public function getAlimentiEvitare($paziente_id)
+    {
+        try {
+            $queryText = "
+                SELECT ae.id, ae.data_aggiunta, ae.durata, la.nome
+                FROM alimenti_evitare ae
+                JOIN lista_alimenti la ON ae.lista_alimenti_id = la.id
+                WHERE ae.paziente_id = :paziente_id AND ae.attivo = 1
+                ORDER BY la.nome ASC
+            ";
+            $query = $this->db->prepare($queryText);
+            $query->execute([':paziente_id' => $paziente_id]);
+            return $query->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Errore in getAlimentiEvitare: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Recupera le prescrizioni attive per un paziente
+     * JOIN con medicinali per ottenere il nome del rimedio
+     */
+    public function getPrescrizioniAttive($paziente_id)
+    {
+        try {
+            $queryText = "
+                SELECT p.id, p.dosaggio, p.frequenza, p.durata, p.note_prescrizione,
+                       p.data_inizio, p.data_fine, m.nome AS nome_rimedio
+                FROM prescrizioni p
+                JOIN medicinali m ON p.medicinale_id = m.id
+                WHERE p.paziente_id = :paziente_id AND p.attivo = 1
+                ORDER BY p.data_creazione DESC
+            ";
+            $query = $this->db->prepare($queryText);
+            $query->execute([':paziente_id' => $paziente_id]);
+            return $query->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Errore in getPrescrizioniAttive: " . $e->getMessage());
+            return [];
+        }
+    }
 }
