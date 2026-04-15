@@ -14,7 +14,7 @@ include __DIR__ . '/includes/patient.php';
 
 $patientManager = new Patient();
 
-$pageTitle = "Nuovo Paziente";
+$pageTitle = "Nuovo Assistito";
 $currentPage = "paziente_nuovo";
 include 'includes/header.php';
 include 'includes/sidebar.php';
@@ -33,10 +33,10 @@ include 'includes/sidebar.php';
                         Dashboard
                     </a>
                     <span class="text-muted">/</span>
-                    <span class="text-dark fw-semibold">Nuovo Paziente</span>
+                    <span class="text-dark fw-semibold">Nuovo Assistito</span>
                 </div>
-                <h2 class="fw-bold mb-1">Registra nuovo paziente</h2>
-                <p class="text-muted">Compila i campi per creare una nuova scheda paziente.</p>
+                <h2 class="fw-bold mb-1">Registra nuovo assistito</h2>
+                <p class="text-muted">Compila i campi per creare una nuova scheda assistito.</p>
             </header>
 
             <!-- Messaggi di errore -->
@@ -47,7 +47,7 @@ include 'includes/sidebar.php';
                 <input type="hidden" name="action" value="create_paziente">
                 <div class="row g-4">
 
-                    <!-- ── SEZIONE UNICA: Dati Paziente ── -->
+                    <!-- ── SEZIONE UNICA: Dati Assistito ── -->
                     <div class="col-12">
                         <div class="card border-0 shadow-sm rounded-4 bg-white">
                             <div class="card-header bg-transparent border-bottom py-3 px-4">
@@ -58,7 +58,7 @@ include 'includes/sidebar.php';
                                         </svg>
                                     </div>
                                     <div>
-                                        <h5 class="fw-bold mb-0">Dati Paziente</h5>
+                                        <h5 class="fw-bold mb-0">Dati Assistito</h5>
                                         <small class="text-muted">Informazioni anagrafiche e contatti</small>
                                     </div>
                                 </div>
@@ -198,8 +198,8 @@ include 'includes/sidebar.php';
                 
                 if (data.success) {
                     Swal.fire({
-                        title: 'Paziente Registrato!',
-                        text: 'Il nuovo paziente è stato salvato con successo.',
+                        title: 'Assistito Registrato!',
+                        text: 'Il nuovo assistito è stato salvato con successo.',
                         icon: 'success',
                         timer: 1500,
                         showConfirmButton: false,

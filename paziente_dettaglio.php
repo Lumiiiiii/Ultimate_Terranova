@@ -47,7 +47,7 @@ foreach ($weightTrend as $row) {
 }
 
 $pageTitle = htmlspecialchars($patient['nome_cognome']) . " - Dettaglio";
-$currentPage = "index";
+$currentPage = "pazienti";
 include 'includes/header.php';
 include 'includes/sidebar.php';
 ?>
@@ -59,18 +59,18 @@ include 'includes/sidebar.php';
             <!-- Header della pagina -->
             <header class="mb-5">
                 <div class="d-flex align-items-center gap-3 mb-1">
-                    <a href="index.php" class="text-muted text-decoration-none d-flex align-items-center gap-1 hover-lift">
+                    <a href="pazienti.php" class="text-muted text-decoration-none d-flex align-items-center gap-1 hover-lift">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
-                        Dashboard
+                        Assistiti
                     </a>
                     <span class="text-muted">/</span>
                     <span class="text-dark fw-semibold"><?= htmlspecialchars($patient['nome_cognome']) ?></span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h2 class="fw-bold mb-1">Dettaglio Paziente</h2>
+                        <h2 class="fw-bold mb-1">Dettaglio Assistito</h2>
                         <p class="text-muted mb-0">Profilo e storico visite di <?= htmlspecialchars($patient['nome_cognome']) ?>.</p>
                     </div>
                 </div>
@@ -86,7 +86,7 @@ include 'includes/sidebar.php';
                         <div class="card border-0 shadow-sm rounded-4 bg-white text-center p-3 position-relative">
                         
                         <!-- Bottone Elimina Paziente -->
-                        <button type="button" class="btn btn-sm btn-outline-danger position-absolute border-0 hover-lift" style="top: 10px; right: 10px;" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" title="Elimina Paziente">
+                        <button type="button" class="btn btn-sm btn-outline-danger position-absolute border-0 hover-lift" style="top: 10px; right: 10px;" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal" title="Elimina Assistito">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
@@ -274,23 +274,24 @@ include 'includes/sidebar.php';
                 
                 <!-- Colonna Destra: Storico Visite -->
                 <div class="col-lg-8">
-                    <div class="card border-0 shadow-sm rounded-4 bg-white h-100">
+                    <div class="card border-0 shadow-sm rounded-4 bg-white h-100 d-flex flex-column position-relative">
                             <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
                             <h5 class="fw-bold mb-0">Storico Visite</h5>
                             <span class="badge bg-light text-primary border rounded-pill px-3 py-2">
                                 <?= count($visits) ?> visite totali
                             </span>
                         </div>
-                        <div class="card-body p-0">
+                        <div class="card-body p-0 position-relative flex-grow-1">
+                            <div class="position-absolute top-0 bottom-0 start-0 end-0" style="overflow-y: auto;">
                             <?php if (empty($visits)): ?>
                                 <div class="text-center p-5 text-muted">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" class="mb-3 opacity-50 mx-auto">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    <p class="mb-0">Nessuna visita registrata per questo paziente.</p>
+                                    <p class="mb-0">Nessuna visita registrata per questo assistito.</p>
                                 </div>
                             <?php else: ?>
-                                <div class="list-group list-group-flush border-0" style="max-height: 480px; overflow-y: auto; overflow-x: hidden;">
+                                <div class="list-group list-group-flush border-0">
                                     <?php foreach ($visits as $visit): ?>
                                         <div class="list-group-item p-4 bg-transparent border-bottom hover-lift">
                                             <div class="d-flex justify-content-between align-items-center">
@@ -320,6 +321,7 @@ include 'includes/sidebar.php';
                                     <?php endforeach; ?>
                                 </div>
                             <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -333,7 +335,7 @@ include 'includes/sidebar.php';
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
                 <div class="modal-header border-bottom-0 py-4 px-4 bg-light bg-opacity-50">
-                    <h5 class="modal-title fw-bold" id="editModalLabel">Modifica Dati Paziente</h5>
+                    <h5 class="modal-title fw-bold" id="editModalLabel">Modifica Dati Assistito</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body px-4 pb-4 pt-4">
@@ -430,7 +432,7 @@ include 'includes/sidebar.php';
                 
                 if (data.success) {
                     Swal.fire({
-                        title: 'Aggiornato!', text: 'I dati del paziente sono stati salvati.',
+                        title: 'Aggiornato!', text: 'I dati dell\'assistito sono stati salvati.',
                         icon: 'success', timer: 1500, showConfirmButton: false,
                         customClass: { popup: 'rounded-4 border-0 shadow' }
                     }).then(() => location.reload());
@@ -451,7 +453,7 @@ include 'includes/sidebar.php';
         document.getElementById('confirmDeleteBtnDettaglio')?.addEventListener('click', function () {
             Swal.fire({
                 title: 'Sei sicuro?',
-                text: "Questa azione non può essere annullata. Tutti i dati del paziente verranno eliminati.",
+                text: "Questa azione non può essere annullata. Tutti i dati dell'assistito verranno eliminati.",
                 icon: 'warning', showCancelButton: true,
                 confirmButtonText: 'Sì, elimina definitivamente', cancelButtonText: 'Annulla',
                 customClass: { popup: 'rounded-4 border-0 shadow', confirmButton: 'btn btn-danger px-4 mx-2', cancelButton: 'btn btn-light px-4 mx-2' },
@@ -471,7 +473,7 @@ include 'includes/sidebar.php';
                         const res = await fetch('ajax_handlers.php', { method: 'POST', body: formData });
                         const data = await res.json();
                         if (data.success) {
-                            Swal.fire({ title: 'Eliminato!', text: 'Il paziente è stato rimosso.', icon: 'success', timer: 1500, showConfirmButton: false, customClass: { popup: 'rounded-4 border-0 shadow' } })
+                            Swal.fire({ title: 'Eliminato!', text: 'L\'assistito è stato rimosso.', icon: 'success', timer: 1500, showConfirmButton: false, customClass: { popup: 'rounded-4 border-0 shadow' } })
                             .then(() => window.location.href = 'index.php');
                         } else {
                             Swal.fire({ title: 'Errore', text: data.error || 'Impossibile eliminare.', icon: 'error', customClass: { popup: 'rounded-4 border-0 shadow' } });
@@ -523,7 +525,7 @@ include 'includes/sidebar.php';
                 const alim_id = this.getAttribute('data-id');
                 Swal.fire({
                     title: 'Rimuovi Restrizione',
-                    text: "Il paziente può tornare a consumare regolarmente questo alimento?",
+                    text: "L'assistito può tornare a consumare regolarmente questo alimento?",
                     icon: 'question', showCancelButton: true,
                     confirmButtonText: 'Sì, rimuovi dalla lista', cancelButtonText: 'Annulla',
                     customClass: { popup: 'rounded-4 border-0 shadow', confirmButton: 'btn btn-danger px-4 mx-2', cancelButton: 'btn btn-light px-4 mx-2' },

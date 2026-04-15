@@ -36,7 +36,7 @@ $lista_alimenti = $stmtAlim->fetchAll(PDO::FETCH_ASSOC);
 $anamnesi_passata = $patientManager->getAnamnesi($paziente_id);
 
 $pageTitle = "Nuova Visita - " . htmlspecialchars($patient['nome_cognome']);
-$currentPage = "index";
+$currentPage = "pazienti";
 include 'includes/header.php';
 ?>
 
@@ -65,7 +65,7 @@ include 'includes/header.php';
                     </a>
                     <div>
                         <h5 class="mb-0 fw-bold">Nuova Visita di Controllo</h5>
-                        <small class="text-muted">Paziente: <?= htmlspecialchars($patient['nome_cognome']) ?></small>
+                        <small class="text-muted">Assistito: <?= htmlspecialchars($patient['nome_cognome']) ?></small>
                     </div>
                 </div>
             </div>
@@ -81,7 +81,7 @@ include 'includes/header.php';
                     </svg>
                 </div>
                 <h2 class="fw-bold">Visita di Controllo</h2>
-                <p class="text-muted">Compila i dati per registrare l'andamento del paziente in questa sessione specifica.</p>
+                <p class="text-muted">Compila i dati per registrare l'andamento dell'assistito in questa sessione specifica.</p>
             </div>
 
             <?php if ($anamnesi_passata): ?>
@@ -153,7 +153,7 @@ include 'includes/header.php';
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label small text-muted mb-1">Note Extra</label>
-                                            <textarea name="note_aggiuntive" class="form-control form-control-sm bg-light text-primary" rows="2"><?= htmlspecialchars($anamnesi_passata['note_aggiuntive'] ?? '') ?></textarea>
+                                            <textarea name="note_aggiuntive" class="form-control form-control-sm bg-light" rows="2"><?= htmlspecialchars($anamnesi_passata['note_aggiuntive'] ?? '') ?></textarea>
                                         </div>
                                         <div class="d-flex justify-content-end mt-4">
                                             <button type="submit" class="btn btn-sm btn-outline-primary fw-bold d-flex align-items-center gap-2">
@@ -309,7 +309,7 @@ include 'includes/header.php';
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Nuovo alimento
                             </button>
                         </div>
-                        <div class="form-text small opacity-75 mt-2">Gli alimenti selezionati resteranno <span class="fw-bold">Attivi</span> nella scheda paziente finché non verranno revocati.</div>
+                        <div class="form-text small opacity-75 mt-2">Gli alimenti selezionati resteranno <span class="fw-bold">Attivi</span> nella scheda dell'assistito finché non verranno revocati.</div>
                     </div>
                 </div>
 
@@ -323,7 +323,7 @@ include 'includes/header.php';
                 <div class="row g-4 mb-4">
                     <div class="col-12">
                         <label class="form-label small fw-semibold text-muted">Note Finali del Naturopata</label>
-                        <textarea name="note_finali" class="form-control bg-light" rows="4" placeholder="Appunti liberi (visibili solo a te). Es. Paziente molto collaborativo, prossimo controllo tra 40 gg."></textarea>
+                        <textarea name="note_finali" class="form-control bg-light" rows="4" placeholder="Appunti liberi (visibili solo a te). Es. Assistito molto collaborativo, prossimo controllo tra 40 gg."></textarea>
                     </div>
                 </div>
 

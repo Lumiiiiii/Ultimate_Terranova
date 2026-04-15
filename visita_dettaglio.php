@@ -33,7 +33,7 @@ $domande_aggiuntive = $visitManager->getDomandeAggiuntive($visita_id);
 $prescrizioni_visita = $visitManager->getPrescrizioniByVisita($visita_id);
 
 $pageTitle = "Dettaglio Visita - " . htmlspecialchars($patient['nome_cognome']);
-$currentPage = "index";
+$currentPage = "pazienti";
 
 include 'includes/header.php';
 include 'includes/sidebar.php';
@@ -50,7 +50,7 @@ include 'includes/sidebar.php';
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                         </svg>
-                        Scheda Paziente
+                        Scheda Assistito
                     </a>
                     <span class="text-muted">/</span>
                     <span class="text-dark fw-semibold">Visita del <?= date('d/m/Y', strtotime($visit['data_visita'])) ?></span>
@@ -193,7 +193,7 @@ include 'includes/sidebar.php';
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                Anamnesi Paziente
+                                Anamnesi Assistito
                             </h5>
                         </div>
                         <div class="card-body p-4">

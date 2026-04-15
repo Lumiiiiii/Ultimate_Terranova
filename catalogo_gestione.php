@@ -84,31 +84,19 @@ include 'includes/sidebar.php';
                                     <th>Nome Prodotto</th>
                                     <th>Tipologia</th>
                                     <th>Dosaggio Consigliato</th>
-                                    <th class="text-center">Stato</th>
-                                    <th class="text-end">Azioni</th>
+
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php if(empty($medicinali)): ?>
-                                    <tr><td colspan="5" class="text-center py-4 text-muted">Nessun rimedio registrato nel catalogo. Aggiungi il primo!</td></tr>
+                                    <tr><td colspan="3" class="text-center py-4 text-muted">Nessun rimedio registrato nel catalogo. Aggiungi il primo!</td></tr>
                                 <?php endif; ?>
                                 <?php foreach($medicinali as $med): ?>
                                     <tr>
                                         <td class="fw-bold text-dark"><?= htmlspecialchars($med['nome']) ?></td>
                                         <td><span class="badge bg-light text-secondary border"><?= htmlspecialchars($med['tipologia'] ?? 'Generico') ?></span></td>
                                         <td class="text-muted small"><?= htmlspecialchars($med['dosaggio_standard'] ?? '-') ?></td>
-                                        <td class="text-center">
-                                            <?php if($med['attivo']): ?>
-                                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">Attivo</span>
-                                            <?php else: ?>
-                                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1">Sospeso</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="text-end">
-                                            <button class="btn btn-sm btn-outline-secondary rounded-3 px-3 fw-medium" onclick="toggleStato(<?= $med['id'] ?>, <?= $med['attivo'] ? 0 : 1 ?>)">
-                                                <?= $med['attivo'] ? 'Sospendi' : 'Riattiva' ?>
-                                            </button>
-                                        </td>
+
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>

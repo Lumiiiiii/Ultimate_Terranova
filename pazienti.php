@@ -14,7 +14,7 @@ $patientManager = new Patient();
 $allPatients = $patientManager->getAllPatients();
 $totalPatients = $patientManager->countPatients();
 
-$pageTitle = "Pazienti";
+$pageTitle = "Assistiti";
 $currentPage = "pazienti";
 include 'includes/header.php';
 include 'includes/sidebar.php';
@@ -27,14 +27,14 @@ include 'includes/sidebar.php';
         <header class="mb-5">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h2 class="fw-bold mb-1">Pazienti Registrati</h2>
-                    <p class="text-muted mb-0">Elenco completo di tutti i pazienti. Clicca su un paziente per vedere la scheda.</p>
+                    <h2 class="fw-bold mb-1">Assistiti Registrati</h2>
+                    <p class="text-muted mb-0">Elenco completo di tutti gli assistiti. Clicca su un assistito per vedere la scheda.</p>
                 </div>
                 <a href="paziente_nuovo.php" class="btn btn-gradient rounded-3 px-4 py-2 d-flex align-items-center gap-2 shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
-                    Nuovo Paziente
+                    Nuovo Assistito
                 </a>
             </div>
         </header>
@@ -50,7 +50,7 @@ include 'includes/sidebar.php';
                             </svg>
                         </span>
                         <input type="text" id="filter-input" class="form-control border-0 bg-transparent shadow-none py-2 fw-medium" 
-                               placeholder="Filtra pazienti per nome, email o telefono..." autocomplete="off">
+                               placeholder="Filtra assistiti per nome, email o telefono..." autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -58,7 +58,7 @@ include 'includes/sidebar.php';
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
                     <div class="d-flex align-items-center justify-content-center gap-2">
                         <span class="display-6 fw-bold text-primary"><?= $totalPatients ?></span>
-                        <span class="text-muted small">pazienti registrati</span>
+                        <span class="text-muted small">assistiti registrati</span>
                     </div>
                 </div>
             </div>
@@ -71,13 +71,13 @@ include 'includes/sidebar.php';
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" class="mb-3 opacity-40 mx-auto d-block">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <h5 class="fw-bold mb-2">Nessun paziente registrato</h5>
-                    <p class="mb-3">Inizia registrando il tuo primo paziente.</p>
+                    <h5 class="fw-bold mb-2">Nessun assistito registrato</h5>
+                    <p class="mb-3">Inizia registrando il tuo primo assistito.</p>
                     <a href="paziente_nuovo.php" class="btn btn-gradient rounded-3 px-4 py-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="me-1">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                         </svg>
-                        Registra Paziente
+                        Registra Assistito
                     </a>
                 </div>
             <?php else: ?>
@@ -130,7 +130,7 @@ include 'includes/sidebar.php';
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" class="mb-2 opacity-50">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    <div class="small">Nessun paziente trovato per la ricerca.</div>
+                    <div class="small">Nessun assistito trovato per la ricerca.</div>
                 </div>
             <?php endif; ?>
         </div>

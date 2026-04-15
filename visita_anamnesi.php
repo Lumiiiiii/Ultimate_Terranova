@@ -25,7 +25,7 @@ if (!$patient) {
 }
 
 $pageTitle = "Anamnesi";
-$currentPage = "index";
+$currentPage = "pazienti";
 include 'includes/header.php';
 include 'includes/sidebar.php';
 ?>
@@ -43,7 +43,7 @@ include 'includes/sidebar.php';
                     </a>
                     <div>
                         <h5 class="mb-0 fw-bold">Prima Visita (Anamnesi)</h5>
-                        <small class="text-muted">Paziente: <?= htmlspecialchars($patient['nome_cognome']) ?></small>
+                        <small class="text-muted">Assistito: <?= htmlspecialchars($patient['nome_cognome']) ?></small>
                     </div>
                 </div>
             </div>
@@ -58,7 +58,7 @@ include 'includes/sidebar.php';
                     </svg>
                 </div>
                 <h2 class="fw-bold">Raccolta Dati Anamnestici</h2>
-                <p class="text-muted">Compila la scheda storica del paziente. Questi dati verranno richiesti una sola volta.</p>
+                <p class="text-muted">Compila la scheda storica dell'assistito. Questi dati verranno richiesti una sola volta.</p>
             </div>
 
             <form id="anamnesi-form">
@@ -160,7 +160,7 @@ include 'includes/sidebar.php';
                 <div class="row g-4 mb-4">
                     <div class="col-12">
                         <label class="form-label small fw-semibold text-muted">Altre informazioni anamnestiche</label>
-                        <textarea name="note_aggiuntive" class="form-control bg-light" rows="4" placeholder="Eventuali annotazioni, osservazioni sul paziente o dettagli liberi..."></textarea>
+                        <textarea name="note_aggiuntive" class="form-control bg-light" rows="4" placeholder="Eventuali annotazioni, osservazioni sull'assistito o dettagli liberi..."></textarea>
                     </div>
                 </div>
 

@@ -67,7 +67,7 @@ include 'includes/sidebar.php';
             <!-- ── Totale Pazienti ── -->
             <div class="col-md-3">
                 <div class="card h-100 border-0 shadow-sm p-4 rounded-4 bg-white">
-                    <p class="text-uppercase small fw-bold text-muted mb-1">Totale Pazienti</p>
+                    <p class="text-uppercase small fw-bold text-muted mb-1">Totale Assistiti</p>
                     <div class="d-flex align-items-baseline gap-2">
                         <span class="display-4 fw-bold"><?= $totalPatients ?></span>
                         <span class="small text-muted">assistiti</span>
@@ -120,7 +120,7 @@ include 'includes/sidebar.php';
                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="mb-2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                         </svg>
-                        <h6 class="fw-bold mb-1">Nuovo Paziente</h6>
+                        <h6 class="fw-bold mb-1">Nuovo Assistito</h6>
                         <p class="small opacity-75 mb-0">Registra una nuova scheda →</p>
                     </div>
                 </a>
@@ -135,7 +135,7 @@ include 'includes/sidebar.php';
                             </svg>
                         </span>
                         <input type="text" id="search-input" class="form-control border-0 bg-transparent shadow-none fs-5 py-3 fw-medium" 
-                               placeholder="Cerca un paziente per avviare istantaneamente una visita..." autocomplete="off">
+                               placeholder="Cerca un assistito per avviare istantaneamente una visita..." autocomplete="off">
                         <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 me-3 d-none d-md-block">Ricerca Rapida</span>
                     </div>
                 </div>
@@ -168,7 +168,7 @@ include 'includes/sidebar.php';
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm rounded-4 bg-white h-100 p-3">
                     <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="fw-bold mb-0">Nuovi Pazienti</h5>
+                        <h5 class="fw-bold mb-0">Nuovi Assistiti</h5>
                         <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 small">Ultimi 30 giorni</span>
                     </div>
                     <div class="card-body p-0 d-flex align-items-end h-100" style="min-height: 200px; position: relative;">
@@ -244,7 +244,7 @@ include 'includes/sidebar.php';
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Nuovi Pazienti',
+                            label: 'Nuovi Assistiti',
                             data: dataPoints,
                             borderColor: '#2ecc71', // var(--color-primary)
                             borderWidth: 3,
@@ -403,12 +403,12 @@ include 'includes/sidebar.php';
                         .then(data => {
                             if (data.success) {
                                 Swal.fire({
-                                    title: 'Eliminato!', text: 'Il paziente è stato rimosso.',
+                                    title: 'Eliminato!', text: 'L\'assistito è stato rimosso.',
                                     icon: 'success', timer: 1500, showConfirmButton: false,
                                     customClass: { popup: 'rounded-4 border-0 shadow' }
                                 }).then(() => window.location.reload());
                             } else {
-                                Swal.fire({ title: 'Errore', text: data.error || 'Impossibile eliminare il paziente.', icon: 'error', customClass: { popup: 'rounded-4 border-0 shadow' } });
+                                Swal.fire({ title: 'Errore', text: data.error || 'Impossibile eliminare l\'assistito.', icon: 'error', customClass: { popup: 'rounded-4 border-0 shadow' } });
                                 confirmDeleteBtn.innerHTML = originalText;
                                 confirmDeleteBtn.disabled = false;
                                 deleteModal.hide();
