@@ -326,7 +326,7 @@ include 'includes/sidebar.php';
                                     </li>
 
                                     <li>
-                                        <strong class="d-block small text-muted text-uppercase mb-1 mt-2">Dati Biometrici</strong>
+                                        <strong class="d-block small text-muted text-uppercase mb-1 mt-2">Dati Fisici</strong>
                                         <div class="d-flex gap-2">
                                             <?php if(!empty($anamnesi['altezza'])): ?>
                                                 <span class="badge bg-light text-dark border">Alt: <?= $anamnesi['altezza'] ?> cm</span>
