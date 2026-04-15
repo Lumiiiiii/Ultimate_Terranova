@@ -97,6 +97,18 @@ try {
                 ':peso'       => !empty($_POST['peso']) ? (float)$_POST['peso'] : null
             ]);
 
+            if ($success && !empty($_POST['peso'])) {
+                $stmtPesoCheck = $db->prepare("SELECT id FROM storico_peso WHERE paziente_id = :paz_id AND data_registrazione = CURDATE()");
+                $stmtPesoCheck->execute([':paz_id' => $paz_id]);
+                if ($stmtPesoCheck->fetch()) {
+                    $stmtPeso = $db->prepare("UPDATE storico_peso SET peso = :peso WHERE paziente_id = :paz_id AND data_registrazione = CURDATE()");
+                    $stmtPeso->execute([':paz_id' => $paz_id, ':peso' => (float)$_POST['peso']]);
+                } else {
+                    $stmtPeso = $db->prepare("INSERT INTO storico_peso (paziente_id, peso, data_registrazione) VALUES (:paz_id, :peso, CURDATE())");
+                    $stmtPeso->execute([':paz_id' => $paz_id, ':peso' => (float)$_POST['peso']]);
+                }
+            }
+
             echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nel salvataggio dell\'anamnesi.']);
             break;
             
@@ -129,6 +141,18 @@ try {
                 ':alcol'      => !empty(trim($_POST['alcol'])) ? trim($_POST['alcol']) : null,
                 ':fumo'       => !empty(trim($_POST['fumo'])) ? trim($_POST['fumo']) : null
             ]);
+
+            if ($success && !empty($_POST['peso'])) {
+                $stmtPesoCheck = $db->prepare("SELECT id FROM storico_peso WHERE paziente_id = :paz_id AND data_registrazione = CURDATE()");
+                $stmtPesoCheck->execute([':paz_id' => $paz_id]);
+                if ($stmtPesoCheck->fetch()) {
+                    $stmtPeso = $db->prepare("UPDATE storico_peso SET peso = :peso WHERE paziente_id = :paz_id AND data_registrazione = CURDATE()");
+                    $stmtPeso->execute([':paz_id' => $paz_id, ':peso' => (float)$_POST['peso']]);
+                } else {
+                    $stmtPeso = $db->prepare("INSERT INTO storico_peso (paziente_id, peso, data_registrazione) VALUES (:paz_id, :peso, CURDATE())");
+                    $stmtPeso->execute([':paz_id' => $paz_id, ':peso' => (float)$_POST['peso']]);
+                }
+            }
 
             echo json_encode($success ? ['success' => true] : ['success' => false, 'error' => 'Errore nell\'aggiornamento dell\'anamnesi.']);
             break;

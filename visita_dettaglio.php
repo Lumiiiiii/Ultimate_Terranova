@@ -106,84 +106,9 @@ include 'includes/sidebar.php';
                             </div>
                         </div>
 
-                        <!-- Stato Fisico ed Emotivo -->
-                        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
-                            <h5 class="fw-bold text-dark border-bottom pb-3 mb-4 d-flex align-items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Parametri Generali e Stile di Vita
-                            </h5>
-                            
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Stato Emotivo</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0" style="font-size: 0.95rem;"><?= nl2br(htmlspecialchars($visit['stato_emotivo'] ?: 'Non specificato.')) ?></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Concentrazione</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0" style="font-size: 0.95rem;"><?= nl2br(htmlspecialchars($visit['concentrazione'] ?: 'Non specificata.')) ?></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Livello Stress (1-10)</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0 fw-bold text-primary" style="font-size: 1.1rem;"><?= (int)$visit['livello_stress'] > 0 ? (int)$visit['livello_stress'] : 'N/D' ?></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Livello Energia (1-10)</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0 fw-bold text-primary" style="font-size: 1.1rem;"><?= (int)$visit['livello_energia'] > 0 ? (int)$visit['livello_energia'] : 'N/D' ?></p>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Salute Intestinale e Digestione -->
-                        <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
-                            <h5 class="fw-bold text-dark border-bottom pb-3 mb-4 d-flex align-items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                                </svg>
-                                Parametri Fisiologici
-                            </h5>
-                            
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Qualità Sonno Percepita</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0" style="font-size: 0.95rem;"><?= nl2br(htmlspecialchars($visit['qualita_sonno_percepita'] ?: 'Non specificata.')) ?></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Idratazione</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0" style="font-size: 0.95rem;"><?= nl2br(htmlspecialchars($visit['idratazione'] ?: 'Non specificata.')) ?></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Appetito e Digestione</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0" style="font-size: 0.95rem;"><?= nl2br(htmlspecialchars($visit['appetito_e_digestione'] ?: 'Non specificato.')) ?></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Regolarità Intestinale</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0" style="font-size: 0.95rem;"><?= nl2br(htmlspecialchars($visit['regolarita_intestinale'] ?: 'Non specificata.')) ?></p>
-                                </div>
-                                <div class="col-12">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Sintomi Acuti</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0" style="font-size: 0.95rem;"><?= nl2br(htmlspecialchars($visit['sintomi_acuti'] ?: 'Nessuno.')) ?></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Supporti in uso</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0" style="font-size: 0.95rem;"><?= nl2br(htmlspecialchars($visit['supporti_in_uso'] ?: 'Nessuno.')) ?></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Alimentazione Recente</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0" style="font-size: 0.95rem;"><?= nl2br(htmlspecialchars($visit['alimentazione_recente'] ?: 'Non specificata.')) ?></p>
-                                </div>
-                                <?php if(!empty($visit['difficolta_addormentarsi_risvegli_notturni'])): ?>
-                                <div class="col-12">
-                                    <label class="small text-muted fw-bold text-uppercase tracking-wider mb-1">Problemi Sonno (Difficoltà Addormentarsi / Risvegli)</label>
-                                    <p class="text-dark bg-light p-3 rounded-3 mb-0" style="font-size: 0.95rem;"><?= nl2br(htmlspecialchars($visit['difficolta_addormentarsi_risvegli_notturni'])) ?></p>
-                                </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
 
                         <!-- Domande Aggiuntive -->
-                        <?php if(!empty($domande_aggiuntive)): ?>
                         <div class="card border-0 shadow-sm rounded-4 bg-white p-4">
                             <h5 class="fw-bold text-dark border-bottom pb-3 mb-4 d-flex align-items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="text-primary">
@@ -191,20 +116,25 @@ include 'includes/sidebar.php';
                                 </svg>
                                 Risposte alle Domande Specifiche
                             </h5>
-                            <div class="d-flex flex-column gap-3">
-                                <?php foreach($domande_aggiuntive as $index => $domanda): ?>
-                                    <div class="bg-light bg-opacity-50 p-3 rounded-3 border">
-                                        <p class="fw-bold text-dark mb-1 d-flex gap-2">
-                                            <span class="text-primary">Q:</span> <?= htmlspecialchars($domanda['domanda']) ?>
-                                        </p>
-                                        <p class="text-muted mb-0 ps-4 border-start border-primary border-3 ms-1 mt-2">
-                                            <?= nl2br(htmlspecialchars($domanda['risposta'] ?: 'Nessuna risposta fornita.')) ?>
-                                        </p>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
+                            <?php if(!empty($domande_aggiuntive)): ?>
+                                <div class="d-flex flex-column gap-3">
+                                    <?php foreach($domande_aggiuntive as $index => $domanda): ?>
+                                        <div class="bg-light bg-opacity-50 p-3 rounded-3 border">
+                                            <p class="fw-bold text-dark mb-1 d-flex gap-2">
+                                                <span class="text-primary">Q:</span> <?= htmlspecialchars($domanda['domanda']) ?>
+                                            </p>
+                                            <p class="text-muted mb-0 ps-4 border-start border-primary border-3 ms-1 mt-2">
+                                                <?= nl2br(htmlspecialchars($domanda['risposta'] ?: 'Nessuna risposta fornita.')) ?>
+                                            </p>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="bg-light p-3 rounded-3 text-muted fst-italic text-center border">
+                                    Nessuna domanda specifica registrata per questa seduta.
+                                </div>
+                            <?php endif; ?>
                         </div>
-                        <?php endif; ?>
 
                         <!-- Piano Terapeutico Assegnato / Integratori -->
                         <?php if(!empty($prescrizioni_visita)): ?>
@@ -329,7 +259,7 @@ include 'includes/sidebar.php';
                                         <strong class="d-block small text-muted text-uppercase mb-1 mt-2">Dati Fisici</strong>
                                         <div class="d-flex gap-2">
                                             <?php if(!empty($anamnesi['altezza'])): ?>
-                                                <span class="badge bg-light text-dark border">Alt: <?= $anamnesi['altezza'] ?> cm</span>
+                                                <span class="badge bg-light text-dark border">Altezza: <?= $anamnesi['altezza'] ?> cm</span>
                                             <?php endif; ?>
                                             <?php if(!empty($anamnesi['peso'])): ?>
                                                 <span class="badge bg-light text-dark border">Peso: <?= $anamnesi['peso'] ?> kg</span>

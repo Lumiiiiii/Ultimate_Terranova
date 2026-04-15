@@ -35,6 +35,17 @@ foreach ($sleepTrend as $row) {
     }
 }
 
+// Prepara i dati per il grafico del Peso
+$weightTrend = $patientManager->getWeightTrend($id);
+$weightLabels = [];
+$weightData = [];
+foreach ($weightTrend as $row) {
+    if (!empty($row['data_registrazione'])) {
+        $weightLabels[] = date('d/m/Y', strtotime($row['data_registrazione']));
+        $weightData[] = (float)$row['peso'];
+    }
+}
+
 $pageTitle = htmlspecialchars($patient['nome_cognome']) . " - Dettaglio";
 $currentPage = "index";
 include 'includes/header.php';
@@ -239,6 +250,22 @@ include 'includes/sidebar.php';
                                     </div>
                                 <?php endif; ?>
                                 <canvas id="sleepChart" style="<?= empty($sleepData) ? 'display:none;' : '' ?>"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Grafico Peso -->
+                        <div class="card border-0 shadow-sm rounded-4 bg-white p-3 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0">Andamento Peso</h6>
+                                <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-2 py-1 small fw-medium" style="font-size: 0.75rem;">Kg</span>
+                            </div>
+                            <div style="height: 120px; position: relative;">
+                                <?php if(empty($weightData)): ?>
+                                    <div class="d-flex align-items-center justify-content-center h-100 bg-light rounded-3 border">
+                                        <p class="text-muted mb-0 small text-center p-2"><i class="bi bi-info-circle me-1"></i> Nessun dato registrato</p>
+                                    </div>
+                                <?php endif; ?>
+                                <canvas id="weightChart" style="<?= empty($weightData) ? 'display:none;' : '' ?>"></canvas>
                             </div>
                         </div>
 
@@ -543,6 +570,7 @@ include 'includes/sidebar.php';
 
         // Init Chart.js
         document.addEventListener('DOMContentLoaded', function () {
+            // -- Grafico Sonno --
             const ctxSleep = document.getElementById('sleepChart');
             if (ctxSleep) {
                 const labels = <?= json_encode($sleepLabels) ?>;
@@ -602,6 +630,73 @@ include 'includes/sidebar.php';
                                 },
                                 min: 0,
                                 suggestedMax: 10
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index',
+                        },
+                    }
+                });
+            }
+
+            // -- Grafico Peso --
+            const ctxWeight = document.getElementById('weightChart');
+            if (ctxWeight) {
+                const labelsW = <?= json_encode($weightLabels) ?>;
+                const dataW = <?= json_encode($weightData) ?>;
+
+                let gradientW = ctxWeight.getContext('2d').createLinearGradient(0, 0, 0, 300);
+                gradientW.addColorStop(0, 'rgba(14, 165, 233, 0.4)'); // Colore accent (info)
+                gradientW.addColorStop(1, 'rgba(14, 165, 233, 0.0)');
+
+                new Chart(ctxWeight, {
+                    type: 'line',
+                    data: {
+                        labels: labelsW,
+                        datasets: [{
+                            label: 'Peso (Kg)',
+                            data: dataW,
+                            borderColor: '#0ea5e9',
+                            borderWidth: 3,
+                            backgroundColor: gradientW,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: '#0ea5e9',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#1e293b',
+                                titleFont: { size: 13, family: "'Inter', sans-serif" },
+                                bodyFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+                                padding: 12,
+                                cornerRadius: 8,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) { return context.parsed.y + ' kg'; }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#64748b', font: { size: 11 } }
+                            },
+                            y: {
+                                grid: { color: '#f1f5f9', borderDash: [4, 4] },
+                                ticks: {
+                                    color: '#64748b',
+                                    font: { size: 11 }
+                                }
                             }
                         },
                         interaction: {

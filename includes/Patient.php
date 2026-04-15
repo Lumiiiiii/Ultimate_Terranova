@@ -295,6 +295,26 @@ public function deletePatient($id)
     }
 
     /**
+     * Dati per il grafico: andamento peso paziente
+     */
+    public function getWeightTrend($paziente_id)
+    {
+        try {
+            $queryText = "
+                SELECT data_registrazione, peso 
+                FROM storico_peso 
+                WHERE paziente_id = :paziente_id AND peso IS NOT NULL 
+                ORDER BY data_registrazione ASC
+            ";
+            $query = $this->db->prepare($queryText);
+            $query->execute([':paziente_id' => $paziente_id]);
+            return $query->fetchAll();
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
      * Recupera gli alimenti da evitare (attivi) per un paziente
      * JOIN con lista_alimenti per ottenere il nome dell'alimento
      */
